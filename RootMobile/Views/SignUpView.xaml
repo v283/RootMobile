@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RootMobile.Views.SignUpView"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <Grid Padding="24,40,24,24"
+          RowDefinitions="*,Auto"
+          RowSpacing="24">
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="20"
+                             VerticalOptions="Center">
+            <VerticalStackLayout Spacing="4"
+                                 HorizontalOptions="Center">
+                <Label Text="Create account"
+                       FontSize="28"
+                       FontAttributes="Bold"
+                       TextColor="#111827"
+                       HorizontalTextAlignment="Center" />
+                <Label Text="Join us today"
+                       FontSize="14"
+                       TextColor="#9CA3AF"
+                       HorizontalTextAlignment="Center" />
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="16">
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Name"
+                           FontSize="12"
+                           TextColor="#374151" />
+                    <Border BackgroundColor="#F3F4F6"
+                            Stroke="#F3F4F6"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,4">
+                        <Grid ColumnDefinitions="20,*"
+                              ColumnSpacing="8"
+                              VerticalOptions="Center">
+                            <Image Source="user_icon.png"
+                                   WidthRequest="18"
+                                   HeightRequest="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Placeholder="Enter name" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Email"
+                           FontSize="12"
+                           TextColor="#374151" />
+                    <Border BackgroundColor="#F3F4F6"
+                            Stroke="#F3F4F6"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,4">
+                        <Grid ColumnDefinitions="20,*"
+                              ColumnSpacing="8"
+                              VerticalOptions="Center">
+                            <Image Source="email_icon.png"
+                                   WidthRequest="18"
+                                   HeightRequest="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Placeholder="Enter email"
+                                   Keyboard="Email" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Password"
+                           FontSize="12"
+                           TextColor="#374151" />
+                    <Border BackgroundColor="#F3F4F6"
+                            Stroke="#F3F4F6"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,4">
+                        <Grid ColumnDefinitions="20,*,20"
+                              ColumnSpacing="8"
+                              VerticalOptions="Center">
+                            <Image Source="lock_icon.png"
+                                   WidthRequest="18"
+                                   HeightRequest="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Placeholder="Enter password"
+                                   IsPassword="True" />
+                            <ImageButton Grid.Column="2"
+                                         Source="eye_icon.png"
+                                         BackgroundColor="Transparent"
+                                         WidthRequest="18"
+                                         HeightRequest="18" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="6">
+                    <Label Text="Confirm password"
+                           FontSize="12"
+                           TextColor="#374151" />
+                    <Border BackgroundColor="#F3F4F6"
+                            Stroke="#F3F4F6"
+                            StrokeShape="RoundRectangle 8"
+                            Padding="12,4">
+                        <Grid ColumnDefinitions="20,*,20"
+                              ColumnSpacing="8"
+                              VerticalOptions="Center">
+                            <Image Source="lock_icon.png"
+                                   WidthRequest="18"
+                                   HeightRequest="18"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center" />
+                            <Entry Grid.Column="1"
+                                   Placeholder="Repeat password"
+                                   IsPassword="True" />
+                            <ImageButton Grid.Column="2"
+                                         Source="eye_icon.png"
+                                         BackgroundColor="Transparent"
+                                         WidthRequest="18"
+                                         HeightRequest="18" />
+                        </Grid>
+                    </Border>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <Button Text="Sign Up"
+                    BackgroundColor="#6DBA3F"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="48" />
+
+            <Label Text="OR CONTINUE WITH"
+                   FontSize="10"
+                   TextColor="#9CA3AF"
+                   HorizontalOptions="Center" />
+
+            <HorizontalStackLayout Spacing="24"
+                                   HorizontalOptions="Center">
+                <Image Source="google_logo.webp"
+                       WidthRequest="24"
+                       HeightRequest="24" />
+                <Image Source="facebook_logo.png"
+                       WidthRequest="24"
+                       HeightRequest="24" />
+                <Image Source="apple_logo.png"
+                       WidthRequest="24"
+                       HeightRequest="24" />
+            </HorizontalStackLayout>
+        </VerticalStackLayout>
+
+        <HorizontalStackLayout Grid.Row="1"
+                               Spacing="4"
+                               HorizontalOptions="Center">
+            <Label Text="Already have an account?"
+                   FontSize="12"
+                   TextColor="#374151" />
+            <Label Text="Sign in"
+                   FontSize="12"
+                   FontAttributes="Bold"
+                   TextColor="#6DBA3F" />
+        </HorizontalStackLayout>
+    </Grid>
+</ContentPage>

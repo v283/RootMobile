@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RootMobile", "RootMobile\RootMobile.csproj", "{3880F877-FA52-4F9C-85F5-B5FEA87F0653}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{3880F877-FA52-4F9C-85F5-B5FEA87F0653}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3880F877-FA52-4F9C-85F5-B5FEA87F0653}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3880F877-FA52-4F9C-85F5-B5FEA87F0653}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3880F877-FA52-4F9C-85F5-B5FEA87F0653}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

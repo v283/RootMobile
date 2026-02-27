@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RootMobile.Views.LaunchView"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <Grid Padding="24,40" VerticalOptions="Fill"
+          RowDefinitions="3*,*" ColumnDefinitions="*"
+          RowSpacing="24">
+
+
+        <VerticalStackLayout Grid.Row="0"
+                             Spacing="8" VerticalOptions="Center"
+                             HorizontalOptions="Center">
+            <Image 
+                   Source="root_logo.png"
+                   WidthRequest="180"
+                   HeightRequest="180"
+                   HorizontalOptions="Center"
+                   VerticalOptions="Center" />
+            <Label Text="Select your language"
+                   FontSize="14"
+                   TextColor="#6B7280"
+                   HorizontalTextAlignment="Center" />
+
+            <Border Stroke="#E5E7EB"
+                    StrokeThickness="1"
+                    StrokeShape="RoundRectangle 8"
+                    BackgroundColor="White"
+                    Padding="12,4"
+                    WidthRequest="220">
+                <Picker Title="Українська"
+                        SelectedIndex="0">
+                    <Picker.Items>
+                        <x:String>Українська</x:String>
+                        <x:String>English</x:String>
+                    </Picker.Items>
+                </Picker>
+            </Border>
+        </VerticalStackLayout>
+
+        <VerticalStackLayout   VerticalOptions="End" Grid.Row="1"
+                             Spacing="12">
+            <Button Text="Sign in"
+                    BackgroundColor="#6DBA3F"
+                    TextColor="White"
+                    CornerRadius="8"
+                    HeightRequest="48"
+                    Clicked="OnSignIn"/>
+            <Button Text="Sign up"
+                    BackgroundColor="Transparent"
+                    TextColor="#6DBA3F"
+                    BorderColor="#6DBA3F"
+                    BorderWidth="1"
+                    CornerRadius="8"
+                    HeightRequest="48" Clicked="OnSignUp"/>
+        </VerticalStackLayout>
+    </Grid>
+</ContentPage>

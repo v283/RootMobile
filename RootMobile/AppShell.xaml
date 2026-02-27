@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="RootMobile.AppShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:local="clr-namespace:RootMobile"
+    xmlns:views="clr-namespace:RootMobile.Views"
+    Title="RootMobile">
+
+    <TabBar >
+        
+        <ShellContent Title="Map" Route="rootmapview"
+                      Icon="map_tree.png" 
+                      ContentTemplate="{DataTemplate views:RootMapView}"/>
+        <ShellContent Title="Challenges" Route="challengesview"
+                      Icon="challenges.png"
+                      ContentTemplate="{DataTemplate views:ChallengesView}" />
+        <ShellContent Title="Game" Route="treegameview"
+                      Icon="game_tree.png" 
+                      ContentTemplate="{DataTemplate views:TreeGameView}" />
+        <ShellContent Title="Shop" Route="shopview"
+                      Icon="shop.png"
+                      ContentTemplate="{DataTemplate views:ShopView}" />
+        <ShellContent Title="Account" Route="accountview"
+                      Icon="account.png"
+                      ContentTemplate="{DataTemplate views:AccountView}" />
+
+
+    </TabBar>
+</Shell>
