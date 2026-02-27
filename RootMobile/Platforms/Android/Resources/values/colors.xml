@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#512BD4</color>
-    <color name="colorPrimaryDark">#2B0B98</color>
-    <color name="colorAccent">#2B0B98</color>
+    <color name="colorPrimary">#43b02a</color>  <!-- Білий фон -->
+    <color name="colorPrimaryDark">#888888</color>  <!-- Білий статус-бар -->
+    <color name="colorAccent">#43b02a</color>
 </resources>
