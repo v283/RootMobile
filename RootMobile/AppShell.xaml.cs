@@ -1,4 +1,4 @@
-﻿﻿namespace RootMobile;
+﻿namespace RootMobile;
 
 public partial class AppShell : Shell
 {
