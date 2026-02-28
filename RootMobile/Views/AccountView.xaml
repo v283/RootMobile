@@ -1,7 +1,130 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RootMobile.Views.AccountView">
+             x:Class="RootMobile.Views.AccountView"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="White">
+    <Grid Padding="16" RowDefinitions="Auto,*" ColumnDefinitions="*">
+        <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Grid.Column="0" Padding="0,6,0,12">
+            <BoxView WidthRequest="28" HeightRequest="28" Opacity="0" Grid.Column="0"/>
+            <Label Text="My Profile" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
+            <Image HeightRequest="24" WidthRequest="24" Source="settings.png" Grid.Column="2"/>
+        </Grid>
 
+        <ScrollView Grid.Row="1" Grid.Column="0">
+            <VerticalStackLayout Spacing="20">
+                <Border StrokeThickness="0" Padding="16" StrokeShape="RoundRectangle 24">
+
+                    <VerticalStackLayout Spacing="10">
+                        <Grid HorizontalOptions="Center">
+                            <Grid WidthRequest="96" HeightRequest="96">
+                                <Border Stroke="#c7c9c7" StrokeThickness="0.2" StrokeShape="RoundRectangle 48">
+                                    <Image Source="dotnet_bot.png" Aspect="AspectFill" />
+                                </Border>
+                                <BoxView WidthRequest="12" HeightRequest="12" BackgroundColor="#2FBF71" CornerRadius="6" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,4,4" />
+                            </Grid>
+                        </Grid>
+                        
+
+                        <Label Text="Alex Rivers" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="Eco-Warrior" FontSize="12" TextColor="#6E6E6E" HorizontalOptions="Center" />
+
+                        <Grid ColumnDefinitions="*,*,*" Padding="0,8,0,0">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                                <Label Text="48" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                <Label Text="TREES" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                                <Label Text="1.2k" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                <Label Text="CO2 (KG)" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                            <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                                <Label Text="03" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                <Label Text="TEAMS" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+                
+                <!-- <Label Text="Team Impact" FontSize="16" FontAttributes="Bold" /> -->
+                <!-- -->
+                <!-- <Border Padding="16" BackgroundColor="White" StrokeShape="RoundRectangle 18"> -->
+                <!--     <VerticalStackLayout Spacing="10"> -->
+                <!--         <Grid ColumnDefinitions="*,Auto" ColumnSpacing="12"> -->
+                <!--             <VerticalStackLayout Spacing="4"> -->
+                <!--                 <Label Text="Forest Guardians" FontAttributes="Bold" FontSize="14" /> -->
+                <!--                 <Label Text="Collaborating with 12 friends to plant a 1,000 tree grove in Northern Cali." FontSize="12" TextColor="#6E6E6E" /> -->
+                <!--             </VerticalStackLayout> -->
+                <!-- -->
+                <!--         </Grid> -->
+                <!-- -->
+                <!--         <Grid ColumnDefinitions="*,Auto"> -->
+                <!--             <Label Text="850 / 1000 Trees" FontSize="12" TextColor="#6E6E6E" Grid.Column="0" /> -->
+                <!--             <Label Text="85%" FontSize="12" TextColor="#6E6E6E" Grid.Column="1" HorizontalOptions="End" /> -->
+                <!--         </Grid> -->
+                <!--         <ProgressBar Progress="0.85" ProgressColor="#2FBF71" BackgroundColor="#E1E1E1" HeightRequest="6" /> -->
+                <!-- -->
+                <!--         <Button Text="Contribute Now" BackgroundColor="#2FBF71" TextColor="White" CornerRadius="18" /> -->
+                <!--     </VerticalStackLayout> -->
+                <!-- </Border> -->
+                
+                <Grid ColumnDefinitions="*,Auto">
+                    <Label Text="Eco-Badges" FontSize="16" FontAttributes="Bold" Grid.Column="0" />
+                    <Label Text="12 / 24 unlocked" FontSize="12" TextColor="#6E6E6E" Grid.Column="1" VerticalOptions="Center" />
+                </Grid>
+
+                <Grid ColumnDefinitions="*,*,*,*" ColumnSpacing="12">
+                    <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                        <Border WidthRequest="48" HeightRequest="48" BackgroundColor="#E9F8F1" StrokeShape="RoundRectangle 12">
+                            <Label Text="EB" TextColor="#2FBF71" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="Early Bird" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                        <Border WidthRequest="48" HeightRequest="48" BackgroundColor="#E9F8F1" StrokeShape="RoundRectangle 12">
+                            <Label Text="CO2" TextColor="#2FBF71" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="CO2 Warrior" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                        <Border WidthRequest="48" HeightRequest="48" BackgroundColor="#E9F8F1" StrokeShape="RoundRectangle 12">
+                            <Label Text="TP" TextColor="#2FBF71" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="Top Planter" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
+                        <Border WidthRequest="48" HeightRequest="48" BackgroundColor="#E9F8F1" StrokeShape="RoundRectangle 12">
+                            <Label Text="GD" TextColor="#2FBF71" FontAttributes="Bold" HorizontalOptions="Center" VerticalOptions="Center" />
+                        </Border>
+                        <Label Text="Guardian" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+                <Label Text="Project Center" HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"  />
+                <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="customer_support.png"/>
+                        <Label Text="Help Center" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="privacy_policy.png"/>
+                        <Label Text="Privacy Policy" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="flying_money.png"/>
+                        <Label Text="Support Project" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="suggestion.png"/>
+                        <Label Text="Suggestions" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="4" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="add_friends.png"/>
+                        <Label Text="Invite Friends" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

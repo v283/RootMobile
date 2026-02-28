@@ -2,8 +2,15 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RootMobile.Views.ShopView">
-    <ContentPage.Content>
+             x:Class="RootMobile.Views.ShopView" Shell.NavBarIsVisible="False">
+    <Grid Padding="10" RowDefinitions="Auto, *" ColumnDefinitions="*">
+        <Grid RowDefinitions="*" ColumnDefinitions="*, Auto" Grid.Row="0" Grid.Column="0">
+            <Label Text="Root market" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0" Grid.Row="0"/>
+            <Image HeightRequest="28" Source="cart.png" Grid.Column="1" Grid.Row="0"/>
+        </Grid>
+        <VerticalStackLayout Grid.Row="1" Grid.Column="0">
+            
+        </VerticalStackLayout>
         
-    </ContentPage.Content>
+    </Grid>
 </ContentPage>
