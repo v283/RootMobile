@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Maui.GoogleMaps.Hosting;
+using Microsoft.Extensions.Logging;
 
 namespace RootMobile;
 
@@ -17,8 +18,13 @@ public static class MauiProgram
 
 #if DEBUG
         builder.Logging.AddDebug();
-#endif
 
+#endif
+#if ANDROID
+        builder.UseGoogleMaps();
+#elif IOS
+        builder.UseGoogleMaps("AIzaSyAKbeCntKNiPUHflmWGV__6ZPT22ppkLdM");
+#endif
         return builder.Build();
     }
 }
