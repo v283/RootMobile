@@ -4,6 +4,10 @@
 ## Get latest from https://github.com/github/gitignore/blob/main/VisualStudio.gitignore
 
 # User-specific files
+/packages/
+riderModule.iml
+/_ReSharper.Caches/
+.idea/
 *.rsuser
 *.suo
 *.user
