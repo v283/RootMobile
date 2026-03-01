@@ -1,0 +1,174 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:RootMobile.ViewModels"
+             xmlns:services="clr-namespace:RootMobile.Services"
+             xmlns:ad="clr-namespace:RootMobile.Constants"
+             x:Class="RootMobile.Views.ProductView">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:BoolToColorConverterBackGround x:Key="BoolToColorConvertHeart" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Shell.TitleView>
+        <Grid Padding="20" RowDefinitions="*" ColumnSpacing="20" ColumnDefinitions="8*, Auto, Auto" >
+
+            <Image  Grid.Column="0" Grid.Row="0" HorizontalOptions="Center" Margin="40,0,0,0" HeightRequest="35" Source="bot.png">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:ProductViewModel}}, Path=ChatBotCommand}"/>
+                </Image.GestureRecognizers>
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                </Image.Behaviors>
+
+            </Image>
+
+            <Image  Grid.Column="1" Grid.Row="0" HorizontalOptions="Center"  HeightRequest="21" Source="share.png">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:ProductViewModel}}, Path=ShareProductCommand}"/>
+                </Image.GestureRecognizers>
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                </Image.Behaviors>
+
+            </Image>
+
+            <Image  Grid.Column="2" Grid.Row="0" HorizontalOptions="End" HeightRequest="22" Source="{Binding Product.CartIdent}">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type local:ProductViewModel}}, Path=AddOrRemoveToCartCommand}" />
+                </Image.GestureRecognizers>
+
+            </Image>
+
+
+
+        </Grid>
+    </Shell.TitleView>
+
+    <ScrollView>
+        <VerticalStackLayout Padding="10" >
+            <Image HeightRequest="260" Source="{Binding Product.Image}"/>
+            <Label  FontAttributes="Bold" FontSize="18"  >
+                <Label.FormattedText>
+                    <FormattedString>
+                        <Span  Text="{Binding Product.Name}" />
+                        <Span Text=",   "/>
+                        <Span Text="{Binding Product.Size}"/>
+                    </FormattedString>
+
+                </Label.FormattedText>
+            </Label>
+            <Grid Padding="0,10" Margin="10,10,0,5" RowDefinitions="*, auto" ColumnSpacing="10" ColumnDefinitions="Auto, *">
+                <Label FontAttributes="Bold" FontSize="21" Grid.Column="0" Grid.Row="0" Text="{Binding Product.Price , StringFormat='{0:N2} грн'}"/>
+                <Border HorizontalOptions="End" Grid.Column="1" Grid.Row="0"  WidthRequest="140" StrokeShape="RoundRectangle 5" >
+                    <Grid Padding="5" ColumnSpacing="5" RowDefinitions="*"  ColumnDefinitions="Auto, Auto,Auto">
+                        <Image HeightRequest="22" Grid.Column="0" Grid.Row="0" Source="star.png"/>
+                        <Label FontSize="16" Grid.Column="1" Grid.Row="0" Text="5.0" />
+                        <Label FontSize="16" FontAttributes="Bold" Grid.Column="2" Grid.Row="0" Text="Оцінити"/>
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding MarkCommand}"/>
+
+                        </Grid.GestureRecognizers>
+                    </Grid>
+                </Border>
+                <Label Grid.Column="0" Grid.Row="1" TextColor="Gray" Text="{Binding Product.LastUpdate, StringFormat='{}{0:dd.MM.yyyy}'}" /> 
+            </Grid>
+
+            <toolkit:Expander IsExpanded="True">
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="*"  Padding="10">
+                        <Label Grid.Column="0" Grid.Row="0" Text="{Binding ShopsCount ,StringFormat='Магазини ({0})' }" FontSize="18" />
+                        <Image Grid.Column="1" Grid.Row="0" HeightRequest="18" Source="arrow_down.png">
+                            <Image.Behaviors>
+                                <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                            </Image.Behaviors>
+
+                        </Image>
+                    </Grid>
+                </toolkit:Expander.Header>
+
+                <toolkit:Expander.Content>
+                    <CollectionView ItemsSource="{Binding Shops}">
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate>
+
+
+                                <Grid ColumnSpacing="10"  Padding="10" RowDefinitions="*" ColumnDefinitions="*, 2*, Auto ">
+                                    <Image Grid.Row="0"  Grid.Column="0"  WidthRequest="80" 
+                               
+                                   Source="{Binding LogoUrl}"  />
+
+                                    <Label Grid.Row="0"    Grid.Column="1"  
+                                   FontSize="15"    FontAttributes="Bold"
+                                   Text="{Binding Name, StringFormat='Ціна в магазині {0}'}"
+                                   VerticalOptions="Center" />
+
+                                    <Label Grid.Row="0"    Grid.Column="2"  
+                                   FontSize="15"    FontAttributes="Bold"
+                                   Text="{Binding Price , StringFormat='{0:N2} грн'}"
+                                   VerticalOptions="Center" />
+                                    <Grid.GestureRecognizers>
+                                        <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:ProductViewModel}}, Path=GoToShopCommand}" 
+ CommandParameter="{Binding ProductLink}"/>
+
+                                    </Grid.GestureRecognizers>
+                                </Grid>
+
+
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+
+                    </CollectionView>
+                </toolkit:Expander.Content>
+            </toolkit:Expander>
+
+
+            <toolkit:Expander >
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="*"  Padding="10">
+                        <Label Grid.Column="0" Grid.Row="0" Text="Загальна інформація" FontSize="18" />
+                        <Image Grid.Column="1" Grid.Row="0" HeightRequest="18" Source="arrow_down.png">
+                            <Image.Behaviors>
+                                <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                            </Image.Behaviors>
+
+                        </Image>
+                    </Grid>
+                </toolkit:Expander.Header>
+
+                <toolkit:Expander.Content>
+                    <VerticalStackLayout Padding="10">
+                        <Label FontSize="16"  Text="{Binding Product.TradeMark, StringFormat='Торгова марка:  {0}' }" />
+                        <Label FontSize="16" Text="{Binding Product.Country, StringFormat='Країна:  {0}'}" />
+                    </VerticalStackLayout>
+                </toolkit:Expander.Content>
+            </toolkit:Expander>
+            <toolkit:Expander>
+                <toolkit:Expander.Header>
+                    <Grid ColumnDefinitions="*, Auto" RowDefinitions="*"  Padding="10">
+                        <Label Grid.Column="0" Grid.Row="0" Text="Про товар" FontSize="18" />
+                        <Image Grid.Column="1" Grid.Row="0" HeightRequest="18" Source="arrow_down.png">
+                            <Image.Behaviors>
+                                <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                            </Image.Behaviors>
+
+                        </Image>
+                    </Grid>
+                </toolkit:Expander.Header>
+
+                <toolkit:Expander.Content>
+                    <VerticalStackLayout Padding="10">
+                        <Label x:Name="Ref"  Text="{Binding Product.About }" />
+
+                    </VerticalStackLayout>
+                </toolkit:Expander.Content>
+            </toolkit:Expander>
+
+            <!-- <ad:AdBanner/> -->
+        </VerticalStackLayout>
+    </ScrollView>
+
+</ContentPage>
