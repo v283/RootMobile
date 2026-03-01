@@ -83,23 +83,13 @@ namespace RootMobile.ViewModels
             ProductsBind = new();
         }
 
-        public async Task Initialize(string category, CategoriesModel sub, List<SubCategoriesModel> subList, string serchFilter="",string subStr="", string subsub="")
+        public async Task Initialize(List<CategoriesModel> sub)
         {
-            _category = category;
-            _sub = sub.Name;
-            SubSubFilter = sub.SubCategory;
+            _sub = "";
+            SubFilter = sub;
+            SubSubFilter = SubFilter[0].SubCategory;
             //SubFilter = subList;
-
-            _subSub = subsub;
-            if (!subStr.IsNullOrEmpty())
-            {
-                _sub = subStr;
-            }
-            if (!string.IsNullOrEmpty(serchFilter))
-            {
-                FindField = serchFilter;
-            }
-            else { await LoadCatalog(); }
+            //await LoadCatalog(); }
             
 
         }
@@ -182,7 +172,7 @@ namespace RootMobile.ViewModels
 
             _currentPage = 0;
             ProductsBind.Clear();;
-            await LoadCatalog();
+            //await LoadCatalog();
         }
 
         [RelayCommand]

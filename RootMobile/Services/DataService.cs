@@ -335,7 +335,13 @@ namespace RootMobile.Services
             return rezult;
         }
 
+        public async Task<List<CategoriesModel>> GetCategories()
+        {
+            var response = await _supabaseClient.From<CategoriesModel>().Select("*").Order("id", Supabase.Postgrest.Constants.Ordering.Ascending).Get();
+            List<CategoriesModel> rezult = response.Models;
 
+            return rezult;
+        }
 
 
         //cart

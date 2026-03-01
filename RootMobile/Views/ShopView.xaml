@@ -3,17 +3,38 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:local="clr-namespace:RootMobile.ViewModels"             
+             xmlns:services="clr-namespace:RootMobile.Services"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="RootMobile.Views.ShopView" Shell.NavBarIsVisible="False">
-             
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:BoolToColorConverterCategoriesView x:Key="BoolToColorConverterCategoriesView" />
+            <services:BoolToColorConverterFont x:Key="BoolToColorConverterFont" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
     <Grid Padding="10" RowDefinitions="Auto, *" ColumnDefinitions="*">
-        <Grid RowDefinitions="*" ColumnDefinitions="*, Auto" Grid.Row="0" Grid.Column="0">
-            <Label Text="Root market" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="0"
-                   Grid.Row="0" />
-            <Image HeightRequest="28" Source="cart.png" Grid.Column="1" Grid.Row="0" />
+
+        
+        <Grid RowDefinitions="*" ColumnDefinitions="Auto, *, Auto">
+            <Image HeightRequest="28" Source="cart.png" Grid.Column="2" Grid.Row="0" />
+            <Border  Grid.Column="1" Grid.Row="0" Stroke="Transparent" Margin="10" HeightRequest="{x:OnPlatform iOS=30}" StrokeThickness="0" Padding="-7" StrokeShape="RoundRectangle 30">
+                <SearchBar x:Name="serachBar" SearchButtonPressed="SearchBar_TextChanged" Placeholder="Знайти продукти..." />
+            </Border>
+            <Image Margin="15" Grid.Column="0" Grid.Row="0" Source="filter.png"  HeightRequest="25">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BottomFilterCommand}"/>
+                </Image.GestureRecognizers>
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                </Image.Behaviors>
+            </Image>
+
         </Grid>
+        
         <ScrollView Grid.Row="1" Grid.Column="0">
             <VerticalStackLayout BackgroundColor="{DynamicResource CatalogBackgroundColor}">
+                
                 <CollectionView BackgroundColor="{DynamicResource PageBackgroundColor}" Margin="{OnPlatform iOS=5 }"
                                 HeightRequest="37" ItemsSource="{Binding SubFilter}">
                     <CollectionView.Triggers>
