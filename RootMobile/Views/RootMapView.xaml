@@ -5,7 +5,56 @@
               xmlns:maps="clr-namespace:Maui.GoogleMaps;assembly=Maui.GoogleMaps"
              x:Class="RootMobile.Views.RootMapView">
 
-    <maps:Map 
-     x:Name="mymap"
-     VerticalOptions="FillAndExpand" />
+    <Grid>
+        <maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" />
+
+        <!-- Кнопка "Створити" -->
+        <Button Text="Create Pin" 
+         VerticalOptions="End" HorizontalOptions="Center" 
+         Margin="20" Clicked="OnCreatePinClicked" />
+
+        <!-- Анкета (за замовчуванням прихована) -->
+        <Border x:Name="PinForm" IsVisible="False" 
+        BackgroundColor="White" StrokeShape="RoundRectangle 20"
+        VerticalOptions="Center" HorizontalOptions="Center" 
+        WidthRequest="320" Padding="20">
+            <VerticalStackLayout Spacing="15">
+                <Label TextColor="Black" Text="New Plant" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+
+                <!-- Контейнер для фото з округленням -->
+                <Border StrokeShape="RoundRectangle 15" 
+                HeightRequest="200" 
+                WidthRequest="250"
+                HorizontalOptions="Center"
+                Padding="0"
+                StrokeThickness="0">
+                    <Image x:Name="PreviewImage" 
+                   Aspect="AspectFill" 
+                   BackgroundColor="#F0F0F0" />
+                </Border>
+
+                <Button Text="Pick/Take Photo" 
+                Clicked="OnTakePhotoClicked" 
+                BackgroundColor="#512BD4" 
+                TextColor="White" />
+
+                <Entry x:Name="PlantNameEntry" 
+               Placeholder="Enter plant name..." 
+                       TextColor="Black"
+               FontSize="16" />
+
+                <Button Text="Finish Pin" 
+                Clicked="OnFinishPinClicked" 
+                BackgroundColor="Green" 
+                TextColor="White" 
+                FontAttributes="Bold" />
+
+                <Button Text="Cancel" 
+                Clicked="OnCancelClicked" 
+                BackgroundColor="Transparent" 
+                TextColor="Red" />
+            </VerticalStackLayout>
+        </Border>
+    </Grid>
+   
 </ContentPage>
