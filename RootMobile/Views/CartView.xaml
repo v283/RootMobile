@@ -1,0 +1,129 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RootMobile.Views.CartView"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+                          xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:local="clr-namespace:RootMobile.ViewModels"
+             Title="Обрані">
+
+    <Shell.TitleView>
+        <Grid RowDefinitions="*" ColumnDefinitions="*, Auto">
+            <Label x:Name="Ref"  Grid.Column="0" Grid.Row="0" Margin="5" Text="Обрані" FontFamily="Lexend"  FontAttributes="Bold" FontSize="24"/>
+
+            <Image Margin="15" Grid.Column="1" Grid.Row="0" Source="filter.png"  HeightRequest="25">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding BottomFilterCommand}"/>
+
+                </Image.GestureRecognizers>
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+
+                </Image.Behaviors>
+
+            </Image>
+
+        </Grid>
+
+    </Shell.TitleView>
+    <ScrollView>
+        <VerticalStackLayout  >
+
+            <CollectionView   x:Name="prodCollection" ItemsSource="{Binding CartItems}">
+                <CollectionView.ItemsLayout>
+                    <GridItemsLayout Orientation="Vertical"
+                            Span="1"/>
+                </CollectionView.ItemsLayout>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <Grid ColumnSpacing="10" RowDefinitions="Auto, Auto, Auto,Auto" ColumnDefinitions="Auto,Auto,*, Auto, Auto" Margin="7" >
+                            <Border StrokeThickness="0" Grid.Column="0" Grid.Row="0" Grid.RowSpan="4" MaximumHeightRequest="110" MaximumWidthRequest="90" StrokeShape="RoundRectangle 10" VerticalOptions="Start">
+                                <ffimageloading:CachedImage 
+                                   Aspect="AspectFit" HeightRequest="110"
+                                   Source="{Binding Product.Image}"    DownsampleWidth="220" />
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=ToProductPageCommand}"  CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+                            </Border>
+
+                            <Label Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="3" Text="{Binding Product.Name}">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=ToProductPageCommand}" CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+
+                            </Label>
+
+                            <Image Grid.Column="4"  Grid.Row="0" Grid.RowSpan="2" HeightRequest="23" Source="delete.png" HorizontalOptions="End" VerticalOptions="Start">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=DeleteProductCommand}" CommandParameter="{Binding .}"/>
+
+                                </Image.GestureRecognizers>
+
+                            </Image>
+                            <Label Grid.Column="1" Grid.Row="1" Margin="5" VerticalOptions="Center" FontSize="12"  Text="{Binding Product.Size}" >
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=ToProductPageCommand}" CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+
+                            </Label>
+
+                            <Image Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="2" Grid.RowSpan="2" VerticalOptions="Start"   HeightRequest="20" Source="{Binding Shop.LogoUrl}" />
+
+                            <Label Grid.Column="1" Grid.Row="2" Margin="0,10" FontAttributes="Bold" Text="{Binding Product.Price, StringFormat='{0:N2} грн'}" >
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=ToProductPageCommand}"  CommandParameter="{Binding .}"/>
+                                </Label.GestureRecognizers>
+
+                            </Label>
+
+                            <Label Margin="0,10,0,0" Text="{Binding Pay, StringFormat='{0:N2} грн'}" Grid.Column="4" Grid.Row="1" />
+
+
+                            <Grid VerticalOptions="Center" Grid.Column="3" Grid.Row="2" Grid.ColumnSpan="2" Margin="5" ColumnSpacing="5"  RowDefinitions="*" ColumnDefinitions="Auto,*,Auto"  >
+                                <Label  Text="–" FontSize="28"  Grid.Column="0" Grid.Row="0">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=ReduceQuantityCommand}"  CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                                <Entry FontAttributes="Bold" Text="{Binding Quantity}"  HorizontalTextAlignment="Center" FontSize="18" WidthRequest="38" Grid.Column="1" Grid.Row="0"
+                                       ReturnCommand="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=UpdateQuantityCommand}"
+                                       ReturnCommandParameter="{Binding .}"/>
+
+                                <Label Text="+" FontSize="30"   Grid.Column="2" Grid.Row="0">
+                                    <Label.GestureRecognizers>
+                                        <TapGestureRecognizer  Command="{Binding Source={RelativeSource AncestorType={x:Type local:CartViewModel}}, Path=IncreaseQuantityCommand}"  CommandParameter="{Binding .}"/>
+                                    </Label.GestureRecognizers>
+                                </Label>
+                            </Grid>
+
+
+
+                            <Image VerticalOptions="Start" HorizontalOptions="End" Grid.Column="4" Grid.Row="0" HeightRequest="15" Source="morew.png" />
+
+                            <Border  Grid.ColumnSpan="5" Grid.Column="0" Grid.Row="3" HeightRequest="1"/>
+                        </Grid>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+
+            <Grid Margin="10,20" RowSpacing="15" RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="2*, *">
+                <Label FontSize="20" Grid.Column="0" Grid.Row="0" Text="Вартість товарів: "/>
+                <Label FontSize="20"  FontAttributes="Bold" HorizontalOptions="End" Grid.Column="1" Grid.Row="0" Text="{Binding TotalSum, StringFormat='{0:N2} грн'}" />
+
+                <Label TextDecorations="Underline"  FontSize="20" TextColor="#43b02a" Grid.Column="0" Grid.Row="1" Text="Ви економите:"/>
+                <Label FontSize="20" FontAttributes="Bold" TextColor="#43b02a" HorizontalOptions="End" Grid.Column="1" Grid.Row="1" Text="{Binding SavedSum, StringFormat='{0:N2} грн'}" />
+
+
+                <Label TextDecorations="Underline"  FontSize="20" TextColor="#43b02a" Grid.Column="0" Grid.Row="2" Text="Максимальна економія:"/>
+                <Label FontSize="20" FontAttributes="Bold" TextColor="#43b02a" HorizontalOptions="End" Grid.Column="1" Grid.Row="2" Text="{Binding MaxSavedSum, StringFormat='{0:N2} грн'}" />
+                
+                <Label TextDecorations="Underline"  FontSize="20" TextColor="Red" Grid.Column="0" Grid.Row="3" Text="Повна вартість:"/>
+                <Label FontSize="20" FontAttributes="Bold" TextColor="Red" HorizontalOptions="End" Grid.Column="1" Grid.Row="3" Text="{Binding MaxSum, StringFormat='{0:N2} грн'}" />
+
+            </Grid>
+        </VerticalStackLayout>
+
+    </ScrollView>
+
+</ContentPage>

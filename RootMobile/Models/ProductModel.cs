@@ -6,7 +6,7 @@ using Supabase.Postgrest.Models;
 namespace RootMobile.Models
 {
 
-    [Table("products_all_old")]
+    [Table("products_all")]
 
     public class ProductModel : BaseModel, INotifyPropertyChanged
     {
