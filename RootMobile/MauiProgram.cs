@@ -1,7 +1,12 @@
 ﻿using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using FFImageLoading.Maui;
-
+using Microsoft.Maui.Handlers;
+using RootMobile.Constants;
+using RootMobile.Services;
+#if ANDROID
+using Android.Content.Res;
+#endif
 namespace RootMobile;
 
 public static class MauiProgram
@@ -18,7 +23,27 @@ public static class MauiProgram
                 fonts.AddFont("OpenSans-Regular.ttf", "OpenSansRegular");
                 fonts.AddFont("OpenSans-Semibold.ttf", "OpenSansSemibold");
             });
+        var url = AppConfig.SUPABASE_URL;
+        var key = AppConfig.SUPABASE_KEY;
 
+        builder.Services.AddSingleton(provider => new Supabase.Client(url, key, new Supabase.SupabaseOptions
+        {
+            AutoRefreshToken = true,
+            AutoConnectRealtime = true,
+        }));
+        
+        // Add Data Service
+        builder.Services.AddSingleton<IDataService, DataService>();
+#if ANDROID
+        EntryHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+        {
+            if (handler.PlatformView is Android.Widget.EditText nativeEntry)
+            {
+                nativeEntry.SetBackgroundColor(Android.Graphics.Color.Transparent);
+                nativeEntry.BackgroundTintList = ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+            }
+        });
+#endif
 #if DEBUG
         builder.Logging.AddDebug();
 #endif
