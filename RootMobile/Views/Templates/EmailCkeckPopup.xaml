@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+                         x:Class="RootMobile.Views.Templates.EmailCkeckPopup"
+                         Color="Transparent"  Size="300,280">
+
+    <Border StrokeShape="RoundRectangle 10"  >
+        <VerticalStackLayout  Margin="20" Spacing="10"  >
+
+            <Image  HeightRequest="20" HorizontalOptions="Start" Source="close.png">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CloseCommand}"/>
+
+                </Image.GestureRecognizers>
+                <Image.Behaviors>
+                    <toolkit:IconTintColorBehavior TintColor="#43b02a"/>
+                </Image.Behaviors>
+
+            </Image>
+
+            <Grid RowDefinitions="Auto, Auto" ColumnDefinitions="*, *" RowSpacing="10">
+              <Label FontSize="14" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2">
+    <Label.FormattedText>
+        <FormattedString>
+            <Span Text="На ваш " />
+            <Span Text="Email" FontAttributes="Bold" />
+            <Span Text=" було надіслано лист, відкрийте його та " />
+            <Span Text="підтвердьте реєстрацію" FontAttributes="Bold" />
+        </FormattedString>
+    </Label.FormattedText>
+</Label>                <Label Grid.Column="0" Grid.Row="1" Text="Я підтвердив Email:" FontSize="16" />
+                <CheckBox Grid.Column="1" Grid.Row="1" x:Name="isEmail" IsChecked="False"/>
+
+            </Grid>
+
+
+
+            <Button Margin="20" FontSize="16"  Text="Зберегти"  Command="{Binding SaveCommand}" IsEnabled="{Binding Source={x:Reference isEmail}, Path=IsChecked}" />
+        </VerticalStackLayout>
+    </Border>
+
+</toolkit:Popup>
