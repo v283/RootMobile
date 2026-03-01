@@ -5,8 +5,17 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml">
 
     <!-- Note: For Android please see also Platforms\Android\Resources\values\colors.xml -->
+    <Color x:Key="TextColor">Black</Color>
+    <Color x:Key="Primary">#42b029</Color>
+    <Color x:Key="PageBackgroundColor">#ffffff</Color>
+    <Color x:Key="TabBarSelected">#42b029</Color>
+    <Color x:Key="BackgroundInputFieldColor">#f3f5f4</Color>
+    <Color x:Key="BackgroundBorderColor">White</Color>
+    <Color x:Key="StrokeColor">#e7e7e7</Color>
+    <Color x:Key="Grey">#C8C8C8</Color>
 
-    <Color x:Key="Primary">#512BD4</Color>
+    <Color x:Key="CatalogBackgroundColor">#f3f4f6</Color>
+    <Color x:Key="ProdItemBackgroundColor">#ffffff</Color>
     <Color x:Key="PrimaryDark">#ac99ea</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
     <Color x:Key="Secondary">#DFD8F7</Color>

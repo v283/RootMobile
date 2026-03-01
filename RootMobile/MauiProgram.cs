@@ -4,6 +4,8 @@ using FFImageLoading.Maui;
 using Microsoft.Maui.Handlers;
 using RootMobile.Constants;
 using RootMobile.Services;
+using RootMobile.ViewModels;
+using RootMobile.Views;
 #if ANDROID
 using Android.Content.Res;
 #endif
@@ -31,7 +33,8 @@ public static class MauiProgram
             AutoRefreshToken = true,
             AutoConnectRealtime = true,
         }));
-        
+        builder.Services.AddSingleton<ShopView>();
+        builder.Services.AddSingleton<ShopViewModel>();
         // Add Data Service
         builder.Services.AddSingleton<IDataService, DataService>();
 #if ANDROID
