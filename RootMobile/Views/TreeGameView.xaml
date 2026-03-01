@@ -4,6 +4,25 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RootMobile.Views.TreeGameView">
     <ContentPage.Content>
-        
+        <AbsoluteLayout>
+
+            <Image
+            x:Name="TreeSprite"
+            AbsoluteLayout.LayoutBounds="100,150,200,200"
+            AbsoluteLayout.LayoutFlags="None"/>
+
+            <Image
+                Source="background.png"
+                Aspect="AspectFill"
+                AbsoluteLayout.LayoutBounds="0,0,1,1"
+                AbsoluteLayout.LayoutFlags="All"/>
+
+            <Label
+            Text="Tree 12Game"
+            TextColor="Yellow"
+            FontSize="24"
+            AbsoluteLayout.LayoutBounds="0.5,0.1,-1,-1"
+            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        </AbsoluteLayout>
     </ContentPage.Content>
 </ContentPage>
