@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Maui.GoogleMaps.Hosting;
+using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using FFImageLoading.Maui;
 using Microsoft.Maui.Handlers;
@@ -49,8 +50,13 @@ public static class MauiProgram
 #endif
 #if DEBUG
         builder.Logging.AddDebug();
-#endif
 
+#endif
+#if ANDROID
+        builder.UseGoogleMaps();
+#elif IOS
+        builder.UseGoogleMaps("AIzaSyAKbeCntKNiPUHflmWGV__6ZPT22ppkLdM");
+#endif
         return builder.Build();
     }
 }
