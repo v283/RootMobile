@@ -18,9 +18,8 @@ namespace RootMobile.ViewModels
 
         private readonly DataService _dataService;
 
-        private string _category;
-        private string _sub;
-        private string _subSub;
+        private string _category ="";
+        private string _sub = "";
         private int _bottomFilter;
 
         private string findField;
@@ -85,18 +84,14 @@ namespace RootMobile.ViewModels
 
         public async Task Initialize(List<CategoriesModel> sub)
         {
-            _sub = "";
             SubFilter = sub;
             SubSubFilter = SubFilter[0].SubCategory;
-            //SubFilter = subList;
-            //await LoadCatalog(); }
-            
-
+            await LoadCatalog();
         }
 
         private async Task LoadCatalog()
         {
-            var products = await _dataService.GetProductsAsync(_prodOnPage, _currentPage, _category, _sub,_subSub, _bottomFilter, findField);
+            var products = await _dataService.GetProductsAsync(_prodOnPage, _currentPage, _category, _sub, _bottomFilter, findField);
             ProductsBind.AddRange(products);
             // if (products.Count > 0)
             // {
@@ -129,13 +124,13 @@ namespace RootMobile.ViewModels
             if (!subSub.IsSelected)
             {
                 subSub.IsSelected = true;
-                _subSub = subSub.Name;
+
                 prevSubSub = subSub;
             }
             else
             {
                 subSub.IsSelected = false;
-                _subSub = "";
+
                 prevSubSub = new(); ;
             }
 
@@ -158,7 +153,7 @@ namespace RootMobile.ViewModels
                 sub.IsSelected = true;
                 _sub = sub.Name;
                 SubSubFilter = sub.SubCategory;
-                _subSub = "";
+      
                 prevSub = sub;
             }
             else
@@ -166,7 +161,6 @@ namespace RootMobile.ViewModels
                 sub.IsSelected = false;
                 _sub = "";
                 SubSubFilter = new();
-                _subSub = "";
                 prevSub = new();
             }
 
@@ -188,8 +182,8 @@ namespace RootMobile.ViewModels
         [RelayCommand]
         private async Task AddOrRemoveToCart(ProductModel product)
         {
-            // if (_dataService.SupabaseClient.Auth.CurrentUser != null)
-            // {
+            if (_dataService.SupabaseClient.Auth.CurrentUser != null)
+            {
                 if (product.CartIdent == "heart.png")
                 {
                     if (Guid.TryParse(_dataService.SupabaseClient.Auth.CurrentUser.Id, out var userId))
@@ -206,12 +200,12 @@ namespace RootMobile.ViewModels
                     }
                     product.CartIdent = "heart.png";
                 }
-            // }
-            // else
-            // {
-            //     await Shell.Current.CurrentPage.ShowPopupAsync(new LoginPopup(_dataService));
-            //
-            // }
+            }
+            else
+            {
+                await Shell.Current.Navigation.PushModalAsync(new SignInView());
+            
+            }
 
         }
 

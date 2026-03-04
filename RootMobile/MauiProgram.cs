@@ -9,6 +9,7 @@ using RootMobile.ViewModels;
 using RootMobile.Views;
 #if ANDROID
 using Android.Content.Res;
+using Microsoft.Maui.Platform;
 #endif
 namespace RootMobile;
 
@@ -47,6 +48,20 @@ public static class MauiProgram
                 nativeEntry.BackgroundTintList = ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
             }
         });
+        
+            PickerHandler.Mapper.AppendToMapping("NoUnderline", (handler, view) =>
+    {
+        if (handler.PlatformView is MauiPicker nativePicker)
+        {
+            // remove Material underline/background
+            nativePicker.Background = null;
+            nativePicker.SetBackgroundColor(Android.Graphics.Color.Transparent);
+
+            // also remove tint that can still draw a line
+            nativePicker.BackgroundTintList = ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        }
+    });
+        
 #endif
 #if DEBUG
         builder.Logging.AddDebug();

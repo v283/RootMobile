@@ -14,7 +14,6 @@ namespace RootMobile.Services
         int page,
         string category = "",
         string sub = "",
-        string subsub = "",
         int sortOrder = 0,
         string findField = "")
     {
@@ -22,8 +21,7 @@ namespace RootMobile.Services
 
       var query = supabaseClient.From<ProductModel>()
           .Where(x => x.Category.Contains(category))
-          .Where(x => x.Subcategory.Contains(sub))
-          .Where(x => x.Subsubcategory.Contains(subsub));
+          .Where(x => x.Subcategory.Contains(sub));
 
       if (!string.IsNullOrWhiteSpace(findField))
       {

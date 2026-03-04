@@ -302,22 +302,22 @@ namespace RootMobile.Services
             }
         }
 
-        public async Task<List<ProductModel>> GetProductsAsync(int limit, int page, string category = "", string sub = "", string subsub = "", int sortOrder = 0, string findField = "")
+        public async Task<List<ProductModel>> GetProductsAsync(int limit, int page, string category = "", string sub = "",  int sortOrder = 0, string findField = "")
         {
             List<ProductModel> rezult =new();
             if (fallBackIsAvailable)
             {
                 try
                 {
-                    rezult = await FallbackData.GetProductsAsync(_productsSupabaseClient, limit, page, category, sub, subsub, sortOrder, findField);
+                    rezult = await FallbackData.GetProductsAsync(_productsSupabaseClient, limit, page, category, sub, sortOrder, findField);
                 }
                 catch (Exception ex)
                 {
                     fallBackIsAvailable = false;
-                    rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, subsub, sortOrder, findField);
+                    rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField);
                 }
             }
-            else { rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, subsub, sortOrder, findField); }
+            else { rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField); }
 
 
             foreach (var item in Cart)

@@ -72,7 +72,7 @@ namespace RootMobile.Models
                 }
             }
         }
-
+        
         private string subcategory;
         [Column("subcategory")]
         public string Subcategory
@@ -87,22 +87,7 @@ namespace RootMobile.Models
                 }
             }
         }
-
-        private string subsubcategory;
-        [Column("subsubcategory")]
-        public string Subsubcategory
-        {
-            get => subsubcategory;
-            set
-            {
-                if (subsubcategory != value)
-                {
-                    subsubcategory = value;
-                    OnPropertyChanged(nameof(Subsubcategory));
-                }
-            }
-        }
-
+        
         private string barcode;
         [Column("barcode")]
         public string Barcode
@@ -133,20 +118,6 @@ namespace RootMobile.Models
             }
         }
 
-        private string shops;
-        [Column("shops")]
-        public string Shops
-        {
-            get => shops;
-            set
-            {
-                if (shops != value)
-                {
-                    shops = value;
-                    OnPropertyChanged(nameof(Shops));
-                }
-            }
-        }
 
         private string ratingTable;
         [Column("ratingtable")]

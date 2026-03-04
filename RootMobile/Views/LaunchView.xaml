@@ -26,14 +26,13 @@
 
             <Border Stroke="#E5E7EB"
                     StrokeThickness="1"
-                    StrokeShape="RoundRectangle 8"
+                    StrokeShape="RoundRectangle 15"
                     BackgroundColor="White"
-                    Padding="12,4"
                     WidthRequest="220">
-                <Picker Title="Українська"
+                <Picker HorizontalOptions="Center" Title="Українська"
                         SelectedIndex="0">
                     <Picker.Items>
-                        <x:String>Українська</x:String>
+                        <x:String> 🇺🇦   Українська</x:String>
                         <x:String>English</x:String>
                     </Picker.Items>
                 </Picker>
