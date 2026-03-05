@@ -1,6 +1,7 @@
 using Maui.GoogleMaps;
 using SkiaSharp;
 using System.Text.Json;
+using RootMobile.Services;
 
 namespace RootMobile.Views;
 
@@ -42,7 +43,7 @@ public partial class RootMapView : ContentPage
 ]";
 
 
-    public RootMapView()
+    public RootMapView(IDataService dataService)
     {
         InitializeComponent();
 
@@ -51,7 +52,7 @@ public partial class RootMapView : ContentPage
 
         if (!isSignIn)
         {
-            Shell.Current.Navigation.PushModalAsync(new LaunchView(), true);
+            Shell.Current.Navigation.PushModalAsync(new LaunchView(dataService), true);
         }
 
         mymap.MapStyle = MapStyle.FromJson(_mapStyleJson);

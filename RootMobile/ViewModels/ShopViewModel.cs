@@ -1,228 +1,286 @@
-using System.Collections.ObjectModel;
-using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Maui.Views;
 using CommunityToolkit.Mvvm.Collections;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using Microsoft.IdentityModel.Tokens;
 using RootMobile.Models;
 using RootMobile.Services;
 using RootMobile.Views;
 using RootMobile.Views.Templates;
 
-
 namespace RootMobile.ViewModels
 {
     public partial class ShopViewModel : ObservableObject
     {
-
         private readonly DataService _dataService;
 
-        private string _category ="";
-        private string _sub = "";
+        // Backend filters (2 рівні)
+        private string _category = "";     // 1 рівень
+        private string _subCategory = "";  // 2 рівень
         private int _bottomFilter;
 
-        private string findField;
-
-        public string FindField
-        {
-            get => findField;
-            set
-            {
-                _currentPage = 0;
-                if (backSubFilter == null || backSubSubFilter == null)
-                {
-                    backSubFilter = SubFilter;
-                    backSubSubFilter = SubSubFilter;
-                }
-                if (string.IsNullOrEmpty(value))
-                {
-                    SubFilter = backSubFilter;
-                    SubSubFilter = backSubSubFilter;
-                }
-                else
-                {
-
-                    findField = value;
-                    ProductsBind.Clear();;
-                    LoadCatalog();//.Wait();
-
-                    if (SubFilter != null && SubSubFilter!= null)
-                    {
-                        if (SubFilter.Count > 0 || SubSubFilter.Count > 0)
-                        {
-                            SubFilter = new();
-                            SubSubFilter = new();
-                        }
-                    }
-
-                }
-
-            }
-        }
-
-        private int _prodOnPage = 54;
+        // Paging
+        private const int ProdOnPage = 54;
         private int _currentPage = 1;
-        private bool _isLoading = false;
+        private bool _isLoading;
+
+        // Search debounce
+        private CancellationTokenSource _searchCts;
+
+        // Backup filters when search active
+        private List<CategoriesModel> _backupCategories;
+        private List<SubCategoriesModel> _backupSubCategories;
 
         [ObservableProperty]
-        public ObservableRangeCollection<ProductModel> productsBind;
+        private ObservableRangeCollection<ProductModel> products = new();
 
-        private List<CategoriesModel> backSubFilter;
+        // ✅ 1 рівень
         [ObservableProperty]
-        public List<CategoriesModel> subFilter;
+        private List<CategoriesModel> categories = new();
 
-        private List<SubCategoriesModel> backSubSubFilter;
+        // ✅ 2 рівень
         [ObservableProperty]
-        public List<SubCategoriesModel> subSubFilter;
+        private List<SubCategoriesModel> subCategories = new();
+
+        [ObservableProperty]
+        private string searchText;
+
+        private CategoriesModel _prevCategorySelected;
+        private SubCategoriesModel _prevSubCategorySelected;
 
         public ShopViewModel(DataService dataService)
         {
             _dataService = dataService;
-            ProductsBind = new();
         }
 
-        public async Task Initialize(List<CategoriesModel> sub)
+        public async Task Initialize(List<CategoriesModel> categories)
         {
-            SubFilter = sub;
-            SubSubFilter = SubFilter[0].SubCategory;
+            Categories = categories ?? new List<CategoriesModel>();
+            SubCategories = (Categories.Count > 0 ? Categories[0].SubCategory : new List<SubCategoriesModel>()) ?? new();
+
+            _backupCategories = Categories;
+            _backupSubCategories = SubCategories;
+
+            ResetAndClear();
             await LoadCatalog();
+        }
+
+        private void ResetAndClear()
+        {
+            _currentPage = 1;
+            Products.Clear();
         }
 
         private async Task LoadCatalog()
         {
-            var products = await _dataService.GetProductsAsync(_prodOnPage, _currentPage, _category, _sub, _bottomFilter, findField);
-            ProductsBind.AddRange(products);
-            // if (products.Count > 0)
-            // {
-            //     foreach (var product in products)
-            //     {
-            //         ProductsBind.Add(product);
-            //     }  
-            // }
+            var products = await _dataService.GetProductsAsync(
+                ProdOnPage,
+                _currentPage,
+                _category,
+                _subCategory,
+                _bottomFilter,
+                SearchText
+            );
+
+            if (products is { Count: > 0 })
+                Products.AddRange(products);
         }
 
+        // =========================
+        // Search (public method)
+        // =========================
+        public async Task SetSearchAsync(string text)
+        {
+            // Cancel previous debounce
+            _searchCts?.Cancel();
+            _searchCts = new CancellationTokenSource();
+
+            try
+            {
+                await Task.Delay(400, _searchCts.Token);
+            }
+            catch (TaskCanceledException)
+            {
+                return;
+            }
+
+            SearchText = text?.Trim();
+
+            // Якщо пошук порожній — повертаємо фільтри назад
+            if (string.IsNullOrWhiteSpace(SearchText))
+            {
+                if (_backupCategories != null) Categories = _backupCategories;
+                if (_backupSubCategories != null) SubCategories = _backupSubCategories;
+            }
+            else
+            {
+                // Зберігаємо фільтри один раз перед “хованням”
+                _backupCategories ??= Categories;
+                _backupSubCategories ??= SubCategories;
+
+                // Ховаємо списки фільтрів під час пошуку (як у твоєму старому коді)
+                Categories = new();
+                SubCategories = new();
+            }
+
+            ResetAndClear();
+            await LoadCatalog();
+        }
+
+        // =========================
+        // Paging
+        // =========================
         [RelayCommand]
         private async Task LoadMoreProducts()
         {
             if (_isLoading) return;
             _isLoading = true;
-            _currentPage++;
-            await LoadCatalog();
-            _isLoading = false;
+
+            try
+            {
+                _currentPage++;
+                await LoadCatalog();
+            }
+            finally
+            {
+                _isLoading = false;
+            }
         }
 
-        private SubCategoriesModel prevSubSub = new();
+        // =========================
+        // Filter: Category (level 1)
+        // =========================
         [RelayCommand]
-        private async Task FilterSubSub(SubCategoriesModel subSub)
+        private async Task SelectCategory(CategoriesModel category)
         {
-            if (prevSubSub != null && prevSubSub != subSub)
-            {
-                prevSubSub.IsSelected = false;
-            }
+            if (category == null) return;
 
-            if (!subSub.IsSelected)
-            {
-                subSub.IsSelected = true;
+            // Unselect previous
+            if (_prevCategorySelected != null && _prevCategorySelected != category)
+                _prevCategorySelected.IsSelected = false;
 
-                prevSubSub = subSub;
+            // Toggle
+            if (!category.IsSelected)
+            {
+                category.IsSelected = true;
+                _prevCategorySelected = category;
+
+                _category = category.Name ?? "";
+                _subCategory = "";
+
+                SubCategories = category.SubCategory ?? new List<SubCategoriesModel>();
+
+                // Зняти виділення підкатегорії
+                if (_prevSubCategorySelected != null)
+                {
+                    _prevSubCategorySelected.IsSelected = false;
+                    _prevSubCategorySelected = null;
+                }
             }
             else
             {
-                subSub.IsSelected = false;
+                category.IsSelected = false;
+                _prevCategorySelected = null;
 
-                prevSubSub = new(); ;
+                _category = "";
+                _subCategory = "";
+
+                SubCategories = new List<SubCategoriesModel>();
+
+                if (_prevSubCategorySelected != null)
+                {
+                    _prevSubCategorySelected.IsSelected = false;
+                    _prevSubCategorySelected = null;
+                }
             }
 
-            _currentPage = 0;
-            ProductsBind.Clear();;
+            ResetAndClear();
             await LoadCatalog();
         }
 
-        private CategoriesModel prevSub = new();
+        // =========================
+        // Filter: SubCategory (level 2)
+        // =========================
         [RelayCommand]
-        private async Task FilterSub(CategoriesModel sub)
+        private async Task SelectSubCategory(SubCategoriesModel sub)
         {
-            if (prevSub != null && prevSub != sub)
-            {
-                prevSub.IsSelected = false;
-            }
+            if (sub == null) return;
+
+            if (_prevSubCategorySelected != null && _prevSubCategorySelected != sub)
+                _prevSubCategorySelected.IsSelected = false;
 
             if (!sub.IsSelected)
             {
                 sub.IsSelected = true;
-                _sub = sub.Name;
-                SubSubFilter = sub.SubCategory;
-      
-                prevSub = sub;
+                _prevSubCategorySelected = sub;
+
+                _subCategory = sub.Name ?? "";
             }
             else
             {
                 sub.IsSelected = false;
-                _sub = "";
-                SubSubFilter = new();
-                prevSub = new();
+                _prevSubCategorySelected = null;
+
+                _subCategory = "";
             }
 
-            _currentPage = 0;
-            ProductsBind.Clear();;
-            //await LoadCatalog();
+            ResetAndClear();
+            await LoadCatalog();
         }
 
+        // =========================
+        // Navigation
+        // =========================
         [RelayCommand]
         private async Task ToProductPage(ProductModel product)
-        { 
-            ProductView productView = new ProductView(_dataService);
+        {
+            if (product == null) return;
+
+            var productView = new ProductView(_dataService);
             productView.Initialize(product);
             await Shell.Current.Navigation.PushAsync(productView);
-            
-            //AppShell.AddCountToShow();
         }
 
+        // =========================
+        // Cart
+        // =========================
         [RelayCommand]
         private async Task AddOrRemoveToCart(ProductModel product)
         {
-            if (_dataService.SupabaseClient.Auth.CurrentUser != null)
+            if (product == null) return;
+
+            if (_dataService.SupabaseClient.Auth.CurrentUser == null)
             {
-                if (product.CartIdent == "heart.png")
-                {
-                    if (Guid.TryParse(_dataService.SupabaseClient.Auth.CurrentUser.Id, out var userId))
-                    {
-                        await _dataService.AddCartItemAsync(userId, product.Id, product.TableName, 1);
-                    }
-                    product.CartIdent = "heart_done.png";
-                }
-                else
-                {
-                    if (Guid.TryParse(_dataService.SupabaseClient.Auth.CurrentUser.Id, out var userId))
-                    {
-                        await _dataService.RemoveCartItemAsync(userId, product.Id);
-                    }
-                    product.CartIdent = "heart.png";
-                }
+                await Shell.Current.Navigation.PushModalAsync(new SignInView(_dataService));
+                return;
+            }
+
+            if (!Guid.TryParse(_dataService.SupabaseClient.Auth.CurrentUser.Id, out var userId))
+                return;
+
+            if (product.CartIdent == "heart.png")
+            {
+                await _dataService.AddCartItemAsync(userId, product.Id, product.TableName, 1);
+                product.CartIdent = "heart_done.png";
             }
             else
             {
-                await Shell.Current.Navigation.PushModalAsync(new SignInView());
-            
+                await _dataService.RemoveCartItemAsync(userId, product.Id);
+                product.CartIdent = "heart.png";
             }
-
         }
 
+        // =========================
+        // Bottom filter (sort)
+        // =========================
         [RelayCommand]
         private async Task BottomFilter()
         {
             var rez = await Shell.Current.CurrentPage.ShowPopupAsync(new BottomSheetFilter(_bottomFilter));
-
-            if(  rez!= null )
-            {
+            if (rez != null)
                 _bottomFilter = (int)rez;
-            }
-            _currentPage = 0;
-            //ProductsBind = new();
-            ProductsBind.Clear();
+
+            ResetAndClear();
             await LoadCatalog();
         }
-        
     }
 }
