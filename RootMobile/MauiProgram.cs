@@ -35,8 +35,14 @@ public static class MauiProgram
             AutoRefreshToken = true,
             AutoConnectRealtime = true,
         }));
+        builder.Services.AddSingleton<LaunchView>();
+        builder.Services.AddSingleton<RootMapView>();
         builder.Services.AddSingleton<ShopView>();
         builder.Services.AddSingleton<ShopViewModel>();
+        
+        
+        builder.Services.AddSingleton<SignInView>();
+        builder.Services.AddSingleton<SignUpView>();
         // Add Data Service
         builder.Services.AddSingleton<IDataService, DataService>();
 #if ANDROID

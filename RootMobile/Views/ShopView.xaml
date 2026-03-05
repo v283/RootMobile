@@ -1,183 +1,203 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             xmlns:local="clr-namespace:RootMobile.ViewModels"             
+             xmlns:local="clr-namespace:RootMobile.ViewModels"
              xmlns:services="clr-namespace:RootMobile.Services"
              xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
-             x:Class="RootMobile.Views.ShopView" Shell.NavBarIsVisible="False">
+             x:Class="RootMobile.Views.ShopView"
+             Shell.NavBarIsVisible="False">
+
     <ContentPage.Resources>
         <ResourceDictionary>
             <services:BoolToColorConverterCategoriesView x:Key="BoolToColorConverterCategoriesView" />
             <services:BoolToColorConverterFont x:Key="BoolToColorConverterFont" />
         </ResourceDictionary>
     </ContentPage.Resources>
-    <Grid Padding="10" RowDefinitions="Auto, *" ColumnDefinitions="*">
 
-        
-        <Grid RowDefinitions="*" ColumnDefinitions="Auto, *, Auto">
-            <Image HeightRequest="28" Source="cart.png" Grid.Column="2" Grid.Row="0" />
-            <Border  Grid.Column="1" Grid.Row="0" Stroke="Transparent" Margin="10" HeightRequest="{x:OnPlatform iOS=30}" StrokeThickness="0" Padding="-7" StrokeShape="RoundRectangle 30">
-                <SearchBar x:Name="serachBar" SearchButtonPressed="SearchBar_TextChanged" Placeholder="Знайти продукти..." />
-            </Border>
-            <Image Margin="15" Grid.Column="0" Grid.Row="0" Source="filter.png"  HeightRequest="25">
+    <Grid Padding="10"
+          RowDefinitions="Auto,Auto,Auto,*"
+          ColumnDefinitions="*">
+
+        <!-- TOP BAR -->
+        <Grid Grid.Row="0" ColumnDefinitions="Auto,*,Auto">
+            <Image Margin="15" Grid.Column="0" Source="filter.png" HeightRequest="25">
                 <Image.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding BottomFilterCommand}"/>
+                    <TapGestureRecognizer Command="{Binding BottomFilterCommand}" />
                 </Image.GestureRecognizers>
                 <Image.Behaviors>
-                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}"/>
+                    <toolkit:IconTintColorBehavior TintColor="{Binding Source={x:Reference Ref}, Path=TextColor}" />
                 </Image.Behaviors>
             </Image>
 
+            <Border Grid.Column="1"
+                    Stroke="Transparent"
+                    Margin="10"
+                    HeightRequest="{x:OnPlatform iOS=30}"
+                    StrokeThickness="0"
+                    Padding="-7"
+                    StrokeShape="RoundRectangle 30">
+                <SearchBar x:Name="serachBar"
+                           TextChanged="SearchBar_TextChanged"
+                           Placeholder="Знайти продукти..." />
+            </Border>
+
+            <Image HeightRequest="28" Source="cart.png" Grid.Column="2" />
         </Grid>
-        
-        <ScrollView Grid.Row="1" Grid.Column="0">
-            <VerticalStackLayout BackgroundColor="{DynamicResource CatalogBackgroundColor}">
-                
-                <CollectionView BackgroundColor="{DynamicResource PageBackgroundColor}" Margin="{OnPlatform iOS=5 }"
-                                HeightRequest="37" ItemsSource="{Binding SubFilter}">
-                    <CollectionView.Triggers>
-                        <DataTrigger TargetType="CollectionView"
-                                     Binding="{Binding SubFilter.Count}"
-                                     Value="0">
-                            <Setter Property="IsVisible" Value="False" />
-                        </DataTrigger>
-                    </CollectionView.Triggers>
 
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Horizontal" />
-                    </CollectionView.ItemsLayout>
+        <!-- CATEGORY (level 1) -->
+        <CollectionView Grid.Row="1"
+                        BackgroundColor="{DynamicResource PageBackgroundColor}"
+                        Margin="{OnPlatform iOS=5}"
+                        HeightRequest="37"
+                        ItemsSource="{Binding Categories}">
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView"
+                             Binding="{Binding Categories.Count}"
+                             Value="0">
+                    <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+            </CollectionView.Triggers>
 
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border HeightRequest="35"
-                                    Stroke="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
-                                    Padding="7" StrokeThickness="1" StrokeShape="RoundRectangle 30">
-                                <Label
-                                    TextColor="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
-                                    FontSize="14" Text="{Binding Name}" />
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Horizontal" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border HeightRequest="35"
+                            Stroke="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
+                            Padding="7"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 30">
+                        <Label TextColor="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
+                               FontSize="14"
+                               Text="{Binding Name}" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=SelectCategoryCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- SUBCATEGORY (level 2) -->
+        <CollectionView Grid.Row="2"
+                        BackgroundColor="{DynamicResource PageBackgroundColor}"
+                        HeightRequest="37"
+                        ItemsSource="{Binding SubCategories}">
+            <CollectionView.Triggers>
+                <DataTrigger TargetType="CollectionView"
+                             Binding="{Binding SubCategories.Count}"
+                             Value="0">
+                    <Setter Property="IsVisible" Value="False" />
+                </DataTrigger>
+            </CollectionView.Triggers>
+
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Horizontal" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border HeightRequest="35"
+                            BackgroundColor="Transparent"
+                            Stroke="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
+                            Padding="7"
+                            StrokeThickness="1"
+                            StrokeShape="RoundRectangle 30">
+                        <Label TextColor="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
+                               FontSize="14"
+                               Text="{Binding Name}" />
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer
+                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=SelectSubCategoryCommand}"
+                                CommandParameter="{Binding .}" />
+                        </Border.GestureRecognizers>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+
+        <!-- PRODUCTS -->
+        <CollectionView Grid.Row="3"
+                        x:Name="prodCollection"
+                        BackgroundColor="{DynamicResource CatalogBackgroundColor}"
+                        ItemsSource="{Binding Products}"
+                        RemainingItemsThreshold="9"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreProductsCommand}">
+            <CollectionView.ItemsLayout>
+                <GridItemsLayout Orientation="Vertical" Span="3" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border HeightRequest="200"
+                            VerticalOptions="FillAndExpand"
+                            HorizontalOptions="FillAndExpand"
+                            Stroke="{DynamicResource CatalogBackgroundColor}"
+                            BackgroundColor="{DynamicResource ProdItemBackgroundColor}"
+                            StrokeThickness="3"
+                            StrokeShape="RoundRectangle 10">
+
+                        <VerticalStackLayout Margin="10,5" WidthRequest="100">
+
+                            <Label FontSize="12"
+                                   MaxLines="1"
+                                   Text="{Binding Size}"
+                                   HorizontalOptions="Start" />
+
+                            <Image Margin="0,-15,0,0"
+                                   HorizontalOptions="End"
+                                   HeightRequest="20"
+                                   Source="{Binding CartIdent}">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=AddOrRemoveToCartCommand}"
+                                        CommandParameter="{Binding .}" />
+                                </Image.GestureRecognizers>
+                            </Image>
+
+                            <Border BackgroundColor="Transparent" StrokeThickness="0">
+                                <ffimageloading:CachedImage HeightRequest="105"
+                                                            ErrorPlaceholder="loading.png"
+                                                            LoadingPlaceholder="loading.png"
+                                                            Source="{Binding Image}"
+                                                            FadeAnimationEnabled="True" />
                                 <Border.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=FilterSubCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=ToProductPageCommand}"
                                         CommandParameter="{Binding .}" />
-
                                 </Border.GestureRecognizers>
                             </Border>
 
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
+                            <Label FontSize="15"
+                                   Margin="2"
+                                   FontAttributes="Bold"
+                                   Text="{Binding Price, StringFormat='{0:N2} грн'}"
+                                   VerticalOptions="Center"
+                                   HorizontalOptions="Start" />
 
-                <CollectionView BackgroundColor="{DynamicResource PageBackgroundColor}" HeightRequest="37"
-                                ItemsSource="{Binding SubSubFilter}">
-                    <CollectionView.Triggers>
-                        <DataTrigger TargetType="CollectionView"
-                                     Binding="{Binding SubSubFilter.Count}"
-                                     Value="0">
-                            <Setter Property="IsVisible" Value="False" />
-                        </DataTrigger>
-                    </CollectionView.Triggers>
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Horizontal" />
-                    </CollectionView.ItemsLayout>
-
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border HeightRequest="35" BackgroundColor="Transparent"
-                                    Stroke="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
-                                    Padding="7" StrokeThickness="1" StrokeShape="RoundRectangle 30">
-                                <Label
-                                    TextColor="{Binding IsSelected, Converter={StaticResource BoolToColorConverterCategoriesView}}"
-                                    FontSize="14" Text="{Binding Name}" />
-                                <Border.GestureRecognizers>
+                            <Label FontSize="12"
+                                   Text="{Binding Name}"
+                                   MaxLines="2"
+                                   LineBreakMode="TailTruncation"
+                                   HorizontalOptions="Start">
+                                <Label.GestureRecognizers>
                                     <TapGestureRecognizer
-                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=FilterSubSubCommand}"
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=ToProductPageCommand}"
                                         CommandParameter="{Binding .}" />
+                                </Label.GestureRecognizers>
+                            </Label>
 
-                                </Border.GestureRecognizers>
-                            </Border>
+                        </VerticalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
 
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-
-                <CollectionView x:Name="prodCollection" BackgroundColor="{DynamicResource CatalogBackgroundColor}"
-                                ItemsSource="{Binding ProductsBind}"
-                                RemainingItemsThreshold="9"
-                                RemainingItemsThresholdReachedCommand="{Binding LoadMoreProductsCommand}">
-                    <CollectionView.ItemsLayout>
-                        <GridItemsLayout Orientation="Vertical"
-                                         Span="3" />
-                    </CollectionView.ItemsLayout>
-
-                    <CollectionView.ItemTemplate>
-                        <DataTemplate>
-                            <Border HeightRequest="200" VerticalOptions="FillAndExpand"
-                                    HorizontalOptions="FillAndExpand" Stroke="{DynamicResource CatalogBackgroundColor}"
-                                    BackgroundColor="{DynamicResource ProdItemBackgroundColor}" StrokeThickness="3"
-                                    StrokeShape="RoundRectangle 10">
-                                <VerticalStackLayout Margin="10,5" WidthRequest="100">
-                                    <Label FontSize="12" MaxLines="1"
-                                           Text="{Binding Size}"
-                                           HorizontalOptions="Start" />
-
-                                    <Image Margin="0,-15,0,0" HorizontalOptions="End" HeightRequest="20"
-                                           Source="{Binding CartIdent}">
-                                        <Image.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=AddOrRemoveToCartCommand}"
-                                                CommandParameter="{Binding .}" />
-
-                                        </Image.GestureRecognizers>
-
-                                    </Image>
-
-
-                                    <Border BackgroundColor="Transparent" StrokeThickness="0">
-                                        <ffimageloading:CachedImage
-                                            HeightRequest="105" ErrorPlaceholder="loading.png"
-                                            LoadingPlaceholder="loading.png"
-                                            Source="{Binding Image}" FadeAnimationEnabled="True">
-
-                                        </ffimageloading:CachedImage>
-                                        <Border.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=ToProductPageCommand}"
-                                                CommandParameter="{Binding .}" />
-
-                                        </Border.GestureRecognizers>
-                                    </Border>
-
-
-                                    <Label FontSize="15" Margin="2" FontAttributes="Bold"
-                                           Text="{Binding Price, StringFormat='{0:N2} грн'}"
-                                           VerticalOptions="Center" HorizontalOptions="Start" />
-
-
-                                    <Label
-                                        FontSize="12" Text="{Binding Name}" MaxLines="2" LineBreakMode="TailTruncation"
-                                        HorizontalOptions="Start">
-                                        <Label.GestureRecognizers>
-                                            <TapGestureRecognizer
-                                                Command="{Binding Source={RelativeSource AncestorType={x:Type local:ShopViewModel}}, Path=ToProductPageCommand}"
-                                                CommandParameter="{Binding .}" />
-
-                                        </Label.GestureRecognizers>
-                                    </Label>
-
-
-                                </VerticalStackLayout>
-                            </Border>
-                        </DataTemplate>
-                    </CollectionView.ItemTemplate>
-                </CollectionView>
-                <Label x:Name="Ref" />
-
-
-            </VerticalStackLayout>
-
-        </ScrollView>
-
+        <Label x:Name="Ref" IsVisible="False" />
     </Grid>
 </ContentPage>

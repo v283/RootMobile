@@ -5,12 +5,15 @@
              x:Class="RootMobile.Views.SignInView"
              Shell.NavBarIsVisible="False"
              BackgroundColor="White">
+
     <Grid Padding="24,40,24,24"
           RowDefinitions="*,Auto"
           RowSpacing="24">
+
         <VerticalStackLayout Grid.Row="0"
                              Spacing="20"
                              VerticalOptions="Center">
+
             <VerticalStackLayout Spacing="4"
                                  HorizontalOptions="Center">
                 <Label Text="Hello."
@@ -25,6 +28,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="16">
+
+                <!-- Email -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Email"
                            FontSize="12"
@@ -41,13 +46,16 @@
                                    HeightRequest="18"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
+                            <Entry x:Name="EmailEntry"
+                                   Grid.Column="1"
                                    Placeholder="Enter email"
-                                   Keyboard="Email" />
+                                   Keyboard="Email"
+                                   ReturnType="Next" />
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
 
+                <!-- Password -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Password"
                            FontSize="12"
@@ -64,14 +72,19 @@
                                    HeightRequest="18"
                                    HorizontalOptions="Center"
                                    VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
+                            <Entry x:Name="PasswordEntry"
+                                   Grid.Column="1"
                                    Placeholder="Enter password"
-                                   IsPassword="True" />
-                            <ImageButton Grid.Column="2"
+                                   IsPassword="True"
+                                   ReturnType="Go"
+                                   Completed="PasswordEntry_Completed" />
+                            <ImageButton x:Name="TogglePasswordBtn"
+                                         Grid.Column="2"
                                          Source="eye_icon.png"
                                          BackgroundColor="Transparent"
                                          WidthRequest="18"
-                                         HeightRequest="18" />
+                                         HeightRequest="18"
+                                         Clicked="TogglePasswordBtn_Clicked" />
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
@@ -79,14 +92,25 @@
                 <Label Text="Forgot password?"
                        FontSize="12"
                        TextColor="#6DBA3F"
-                       HorizontalOptions="End" />
+                       HorizontalOptions="End">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="ForgotPassword_Tapped" />
+                    </Label.GestureRecognizers>
+                </Label>
             </VerticalStackLayout>
 
-            <Button Text="Sign In"
+            <Button x:Name="SignInButton"
+                    Text="Sign In"
                     BackgroundColor="#6DBA3F"
                     TextColor="White"
                     CornerRadius="8"
-                    HeightRequest="48" />
+                    HeightRequest="48"
+                    Clicked="SignInButton_Clicked" />
+
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               HeightRequest="30" />
 
             <Label Text="OR CONTINUE WITH"
                    FontSize="10"
@@ -97,10 +121,16 @@
                                    HorizontalOptions="Center">
                 <Image Source="google_logo.webp"
                        WidthRequest="24"
-                       HeightRequest="24" />
+                       HeightRequest="24">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Google_Tapped"/>
+                    </Image.GestureRecognizers>
+                </Image>
+
                 <Image Source="facebook_logo.png"
                        WidthRequest="24"
                        HeightRequest="24" />
+
                 <Image Source="apple_logo.png"
                        WidthRequest="24"
                        HeightRequest="24" />
@@ -116,7 +146,11 @@
             <Label Text="Sign up"
                    FontSize="12"
                    FontAttributes="Bold"
-                   TextColor="#6DBA3F" />
+                   TextColor="#6DBA3F">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="GoToSignUp_Tapped"/>
+                </Label.GestureRecognizers>
+            </Label>
         </HorizontalStackLayout>
     </Grid>
 </ContentPage>

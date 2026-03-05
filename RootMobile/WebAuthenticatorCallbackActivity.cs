@@ -18,7 +18,7 @@ namespace RootMobile
     [IntentFilter(
         new[] { Intent.ActionView },
         Categories = new[] { Intent.CategoryDefault, Intent.CategoryBrowsable },
-        DataScheme = "com.valentineos.avocadomobile",
+        DataScheme = "com.valentineos.rootmobile",
         DataHost = "callback")]
 
     public class WebAuthenticatorCallbackActivity : Microsoft.Maui.Authentication.WebAuthenticatorCallbackActivity

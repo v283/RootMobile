@@ -19,9 +19,7 @@ namespace RootMobile.Services
         // log
         // pasw 1234567
         private readonly Supabase.Client _supabaseClient;
-        private readonly Supabase.Client _productsSupabaseClient;
-
-        public static bool fallBackIsAvailable = true;
+        
 
         private List<SuperCartModel> cart;
         public List<SuperCartModel> Cart
@@ -47,35 +45,15 @@ namespace RootMobile.Services
         public DataService(Supabase.Client supabaseClient)
         {
             _supabaseClient = supabaseClient;
-            _productsSupabaseClient = new Supabase.Client(AppConfig.PRODUCTS_SUPABASE_URL, AppConfig.PRODUCTS_SUPABASE_KEY);
         }
 
         public async Task Initialize()
         {
-            fallBackIsAvailable = await CheckProductsSupabaseAvailability();
 
             Cart = await GetCartItemAsync();
         }
 
-
-        private async Task<bool> CheckProductsSupabaseAvailability()
-        {
-            try
-            {
-                // Простий тестовий запит (наприклад, отримання 1 запису)
-                await _productsSupabaseClient
-                    .From<ProductModel>()
-                    .Select("*")
-                    .Limit(1)
-                    .Get();
-                return true;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Помилка доступу до додаткового Supabase: {ex.Message}");
-                return false;
-            }
-        }
+        
 
         //auth
 
@@ -88,7 +66,7 @@ namespace RootMobile.Services
 
                 var authUri = new Uri(response.Uri.ToString());
 
-                Uri redirectUri = new Uri("com.valentineos.avocadomobile://callback");
+                Uri redirectUri = new Uri("com.valentineos.rootmobile://callback");
 
                 var authResult = await WebAuthenticator.AuthenticateAsync(authUri, redirectUri);
 
@@ -235,7 +213,7 @@ namespace RootMobile.Services
             {
                 var options = new ResetPasswordForEmailOptions(email)
                 {
-                    RedirectTo = "com.valentineos.avocadomobile://callback"
+                    RedirectTo = "com.valentineos.rootmobile://callback"
                 };
 
                 await _supabaseClient.Auth.ResetPasswordForEmail(options);
@@ -304,21 +282,8 @@ namespace RootMobile.Services
 
         public async Task<List<ProductModel>> GetProductsAsync(int limit, int page, string category = "", string sub = "",  int sortOrder = 0, string findField = "")
         {
-            List<ProductModel> rezult =new();
-            if (fallBackIsAvailable)
-            {
-                try
-                {
-                    rezult = await FallbackData.GetProductsAsync(_productsSupabaseClient, limit, page, category, sub, sortOrder, findField);
-                }
-                catch (Exception ex)
-                {
-                    fallBackIsAvailable = false;
-                    rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField);
-                }
-            }
-            else { rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField); }
-
+            List<ProductModel> rezult =new(); 
+            rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField); 
 
             foreach (var item in Cart)
             {

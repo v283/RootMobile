@@ -24,7 +24,7 @@
         <ApplicationTitle>RootMobile</ApplicationTitle>
 
         <!-- App Identifier -->
-        <ApplicationId>com.companyname.rootmobile</ApplicationId>
+        <ApplicationId>com.valentineos.rootmobile</ApplicationId>
 
         <!-- Versions -->
         <ApplicationDisplayVersion>1.0</ApplicationDisplayVersion>

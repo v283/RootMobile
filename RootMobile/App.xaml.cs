@@ -5,7 +5,7 @@ using CommunityToolkit.Mvvm.Messaging;
 namespace RootMobile;
 public partial class App : Application
 {
-        public static DataService HotDataService;
+    public static DataService HotDataService;
     public readonly DataService _dataService;
 
     public App(IDataService dataService)
