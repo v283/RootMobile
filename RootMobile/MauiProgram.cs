@@ -39,6 +39,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<RootMapView>();
         builder.Services.AddSingleton<ShopView>();
         builder.Services.AddSingleton<ShopViewModel>();
+        builder.Services.AddSingleton<AccountView>();
+        builder.Services.AddSingleton<AccountViewModel>();
         
         
         builder.Services.AddSingleton<SignInView>();

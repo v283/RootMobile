@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RootMobile.Views.SettingsView">
+    <ContentPage.Content>
+        <VerticalStackLayout   VerticalOptions="End" Grid.Row="1"
+                               Spacing="12">
+            <Button Text="Sign out" BackgroundColor="Red" TextColor="White" CornerRadius="8" HeightRequest="48" Command="{Binding ExitCommand}"/>
+
+        </VerticalStackLayout>
+        
+    </ContentPage.Content>
+</ContentPage>

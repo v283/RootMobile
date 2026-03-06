@@ -1,48 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="RootMobile.Views.AccountView"
              Shell.NavBarIsVisible="False"
              BackgroundColor="White">
     <Grid Padding="16" RowDefinitions="Auto,*" ColumnDefinitions="*">
-        <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Grid.Column="0" Padding="0,6,0,12">
-            <BoxView WidthRequest="28" HeightRequest="28" Opacity="0" Grid.Column="0"/>
-            <Label Text="My Profile" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" Grid.Column="1"/>
-            <Image HeightRequest="24" WidthRequest="24" Source="settings.png" Grid.Column="2"/>
+        <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Grid.Column="0" Padding="0,6,0,1">
+            <Image HeightRequest="24" WidthRequest="24" Source="email.png" Grid.Column="0">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToSettingsCommand}"/>
+                </Image.GestureRecognizers>
+            </Image>
+            
+            <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="10">
+                <Label Text="My Profile" FontSize="20" FontAttributes="Bold"  />
+                <Image Source="edit" WidthRequest="20" HeightRequest="20"   >
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer />
+                    </Image.GestureRecognizers>           
+                    <Image.Behaviors>
+                        <toolkit:IconTintColorBehavior TintColor="#374151"/>
+                    </Image.Behaviors>
+                </Image>
+            </HorizontalStackLayout>
+
+            <Image HeightRequest="24" WidthRequest="24" Source="settings.png" Grid.Column="2">
+                <Image.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding GoToSettingsCommand}"/>
+                </Image.GestureRecognizers>
+            </Image>
         </Grid>
 
         <ScrollView Grid.Row="1" Grid.Column="0">
             <VerticalStackLayout Spacing="20">
-                <Border StrokeThickness="0" Padding="16" StrokeShape="RoundRectangle 24">
+                <Border StrokeThickness="0" Padding="16,0" StrokeShape="RoundRectangle 24">
 
                     <VerticalStackLayout Spacing="10">
-                        <Grid HorizontalOptions="Center">
-                            <Grid WidthRequest="96" HeightRequest="96">
-                                <Border Stroke="#c7c9c7" StrokeThickness="0.2" StrokeShape="RoundRectangle 48">
+                        <Grid RowDefinitions="20, Auto, Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="15" RowSpacing="15" HorizontalOptions="FillAndExpand">
+                            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" WidthRequest="108" HeightRequest="108">
+
+                                <Border WidthRequest="96" HeightRequest="96" Stroke="#c7c9c7" StrokeThickness="0.2" StrokeShape="RoundRectangle 48">
                                     <Image Source="dotnet_bot.png" Aspect="AspectFill" />
                                 </Border>
                                 <BoxView WidthRequest="12" HeightRequest="12" BackgroundColor="#2FBF71" CornerRadius="6" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,4,4" />
                             </Grid>
+                            
+                            <Label Padding="15,0,0,0" Grid.Row="1" Grid.Column="1" Text="Alex Rivers" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="End" />
+                            <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*">
+                                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="48" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="TREES" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="1.2k" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="CO2 (KG)" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                                    <Label Text="03" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="TEAMS" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                </VerticalStackLayout>
+                            </Grid>
+                            <Label Grid.Row="3" Grid.Column="0" Text="Eco-Warrior" FontSize="12" TextColor="#6E6E6E" HorizontalOptions="Center" VerticalOptions="Start" />
+                            
                         </Grid>
                         
 
-                        <Label Text="Alex Rivers" FontSize="18" FontAttributes="Bold" HorizontalOptions="Center" />
-                        <Label Text="Eco-Warrior" FontSize="12" TextColor="#6E6E6E" HorizontalOptions="Center" />
 
-                        <Grid ColumnDefinitions="*,*,*" Padding="0,8,0,0">
-                            <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                                <Label Text="48" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                <Label Text="TREES" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
-                                <Label Text="1.2k" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                <Label Text="CO2 (KG)" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                            <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
-                                <Label Text="03" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                <Label Text="TEAMS" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
-                            </VerticalStackLayout>
-                        </Grid>
+
+
                     </VerticalStackLayout>
                 </Border>
                 
