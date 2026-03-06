@@ -25,13 +25,16 @@ public partial class SignInView : ContentPage
         SignInButton.IsEnabled = !value;
         EmailEntry.IsEnabled = !value;
         PasswordEntry.IsEnabled = !value;
-        TogglePasswordBtn.IsEnabled = !value;
+        ViewPasswordBtn.IsEnabled = !value;
+        HidePasswordBtn.IsEnabled = !value;
     }
 
-    private void TogglePasswordBtn_Clicked(object sender, EventArgs e)
+    private void TogglePasswordBtn_Tapped(object sender, EventArgs e)
     {
         _isPasswordVisible = !_isPasswordVisible;
         PasswordEntry.IsPassword = !_isPasswordVisible;
+        HidePasswordBtn.IsVisible = !_isPasswordVisible;
+        ViewPasswordBtn.IsVisible = _isPasswordVisible;
     }
 
     private async void PasswordEntry_Completed(object sender, EventArgs e)
@@ -66,8 +69,7 @@ public partial class SignInView : ContentPage
         try
         {
             SetBusy(true);
-
-            // як у твоєму LoginPopup
+            
             var ok = await _dataService.LoginAsync(email, pass);
 
             if (!ok)
@@ -75,8 +77,6 @@ public partial class SignInView : ContentPage
                 await DisplayAlert("Login", "Wrong email or password.", "OK");
                 return;
             }
-
-            // ти відкриваєш SignIn як Modal -> закриваємо його
             if (Navigation.ModalStack.Count > 0)
                 await Navigation.PopModalAsync();
             else
@@ -156,5 +156,10 @@ public partial class SignInView : ContentPage
         {
             SetBusy(false);
         }
+    }
+    
+    private async void CloseTepped(object sender, TappedEventArgs e)
+    {
+        await Shell.Current.Navigation.PopModalAsync();
     }
 }

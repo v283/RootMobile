@@ -2,15 +2,32 @@
 
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="RootMobile.Views.SignUpView"
              Shell.NavBarIsVisible="False"
              BackgroundColor="White">
-    <Grid Padding="24,40,24,24"
-          RowDefinitions="*,Auto"
+
+    <Grid Padding="24,0,24,24"
+          RowDefinitions="Auto,*,Auto"
           RowSpacing="24">
-        <VerticalStackLayout Grid.Row="0"
+
+        <Image Grid.Row="0"
+               Margin="0"
+               HeightRequest="20"
+               HorizontalOptions="Start"
+               Source="close.png">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer Tapped="CloseTepped" />
+            </Image.GestureRecognizers>
+            <Image.Behaviors>
+                <toolkit:IconTintColorBehavior TintColor="#43b02a" />
+            </Image.Behaviors>
+        </Image>
+
+        <VerticalStackLayout Grid.Row="1"
                              Spacing="20"
                              VerticalOptions="Center">
+
             <VerticalStackLayout Spacing="4"
                                  HorizontalOptions="Center">
                 <Label Text="Create account"
@@ -25,6 +42,8 @@
             </VerticalStackLayout>
 
             <VerticalStackLayout Spacing="16">
+
+                <!-- Name -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Name"
                            FontSize="12"
@@ -36,17 +55,15 @@
                         <Grid ColumnDefinitions="20,*"
                               ColumnSpacing="8"
                               VerticalOptions="Center">
-                            <Image Source="user_icon.png"
-                                   WidthRequest="18"
-                                   HeightRequest="18"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
-                                   Placeholder="Enter name" />
+                            <Entry x:Name="NameEntry"
+                                   Grid.Column="1"
+                                   Placeholder="Enter name"
+                                   ReturnType="Next" />
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
 
+                <!-- Email -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Email"
                            FontSize="12"
@@ -58,18 +75,16 @@
                         <Grid ColumnDefinitions="20,*"
                               ColumnSpacing="8"
                               VerticalOptions="Center">
-                            <Image Source="email_icon.png"
-                                   WidthRequest="18"
-                                   HeightRequest="18"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
+                            <Entry x:Name="EmailEntry"
+                                   Grid.Column="1"
                                    Placeholder="Enter email"
-                                   Keyboard="Email" />
+                                   Keyboard="Email"
+                                   ReturnType="Next" />
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
 
+                <!-- Password -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Password"
                            FontSize="12"
@@ -81,23 +96,45 @@
                         <Grid ColumnDefinitions="20,*,20"
                               ColumnSpacing="8"
                               VerticalOptions="Center">
-                            <Image Source="lock_icon.png"
-                                   WidthRequest="18"
-                                   HeightRequest="18"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
+
+                            <Entry x:Name="PasswordEntry"
+                                   Grid.Column="1"
                                    Placeholder="Enter password"
-                                   IsPassword="True" />
-                            <ImageButton Grid.Column="2"
-                                         Source="eye_icon.png"
-                                         BackgroundColor="Transparent"
-                                         WidthRequest="18"
-                                         HeightRequest="18" />
+                                   IsPassword="True"
+                                   ReturnType="Next" />
+
+                            <Image x:Name="HidePasswordBtn"
+                                   Grid.Column="2"
+                                   Source="hide.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   IsVisible="True">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TogglePasswordBtn_Tapped" />
+                                </Image.GestureRecognizers>
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="#374151" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <Image x:Name="ViewPasswordBtn"
+                                   Grid.Column="2"
+                                   Source="view.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   IsVisible="False">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="TogglePasswordBtn_Tapped" />
+                                </Image.GestureRecognizers>
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="#374151" />
+                                </Image.Behaviors>
+                            </Image>
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
 
+                <!-- Confirm Password -->
                 <VerticalStackLayout Spacing="6">
                     <Label Text="Confirm password"
                            FontSize="12"
@@ -109,50 +146,80 @@
                         <Grid ColumnDefinitions="20,*,20"
                               ColumnSpacing="8"
                               VerticalOptions="Center">
-                            <Image Source="lock_icon.png"
-                                   WidthRequest="18"
-                                   HeightRequest="18"
-                                   HorizontalOptions="Center"
-                                   VerticalOptions="Center" />
-                            <Entry Grid.Column="1"
+
+                            <Entry x:Name="ConfirmPasswordEntry"
+                                   Grid.Column="1"
                                    Placeholder="Repeat password"
-                                   IsPassword="True" />
-                            <ImageButton Grid.Column="2"
-                                         Source="eye_icon.png"
-                                         BackgroundColor="Transparent"
-                                         WidthRequest="18"
-                                         HeightRequest="18" />
+                                   IsPassword="True"
+                                   ReturnType="Go"
+                                   Completed="ConfirmPasswordEntry_Completed" />
+
+                            <Image x:Name="HideConfirmPasswordBtn"
+                                   Grid.Column="2"
+                                   Source="hide.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   IsVisible="True">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ToggleConfirmPasswordBtn_Tapped" />
+                                </Image.GestureRecognizers>
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="#374151" />
+                                </Image.Behaviors>
+                            </Image>
+
+                            <Image x:Name="ViewConfirmPasswordBtn"
+                                   Grid.Column="2"
+                                   Source="view.png"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
+                                   IsVisible="False">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="ToggleConfirmPasswordBtn_Tapped" />
+                                </Image.GestureRecognizers>
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="#374151" />
+                                </Image.Behaviors>
+                            </Image>
                         </Grid>
                     </Border>
                 </VerticalStackLayout>
             </VerticalStackLayout>
 
-            <Button Text="Sign Up"
+            <Button x:Name="SignUpButton"
+                    Text="Sign Up"
                     BackgroundColor="#6DBA3F"
                     TextColor="White"
                     CornerRadius="8"
-                    HeightRequest="48" />
+                    HeightRequest="48"
+                    Clicked="SignUpButton_Clicked" />
+
+            <ActivityIndicator x:Name="LoadingIndicator"
+                               IsRunning="False"
+                               IsVisible="False"
+                               HeightRequest="30" />
 
             <Label Text="OR CONTINUE WITH"
                    FontSize="10"
                    TextColor="#9CA3AF"
                    HorizontalOptions="Center" />
 
-            <HorizontalStackLayout Spacing="24"
+            <HorizontalStackLayout Spacing="10"
                                    HorizontalOptions="Center">
                 <Image Source="google_logo.webp"
-                       WidthRequest="24"
-                       HeightRequest="24" />
-                <Image Source="facebook_logo.png"
-                       WidthRequest="24"
-                       HeightRequest="24" />
-                <Image Source="apple_logo.png"
-                       WidthRequest="24"
-                       HeightRequest="24" />
+                       WidthRequest="27"
+                       HeightRequest="27">
+                    <Image.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Google_Tapped" />
+                    </Image.GestureRecognizers>
+                </Image>
+                <Label FontAttributes="Bold"
+                       FontSize="18"
+                       Text="Google" />
             </HorizontalStackLayout>
         </VerticalStackLayout>
 
-        <HorizontalStackLayout Grid.Row="1"
+        <HorizontalStackLayout Grid.Row="2"
                                Spacing="4"
                                HorizontalOptions="Center">
             <Label Text="Already have an account?"
@@ -161,7 +228,11 @@
             <Label Text="Sign in"
                    FontSize="12"
                    FontAttributes="Bold"
-                   TextColor="#6DBA3F" />
+                   TextColor="#6DBA3F">
+                <Label.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="GoToSignIn_Tapped" />
+                </Label.GestureRecognizers>
+            </Label>
         </HorizontalStackLayout>
     </Grid>
 </ContentPage>

@@ -7,7 +7,7 @@ namespace RootMobile.Views;
 
 public partial class RootMapView : ContentPage
 {
-    private bool isSignIn = false;
+    private IDataService _dataService;
     string _tempImagePath;
 
     private string _mapStyleJson = @"
@@ -46,14 +46,9 @@ public partial class RootMapView : ContentPage
     public RootMapView(IDataService dataService)
     {
         InitializeComponent();
-
+        _dataService = dataService;
         // ТИМЧАСОВО: Розкоментуйте цей рядок, щоб видалити всі збережені дані
         if (File.Exists(_dbPath)) File.Delete(_dbPath);
-
-        if (!isSignIn)
-        {
-            Shell.Current.Navigation.PushModalAsync(new LaunchView(dataService), true);
-        }
 
         mymap.MapStyle = MapStyle.FromJson(_mapStyleJson);
 
@@ -64,6 +59,13 @@ public partial class RootMapView : ContentPage
     protected override async void OnAppearing()
     {
         base.OnAppearing();
+        string accessToken = await SecureStorage.Default.GetAsync("authToken");
+        string refreshToken = await SecureStorage.Default.GetAsync("refreshToken");
+        if (string.IsNullOrEmpty(accessToken) && string.IsNullOrEmpty(refreshToken))
+        {
+            Shell.Current.Navigation.PushModalAsync(new LaunchView(_dataService), true);
+        }
+        
         PermissionStatus result = await CheckAndRequestLocationPermission();
 
         if (result == PermissionStatus.Granted)
