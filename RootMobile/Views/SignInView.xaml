@@ -136,7 +136,11 @@
                         <TapGestureRecognizer Tapped="Google_Tapped"/>
                     </Image.GestureRecognizers>
                 </Image>
-                <Label FontAttributes="Bold" FontSize="18" Text="Google"/>
+                <Label FontAttributes="Bold" FontSize="18" Text="Google">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="Google_Tapped"/>
+                    </Label.GestureRecognizers>
+                </Label>
 
 
             </HorizontalStackLayout>

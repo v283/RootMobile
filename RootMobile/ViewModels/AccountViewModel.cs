@@ -1,5 +1,6 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using RootMobile.Models;
 using RootMobile.Services;
 using RootMobile.Views;
 
@@ -8,11 +9,20 @@ namespace RootMobile.ViewModels;
 public partial class AccountViewModel  : ObservableObject
 {
     private DataService _dataService;
+
+    [ObservableProperty] 
+    private UserDataModel userData;
     
     public AccountViewModel(IDataService dataService)
     {
         _dataService = (DataService)dataService;
-        
+        Initialize();
+
+    }
+
+    private async Task Initialize()
+    {
+        UserData =  await _dataService.GetUserData();
     }
 
     [RelayCommand]

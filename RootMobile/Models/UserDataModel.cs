@@ -5,7 +5,6 @@ using System.ComponentModel;
 
 namespace RootMobile.Models
 {
-
     [Table("users_data")]
     public class UserDataModel : BaseModel, INotifyPropertyChanged
     {
@@ -16,6 +15,7 @@ namespace RootMobile.Models
         public Guid UserId { get; set; }
 
         private string name;
+
         [Column("name")]
         public string Name
         {
@@ -30,7 +30,42 @@ namespace RootMobile.Models
             }
         }
 
+        private string lastName;
+
+        private DateTime? birth;
+
+        [Column("birth")]
+        public DateTime? Birth
+        {
+            get => birth;
+            set
+            {
+                if (birth != value)
+                {
+                    birth = value;
+                    OnPropertyChanged(nameof(Birth));
+                }
+            }
+        }
+
+        private string image;
+
+        [Column("image")]
+        public string Image
+        {
+            get => image;
+            set
+            {
+                if (image != value)
+                {
+                    image = value;
+                    OnPropertyChanged(nameof(Image));
+                }
+            }
+        }
+        
         private string email;
+
         [Column("email")]
         public string Email
         {
@@ -61,36 +96,97 @@ namespace RootMobile.Models
             }
         }
 
+        private string status;
 
-
-
-        private DateTime? birth;
-
-        [Column("birth")]
-        public DateTime? Birth
+        [Column("status")]
+        public string Status
         {
-            get => birth;
+            get => status;
             set
             {
-                if (birth != value)
+                if (status != value)
                 {
-                    birth = value;
-                    OnPropertyChanged(nameof(Birth));
+                    status = value;
+                    OnPropertyChanged(nameof(Status));
                 }
             }
         }
 
-        private string image;
-        [Column("image")]
-        public string Image
+        private int? treesPlanted;
+
+        [Column("trees_planted")]
+        public int? TreesPlanted
         {
-            get => image;
+            get => treesPlanted;
             set
             {
-                if (image != value)
+                if (treesPlanted != value)
                 {
-                    image = value;
-                    OnPropertyChanged(nameof(Image));
+                    treesPlanted = value;
+                    OnPropertyChanged(nameof(TreesPlanted));
+                }
+                else
+                {
+                    treesPlanted = 0;
+                    OnPropertyChanged(nameof(TreesPlanted));
+                }
+            }
+        }
+        
+        private int? treesFound;
+
+        [Column("trees_found")]
+        public int? TreesFound
+        {
+            get => treesFound;
+            set
+            {
+                if (treesFound != value)
+                {
+                    treesFound = value;
+                    OnPropertyChanged(nameof(TreesFound));
+                }
+                else
+                {
+                    treesFound = 0;
+                    OnPropertyChanged(nameof(TreesFound));
+                }
+            }
+        }
+
+        private int? topRating;
+
+        [Column("top_rating")]
+        public int? TopRating
+        {
+            get => topRating;
+            set
+            {
+                if (topRating != value)
+                {
+                    topRating = value;
+                    OnPropertyChanged(nameof(TopRating));
+                }
+                else
+                {
+                    topRating = 999999;
+                    OnPropertyChanged(nameof(TopRating));
+                }
+            }
+        }
+
+        private int? badgesCount;
+
+        [Column("badges_count")]
+        public int? BadgesCount
+        {
+            get => badgesCount;
+            set
+            {
+                if (badgesCount != value)
+                {
+                    badgesCount = value;
+                    OnPropertyChanged(nameof(BadgesCount));
                 }
             }
         }
@@ -99,8 +195,5 @@ namespace RootMobile.Models
 
         protected void OnPropertyChanged(string propertyName) =>
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
     }
-
 }
-
