@@ -81,6 +81,24 @@ namespace RootMobile.Services
 
                         await _supabaseClient.Auth.SetSession(accessToken, refreshToken);
 
+                        var user = _supabaseClient.Auth.CurrentUser;
+
+                        if (user != null && Guid.TryParse(user.Id, out var userId))
+                        {
+                            string email = user.Email;
+                            string name = user.UserMetadata?["name"]?.ToString() ?? "User";
+
+                            var newUser = new UserDataModel
+                            {
+                                UserId = userId,
+                                Email = email,
+                                Name = name,
+                                Birth = null,
+                                Image = "svg_user.png"
+                            };
+
+                            await _supabaseClient.From<UserDataModel>().Insert(newUser);
+                        }
                         await SecureStorage.Default.SetAsync("authToken", accessToken);
                         await SecureStorage.Default.SetAsync("refreshToken", refreshToken);
 
@@ -162,9 +180,8 @@ namespace RootMobile.Services
                         {
                             UserId = userId,
                             Email = email,
-                            Phone = "",
                             Name = name,
-                            Birth = new(),
+                            Birth = null,
                             Image = "svg_user.png"
                         };
 

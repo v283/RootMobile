@@ -9,7 +9,7 @@
         <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Grid.Column="0" Padding="0,6,0,1">
             <Image HeightRequest="24" WidthRequest="24" Source="email.png" Grid.Column="0">
                 <Image.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoToSettingsCommand}"/>
+                    <TapGestureRecognizer Command="{Binding GoToEmailsCommand}"/>
                 </Image.GestureRecognizers>
             </Image>
             
@@ -17,7 +17,7 @@
                 <Label Text="My Profile" FontSize="20" FontAttributes="Bold"  />
                 <Image Source="edit" WidthRequest="20" HeightRequest="20"   >
                     <Image.GestureRecognizers>
-                        <TapGestureRecognizer />
+                        <TapGestureRecognizer Command="{Binding GoToEditAccountCommand}"/>
                     </Image.GestureRecognizers>           
                     <Image.Behaviors>
                         <toolkit:IconTintColorBehavior TintColor="#374151"/>
@@ -46,19 +46,19 @@
                                 <BoxView WidthRequest="12" HeightRequest="12" BackgroundColor="#2FBF71" CornerRadius="6" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,4,4" />
                             </Grid>
                             
-                            <Label Padding="15,0,0,0" Grid.Row="1" Grid.Column="1" Text="Alex Rivers" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="End" />
+                            <Label Padding="15,0,0,0" Grid.Row="1" Grid.Column="1" Text="{Binding UserData.Name}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="End" />
                             <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*">
                                 <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="48" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                    <Label Text="TREES" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                    <Label Text="{Binding UserData.TreesPlanted}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="Trees&#10;Planted" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="1.2k" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                    <Label Text="CO2 (KG)" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                    <Label Text="{Binding UserData.TreesFound}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="Trees&#10;Found" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                                 <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="03" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
-                                    <Label Text="TEAMS" FontSize="10" TextColor="#6E6E6E" HorizontalOptions="Center" />
+                                    <Label Text="{Binding UserData.TopRating}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                                    <Label Text="Global&#10;Rank" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
                                 </VerticalStackLayout>
                             </Grid>
                             <Label Grid.Row="3" Grid.Column="0" Text="Eco-Warrior" FontSize="12" TextColor="#6E6E6E" HorizontalOptions="Center" VerticalOptions="Start" />
