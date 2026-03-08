@@ -6,55 +6,64 @@
              x:Class="RootMobile.Views.RootMapView">
 
     <Grid>
-        <maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" />
+        <maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" PinClicked="OnPinClicked" />
 
         <!-- Кнопка "Створити" -->
-        <Button Text="Create Pin" 
-         VerticalOptions="End" HorizontalOptions="Center" 
-         Margin="20" Clicked="OnCreatePinClicked" />
+        <Button x:Name="BtnCreate" Text="Create Pin" VerticalOptions="End" HorizontalOptions="Center" 
+            Margin="20" Clicked="OnCreatePinClicked" HeightRequest="60" CornerRadius="30" WidthRequest="160" />
 
-        <!-- Анкета (за замовчуванням прихована) -->
-        <Border x:Name="PinForm" IsVisible="False" 
-        BackgroundColor="White" StrokeShape="RoundRectangle 20"
-        VerticalOptions="Center" HorizontalOptions="Center" 
-        WidthRequest="320" Padding="20">
-            <VerticalStackLayout Spacing="15">
-                <Label TextColor="Black" Text="New Plant" FontSize="22" FontAttributes="Bold" HorizontalOptions="Center"/>
+        <!-- Фон -->
+        <BoxView x:Name="FormOverlay" BackgroundColor="#80000000" IsVisible="False">
+            <BoxView.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCancelClicked" />
+            </BoxView.GestureRecognizers>
+        </BoxView>
 
-                <!-- Контейнер для фото з округленням -->
-                <Border StrokeShape="RoundRectangle 15" 
-                HeightRequest="200" 
-                WidthRequest="250"
-                HorizontalOptions="Center"
-                Padding="0"
-                StrokeThickness="0">
-                    <Image x:Name="PreviewImage" 
-                   Aspect="AspectFill" 
-                   BackgroundColor="#F0F0F0" />
+        <!-- АНКЕТА СТВОРЕННЯ (Початково схована нище екрану) -->
+        <Border x:Name="PinForm" IsVisible="False" TranslationY="1000"
+            BackgroundColor="White" StrokeShape="RoundRectangle 20"
+            VerticalOptions="End" HorizontalOptions="Fill" Margin="10,0,10,10" Padding="20">
+            <ScrollView>
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="New Plant" TextColor="Black" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Border StrokeShape="RoundRectangle 15" HeightRequest="180" Padding="0" StrokeThickness="0">
+                        <Image x:Name="PreviewImage" Aspect="AspectFill" BackgroundColor="#F0F0F0" />
+                    </Border>
+                    <Button Text="Photo" Clicked="OnTakePhotoClicked" />
+                    <Entry x:Name="PlantNameEntry" Placeholder="Name" TextColor="Black" />
+                    <Picker x:Name="CategoryPicker" Title="Category" TextColor="Black" TitleColor="Gray">
+                        <Picker.ItemsSource>
+                            <x:Array Type="{x:Type x:String}">
+                                <x:String>Листяні</x:String>
+                                <x:String>Ягідні</x:String>
+                                <x:String>Декоративні</x:String>
+                                <x:String>Екзотичні</x:String>
+                                <x:String>Цитрусові</x:String>
+                                <x:String>Плодові</x:String>
+                            </x:Array>
+                        </Picker.ItemsSource>
+                    </Picker>
+                    <Editor x:Name="CommentEntry" Placeholder="Comment" AutoSize="TextChanges" TextColor="Black" />
+                    <Button Text="Finish" Clicked="OnFinishPinClicked" BackgroundColor="Green" />
+                    <Button Text="Cancel" Clicked="OnCancelClicked" TextColor="Red" BackgroundColor="Transparent" />
+                </VerticalStackLayout>
+            </ScrollView>
+        </Border>
+
+        <!-- ВІКНО ПЕРЕГЛЯДУ ДЕТАЛЕЙ -->
+        <Border x:Name="DetailsForm" IsVisible="False" TranslationY="1000"
+            BackgroundColor="White" StrokeShape="RoundRectangle 20"
+            VerticalOptions="End" HorizontalOptions="Fill" Margin="10,0,10,10" Padding="20">
+            <VerticalStackLayout Spacing="10">
+                <Label x:Name="LabelDetailName" FontSize="22" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Center"/>
+                <Border StrokeShape="RoundRectangle 15" HeightRequest="200" StrokeThickness="0">
+                    <Image x:Name="ImageDetail" Aspect="AspectFill" />
                 </Border>
-
-                <Button Text="Pick/Take Photo" 
-                Clicked="OnTakePhotoClicked" 
-                BackgroundColor="#512BD4" 
-                TextColor="White" />
-
-                <Entry x:Name="PlantNameEntry" 
-               Placeholder="Enter plant name..." 
-                       TextColor="Black"
-               FontSize="16" />
-
-                <Button Text="Finish Pin" 
-                Clicked="OnFinishPinClicked" 
-                BackgroundColor="Green" 
-                TextColor="White" 
-                FontAttributes="Bold" />
-
-                <Button Text="Cancel" 
-                Clicked="OnCancelClicked" 
-                BackgroundColor="Transparent" 
-                TextColor="Red" />
+                <Label x:Name="LabelDetailCategory" FontSize="16" TextColor="Gray" HorizontalOptions="Center"/>
+                <Label x:Name="LabelDetailComment" FontSize="14" TextColor="Black" />
+                <Button Text="Close" Clicked="OnCancelClicked" />
             </VerticalStackLayout>
         </Border>
     </Grid>
-   
+
 </ContentPage>
