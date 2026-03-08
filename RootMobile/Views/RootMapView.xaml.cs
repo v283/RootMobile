@@ -10,6 +10,8 @@ public partial class RootMapView : ContentPage
     private IDataService _dataService;
     string _tempImagePath;
 
+    private Dictionary<Pin, PlantPinData> _pinDataMap = new();
+
     private string _mapStyleJson = @"
 [
   {
@@ -70,6 +72,8 @@ public partial class RootMapView : ContentPage
 
         if (result == PermissionStatus.Granted)
         {
+            mymap.UiSettings.MyLocationButtonEnabled = true;
+            mymap.MyLocationEnabled = true;
             // Завантажуємо тільки те, що є в пам'яті
             LoadSavedPins();
 
@@ -82,22 +86,54 @@ public partial class RootMapView : ContentPage
                 await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
                            new CameraPosition(myposition, 17d, 0d, 0d)));
 
-                // ЦЕЙ ПІН МОЖЕ ВИКЛИКАТИ ПОМИЛКУ, ЯКЩО ФАЙЛУ "pin_marker" НЕМАЄ
-                // ЗАМІНИМО ЙОГО НА БЕЗПЕЧНИЙ:
-                Pin _pinA = new Pin()
-                {
-                    Icon = BitmapDescriptorFactory.DefaultMarker(Colors.Blue), // Безпечний варіант
-                    Type = PinType.Place,
-                    Label = "Ваша позиція",
-                    Position = myposition
-                };
-                mymap.Pins.Add(_pinA);
             }
         }
     }
 
     private List<PlantPinData> _savedPins = new();
     private string _dbPath = Path.Combine(FileSystem.AppDataDirectory, "pins.json");
+
+    private async Task ShowForm(VisualElement form)
+    {
+        FormOverlay.IsVisible = true;
+        form.IsVisible = true;
+        BtnCreate.IsVisible = false;
+        // Анімація: з 1000 (нище екрану) до 0 (своє місце) за 400мс
+        await form.TranslateTo(0, 0, 400, Easing.SinOut);
+    }
+
+    // 2. Плавне зникнення вікна
+    private async Task HideForms()
+    {
+        await Task.WhenAll(
+            PinForm.TranslateTo(0, 1000, 400, Easing.SinIn),
+            DetailsForm.TranslateTo(0, 1000, 400, Easing.SinIn)
+        );
+        PinForm.IsVisible = false;
+        DetailsForm.IsVisible = false;
+        FormOverlay.IsVisible = false;
+        BtnCreate.IsVisible = true;
+    }
+
+    // 3. Коли натиснули на Пін на карті
+    private async void OnPinClicked(object sender, PinClickedEventArgs e)
+    {
+        // Забороняємо стандартне спливаюче вікно Google
+        e.Handled = true;
+
+        if (_pinDataMap.ContainsKey(e.Pin))
+        {
+            var data = _pinDataMap[e.Pin];
+
+            // Заповнюємо вікно перегляду
+            LabelDetailName.Text = data.Name;
+            LabelDetailCategory.Text = data.Category;
+            LabelDetailComment.Text = data.Comment;
+            ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+
+            await ShowForm(DetailsForm);
+        }
+    }
 
     // БЕЗПЕЧНИЙ МЕТОД СТВОРЕННЯ МАРКЕРА
     private BitmapDescriptor CreateRoundMarker(string imagePath)
@@ -190,6 +226,7 @@ public partial class RootMapView : ContentPage
                     Icon = descriptor ?? BitmapDescriptorFactory.DefaultMarker(Colors.Green)
                 };
 
+                _pinDataMap[pin] = data; // Зберігаємо зв'язок
                 mymap.Pins.Add(pin);
             }
             catch (Exception ex)
@@ -275,7 +312,7 @@ public partial class RootMapView : ContentPage
     {
         if (string.IsNullOrEmpty(PlantNameEntry.Text) || string.IsNullOrEmpty(_tempImagePath))
         {
-            await DisplayAlert("Помилка", "Заповніть назву та фото", "OK");
+            await DisplayAlert("Помилка", "Заповніть назву та додайте фото", "OK");
             return;
         }
 
@@ -284,6 +321,8 @@ public partial class RootMapView : ContentPage
         {
             Id = Guid.NewGuid(),
             Name = PlantNameEntry.Text,
+            Category = CategoryPicker.SelectedItem?.ToString() ?? "Не обрано",
+            Comment = CommentEntry.Text,
             ImagePath = _tempImagePath,
             Latitude = location.Latitude,
             Longitude = location.Longitude
@@ -291,29 +330,52 @@ public partial class RootMapView : ContentPage
 
         _savedPins.Add(newPinData);
         File.WriteAllText(_dbPath, JsonSerializer.Serialize(_savedPins));
+
         AddPinToMap(newPinData);
         CloseAndClearForm();
     }
 
     private async void OnCreatePinClicked(object sender, EventArgs e)
     {
-        var location = await Geolocation.Default.GetLocationAsync();
+        //var location = await Geolocation.Default.GetLocationAsync();
+        var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
         if (location != null)
         {
             PinForm.IsVisible = true;
             await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
                 new CameraPosition(new Position(location.Latitude, location.Longitude), 17d, 0d, 0d)));
+
+            FormOverlay.IsVisible = true; // Показуємо фон
+            BtnCreate.IsVisible = false; // Ховаємо головну кнопку
+
+            CategoryPicker.SelectedIndex = 0; // "Не обрано" за замовчуванням
+
+            await ShowForm(PinForm);
         }
     }
 
-    private void OnCancelClicked(object sender, EventArgs e) => CloseAndClearForm();
+    private async void OnCancelClicked(object sender, EventArgs e) 
+    { 
+        CloseAndClearForm();
+        await HideForms();
+        PlantNameEntry.Text = string.Empty;
+        CommentEntry.Text = string.Empty;
+        _tempImagePath = null;
+        PreviewImage.Source = null;
+    }
 
     private void CloseAndClearForm()
     {
         PinForm.IsVisible = false;
+        FormOverlay.IsVisible = false;
+        BtnCreate.IsVisible = true; // Повертаємо кнопку
+
         PlantNameEntry.Text = string.Empty;
+        CommentEntry.Text = string.Empty;
+        CategoryPicker.SelectedIndex = -1;
         PreviewImage.Source = null;
         _tempImagePath = null;
+
     }
 
     async Task<PermissionStatus> CheckAndRequestLocationPermission()
