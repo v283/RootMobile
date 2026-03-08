@@ -10,7 +10,8 @@
 
         <!-- Кнопка "Створити" -->
         <Button x:Name="BtnCreate" Text="Create Pin" VerticalOptions="End" HorizontalOptions="Center" 
-            Margin="20" Clicked="OnCreatePinClicked" HeightRequest="60" CornerRadius="30" WidthRequest="160" />
+            Margin="20" Clicked="OnCreatePinClicked" HeightRequest="60" CornerRadius="30" WidthRequest="160"
+                BackgroundColor="#27B96E" TextColor="White"  FontAttributes="Bold" FontSize="16"/>
 
         <!-- Фон -->
         <BoxView x:Name="FormOverlay" BackgroundColor="#80000000" IsVisible="False">
@@ -21,48 +22,166 @@
 
         <!-- АНКЕТА СТВОРЕННЯ (Початково схована нище екрану) -->
         <Border x:Name="PinForm" IsVisible="False" TranslationY="1000"
-            BackgroundColor="White" StrokeShape="RoundRectangle 20"
-            VerticalOptions="End" HorizontalOptions="Fill" Margin="10,0,10,10" Padding="20">
-            <ScrollView>
-                <VerticalStackLayout Spacing="10">
-                    <Label Text="New Plant" TextColor="Black" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center"/>
-                    <Border StrokeShape="RoundRectangle 15" HeightRequest="180" Padding="0" StrokeThickness="0">
-                        <Image x:Name="PreviewImage" Aspect="AspectFill" BackgroundColor="#F0F0F0" />
-                    </Border>
-                    <Button Text="Photo" Clicked="OnTakePhotoClicked" />
-                    <Entry x:Name="PlantNameEntry" Placeholder="Name" TextColor="Black" />
-                    <Picker x:Name="CategoryPicker" Title="Category" TextColor="Black" TitleColor="Gray">
-                        <Picker.ItemsSource>
-                            <x:Array Type="{x:Type x:String}">
-                                <x:String>Листяні</x:String>
-                                <x:String>Ягідні</x:String>
-                                <x:String>Декоративні</x:String>
-                                <x:String>Екзотичні</x:String>
-                                <x:String>Цитрусові</x:String>
-                                <x:String>Плодові</x:String>
-                            </x:Array>
-                        </Picker.ItemsSource>
-                    </Picker>
-                    <Editor x:Name="CommentEntry" Placeholder="Comment" AutoSize="TextChanges" TextColor="Black" />
-                    <Button Text="Finish" Clicked="OnFinishPinClicked" BackgroundColor="Green" />
-                    <Button Text="Cancel" Clicked="OnCancelClicked" TextColor="Red" BackgroundColor="Transparent" />
+        BackgroundColor="White" StrokeShape="RoundRectangle 25,25,25,25"
+        VerticalOptions="Fill" HorizontalOptions="Fill" 
+        Margin="10,10,10,10" Padding="20">
+            <Grid RowDefinitions="Auto, *, Auto">
+
+                <!-- Заголовок -->
+                <Label Grid.Row="0" Text="New Plant" TextColor="Black" FontSize="20" 
+               FontAttributes="Bold" HorizontalOptions="Center" Margin="0,0,0,20"/>
+
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="15">
+
+                        <!-- Секція Фото (як на скриншоті) -->
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
+                            <Border StrokeShape="RoundRectangle 20" HeightRequest="260" WidthRequest="160" 
+                            StrokeThickness="0" BackgroundColor="#F0F0F0">
+                                <Grid>
+                                    <Image x:Name="PreviewImage" Aspect="AspectFill" />
+                                    <!-- Іконка камери поверх, якщо фото ще немає -->
+                                    <Image Source="camera_icon.png" HeightRequest="40" Opacity="0.5" 
+                                   IsVisible="{Binding Source={x:Reference PreviewImage}, Path=Source, Converter={StaticResource NullToTrueConverter}}" />
+                                </Grid>
+                            </Border>
+                            <Button Text="Change Photo" Clicked="OnTakePhotoClicked" 
+                            BackgroundColor="Transparent" TextColor="#27B96E" 
+                            FontSize="14" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <!-- Поле Name -->
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Plant Name" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Entry x:Name="PlantNameEntry" Placeholder="Enter name" TextColor="Black" 
+                               FontSize="16" BackgroundColor="Transparent" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Поле Category (Picker) -->
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Category" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Picker x:Name="CategoryPicker" Title="Select category" TextColor="Black" 
+                                FontSize="16" TitleColor="LightGray" BackgroundColor="Transparent">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Не обрано</x:String>
+                                            <x:String>Листяні та паркові дерева 🌲</x:String>
+                                            <x:String>Ягідні 🫐</x:String>
+                                            <x:String>Декоративні рослини 🪴</x:String>
+                                            <x:String>Екзотичні плодові рослини 🍈</x:String>
+                                            <x:String>Цитрусові 🍊</x:String>
+                                            <x:String>Плодові дерева 🌴</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Поле Comment (Editor) -->
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Comment" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Editor x:Name="CommentEntry" Placeholder="Add a description..." TextColor="Black" 
+                                FontSize="16" AutoSize="TextChanges" MinimumHeightRequest="80" 
+                                BackgroundColor="Transparent" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Label Text="This information will be visible on the map" FontSize="11" 
+                       TextColor="Gray" HorizontalOptions="Start" Margin="5,-5,0,0"/>
+
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Кнопки внизу -->
+                <VerticalStackLayout Grid.Row="2" Spacing="10" Margin="0,15,0,0">
+                    <Button Text="Save Plant" Clicked="OnFinishPinClicked" 
+                    BackgroundColor="#27B96E" TextColor="White" 
+                    HeightRequest="55" CornerRadius="28" FontAttributes="Bold" FontSize="16" />
+
+                    <Button Text="Cancel" Clicked="OnCancelClicked" 
+                    BackgroundColor="Transparent" TextColor="Red" 
+                    FontSize="14" />
                 </VerticalStackLayout>
-            </ScrollView>
+
+            </Grid>
         </Border>
 
         <!-- ВІКНО ПЕРЕГЛЯДУ ДЕТАЛЕЙ -->
         <Border x:Name="DetailsForm" IsVisible="False" TranslationY="1000"
-            BackgroundColor="White" StrokeShape="RoundRectangle 20"
-            VerticalOptions="End" HorizontalOptions="Fill" Margin="10,0,10,10" Padding="20">
-            <VerticalStackLayout Spacing="10">
-                <Label x:Name="LabelDetailName" FontSize="22" FontAttributes="Bold" TextColor="Black" HorizontalOptions="Center"/>
-                <Border StrokeShape="RoundRectangle 15" HeightRequest="200" StrokeThickness="0">
-                    <Image x:Name="ImageDetail" Aspect="AspectFill" />
-                </Border>
-                <Label x:Name="LabelDetailCategory" FontSize="16" TextColor="Gray" HorizontalOptions="Center"/>
-                <Label x:Name="LabelDetailComment" FontSize="14" TextColor="Black" />
-                <Button Text="Close" Clicked="OnCancelClicked" />
-            </VerticalStackLayout>
+        BackgroundColor="White" StrokeShape="RoundRectangle 25,25,25,25"
+        VerticalOptions="Fill" HorizontalOptions="Fill" 
+        Margin="10,10,10,10" Padding="0">
+
+            <Grid RowDefinitions="*, Auto">
+
+                <!-- Скрол з основним контентом -->
+                <ScrollView Grid.Row="0" x:Name="DetailsScroll" Scrolled="OnDetailsScrolled">
+                    <VerticalStackLayout Spacing="0">
+
+                        <!-- Велика фотографія рослини -->
+                        <Image x:Name="ImageDetail" HeightRequest="420" Aspect="AspectFill" BackgroundColor="#F0F0F0" />
+
+                        <!-- Контентна частина (стиль як у Edit Profile) -->
+                        <VerticalStackLayout Padding="20" Spacing="15">
+
+                            <!-- Назва -->
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Name" FontSize="14" TextColor="Gray" />
+                                <Label x:Name="LabelDetailName" FontSize="26" FontAttributes="Bold" TextColor="Black" />
+                            </VerticalStackLayout>
+
+                            <!-- Опис -->
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Description" FontSize="14" TextColor="Gray" />
+                                <Label x:Name="LabelDetailComment" FontSize="16" TextColor="#333" />
+                            </VerticalStackLayout>
+
+                            <!-- Категорія (Синій контейнер) -->
+
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="Category" FontSize="14" TextColor="Gray" />
+                                <Border BackgroundColor="#007AFF" HorizontalOptions="Start" 
+                                    Padding="12,5" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                                    <Label x:Name="LabelDetailCategory" TextColor="White" 
+                                       FontSize="14" FontAttributes="Bold" />
+                                </Border>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- СТАТИЧНИЙ ПРОФІЛЬ (Поверх скролу) (Фото профілю як заглушка) -->
+                <HorizontalStackLayout x:Name="ProfileHeader" 
+                               VerticalOptions="Start" HorizontalOptions="Start" 
+                               Margin="20,20,0,0" Spacing="12">
+                    <Border WidthRequest="50" HeightRequest="50" 
+                    StrokeShape="RoundRectangle 25" Padding="0" StrokeThickness="2" Stroke="White">
+                        <Image Source="dotnet_bot.png" Aspect="AspectFill" BackgroundColor="White"/>
+                    </Border>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="Username (Заглушка)" TextColor="White" FontSize="16" FontAttributes="Bold">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="1,1" Radius="2" Opacity="0.8" />
+                            </Label.Shadow>
+                        </Label>
+                        <Label Text="eco warrior (Заглушка)" TextColor="#E0E0E0" FontSize="12">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="1,1" Radius="1" Opacity="0.8" />
+                            </Label.Shadow>
+                        </Label>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+
+                <!-- Кнопка закриття знизу -->
+                <Button Grid.Row="1" Text="Back to Map" Clicked="OnCancelClicked" 
+                Margin="20" HeightRequest="50" CornerRadius="25" 
+                BackgroundColor="#27B96E" TextColor="White" FontAttributes="Bold" />
+            </Grid>
         </Border>
     </Grid>
 
