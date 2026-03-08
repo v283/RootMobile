@@ -95,11 +95,19 @@ public partial class RootMapView : ContentPage
 
     private async Task ShowForm(VisualElement form)
     {
+        //FormOverlay.IsVisible = true;
+        //form.IsVisible = true;
+        //BtnCreate.IsVisible = false;
+        //// Анімація: з 1000 (нище екрану) до 0 (своє місце) за 400мс
+        //await form.TranslateTo(0, 0, 400, Easing.SinOut);
+
         FormOverlay.IsVisible = true;
         form.IsVisible = true;
         BtnCreate.IsVisible = false;
-        // Анімація: з 1000 (нище екрану) до 0 (своє місце) за 400мс
-        await form.TranslateTo(0, 0, 400, Easing.SinOut);
+
+        // Скидаємо позицію (якщо була змінена) і анімуємо виїзд знизу
+        form.TranslationY = DeviceDisplay.MainDisplayInfo.Height; // Початкова точка за межами
+        await form.TranslateTo(0, 0, 450, Easing.SinOut);
     }
 
     // 2. Плавне зникнення вікна
@@ -128,8 +136,13 @@ public partial class RootMapView : ContentPage
             // Заповнюємо вікно перегляду
             LabelDetailName.Text = data.Name;
             LabelDetailCategory.Text = data.Category;
-            LabelDetailComment.Text = data.Comment;
+            LabelDetailComment.Text = string.IsNullOrEmpty(data.Comment) ? "No description" : data.Comment;
             ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+            //LabelDetailName.Text = data.Name;
+            //LabelDetailCategory.Text = data.Category;
+            //LabelDetailComment.Text = data.Comment;
+            //ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+
 
             await ShowForm(DetailsForm);
         }
@@ -354,28 +367,40 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    private async void OnCancelClicked(object sender, EventArgs e) 
-    { 
+    private async void OnCancelClicked(object sender, EventArgs e)
+    {
         CloseAndClearForm();
-        await HideForms();
-        PlantNameEntry.Text = string.Empty;
-        CommentEntry.Text = string.Empty;
-        _tempImagePath = null;
-        PreviewImage.Source = null;
     }
 
-    private void CloseAndClearForm()
+    private async void CloseAndClearForm()
     {
-        PinForm.IsVisible = false;
-        FormOverlay.IsVisible = false;
-        BtnCreate.IsVisible = true; // Повертаємо кнопку
+        await HideForms();
 
         PlantNameEntry.Text = string.Empty;
         CommentEntry.Text = string.Empty;
-        CategoryPicker.SelectedIndex = -1;
+        CategoryPicker.SelectedIndex = 0;
         PreviewImage.Source = null;
         _tempImagePath = null;
 
+    }
+
+    private void OnDetailsScrolled(object sender, ScrolledEventArgs e)
+    {
+        // Відстань, за яку профіль повністю зникне (наприклад, 150 пікселів)
+        double fadeDistance = 150;
+
+        // Обчислюємо прозорість: 1 при старті, 0 після прокрутки на fadeDistance
+        double opacity = 1 - (e.ScrollY / fadeDistance);
+
+        // Обмежуємо значення від 0 до 1
+        if (opacity < 0) opacity = 0;
+        if (opacity > 1) opacity = 1;
+
+        // Застосовуємо прозорість до блоку профілю
+        ProfileHeader.Opacity = opacity;
+
+        // Додатково: якщо прозорість 0, можна сховати елемент, щоб він не заважав клікам
+        ProfileHeader.IsVisible = opacity > 0;
     }
 
     async Task<PermissionStatus> CheckAndRequestLocationPermission()
