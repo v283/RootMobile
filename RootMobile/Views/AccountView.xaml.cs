@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Android.Content;
 using CommunityToolkit.Mvvm.ComponentModel;
 using RootMobile.Models;
 using RootMobile.Services;
@@ -22,5 +21,7 @@ public partial class AccountView : ContentPage
         _dataService = (DataService)dataService;
         BindingContext = new AccountViewModel(dataService);
     }
+    
+    
     
 }

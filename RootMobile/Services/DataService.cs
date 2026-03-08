@@ -181,6 +181,7 @@ namespace RootMobile.Services
                             UserId = userId,
                             Email = email,
                             Name = name,
+                            Status = "Eco-Warrior",
                             Birth = null,
                             Image = "svg_user.png"
                         };
@@ -200,6 +201,44 @@ namespace RootMobile.Services
             // треба буде іще удаляти токен авторизації якщо видалено акаунт користувача і обробляи ошибку якщо він є а акаунта в супі немає
 
             return false;
+        }
+        
+        public async Task<string> UploadProfileImageAsync(string localFilePath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
+                    return null;
+
+                var currentUser = _supabaseClient.Auth.CurrentUser;
+                if (currentUser == null || !Guid.TryParse(currentUser.Id, out var userId))
+                    return null;
+
+                // ВАЖЛИВО: Переконайся, що бакет "avatars" створено в Supabase 
+                // і для нього налаштовано політику доступу (Public для читання)
+                string bucketName = "avatars"; 
+                string extension = Path.GetExtension(localFilePath);
+        
+                // Формуємо ім'я файлу на основі ID користувача, щоб старе фото перезаписувалось
+                string fileName = $"{userId}/profile{extension}"; 
+
+                byte[] imageBytes = await File.ReadAllBytesAsync(localFilePath);
+
+                // Upsert = true дозволяє перезаписати файл, якщо він уже існує
+                await _supabaseClient.Storage
+                    .From(bucketName)
+                    .Upload(imageBytes, fileName, new Supabase.Storage.FileOptions { Upsert = true });
+
+                // Отримуємо публічне посилання на завантажене фото
+                string publicUrl = _supabaseClient.Storage.From(bucketName).GetPublicUrl(fileName);
+
+                return publicUrl;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[UploadProfileImageAsync] Error: {ex.Message}");
+                return null;
+            }
         }
 
         public async Task SignOutAsync()
@@ -431,6 +470,7 @@ namespace RootMobile.Services
                         UserId = userId,
                         Email = _supabaseClient.Auth.CurrentUser.Email,
                         Phone = "",
+                        Status = "Eco-Warrior",
                         Name = "User",
                         Birth = new(),
                         Image = "svg_user.png"
@@ -446,33 +486,30 @@ namespace RootMobile.Services
             return rezult;
         }
 
-        public async Task UpdateUserDataAsync(string name, string email, string phone, DateTime? birth, string image = "svg_user.png")
+// Додай цей метод у DataService.cs (і в IDataService)
+        public async Task UpdateUserProfileAsync(UserDataModel user)
         {
             try
             {
-                if (Guid.TryParse(SupabaseClient.Auth.CurrentUser.Id, out var userId))
+                var currentUser = _supabaseClient.Auth.CurrentUser;
+                if (currentUser != null && Guid.TryParse(currentUser.Id, out var userId))
                 {
-
-                    var response = await _supabaseClient.From<UserDataModel>().
-                        Where(x => x.UserId == userId)
-                        .Set(x => x.Email, email).Set(x => x.Phone, phone).Set(x => x.Name, name).Set(x => x.Birth, birth).Set(x => x.Image, image)
-                        .Update(); ;
-
-                    if (SupabaseClient.Auth.CurrentUser.Email != email)
-                    {
-                        // change email in auth shema
-                    }
-                    if (SupabaseClient.Auth.CurrentUser.Phone != phone)
-                    {
-                        // change phone in auth shema
-                    }
+                    // Оновлюємо дані в таблиці user_data
+                    await _supabaseClient.From<UserDataModel>()
+                        .Where(x => x.UserId == userId)
+                        .Set(x => x.Name, user.Name)
+                        .Set(x => x.Phone, user.Phone)
+                        
+                        // Розкоментуй наступний рядок, якщо поле Status є в таблиці Supabase
+                        .Set(x => x.Status, user.Status) 
+                        .Set(x => x.Image, user.Image)
+                        .Update();
                 }
             }
-
             catch (Exception ex)
             {
-                Console.WriteLine($"Error adding user data: {ex.Message}");
-
+                Debug.WriteLine($"[UpdateUserProfileAsync] Error: {ex.Message}");
+                throw; // Прокидаємо помилку для обробки у View
             }
         }
 
