@@ -6,6 +6,30 @@
     <ContentPage.Content>
         <VerticalStackLayout   VerticalOptions="End" Grid.Row="1"
                                Spacing="12">
+                            <!-- <Label Text="Project Center" HorizontalOptions="Center" FontSize="16" FontAttributes="Bold"  /> -->
+                <Grid ColumnDefinitions="*,*,*,*,*" ColumnSpacing="10">
+                    <VerticalStackLayout Grid.Column="0" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="customer_support.png"/>
+                        <Label Text="Help Center" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="1" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="privacy_policy.png"/>
+                        <Label Text="Privacy Policy" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="flying_money.png"/>
+                        <Label Text="Support Project" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="3" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="suggestion.png"/>
+                        <Label Text="Suggestions" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                
+                    <VerticalStackLayout Grid.Column="4" Spacing="6" HorizontalOptions="Center">
+                        <Image WidthRequest="30" HeightRequest="30" Source="add_friends.png"/>
+                        <Label Text="Invite Friends" FontSize="11" HorizontalTextAlignment="Center" />
+                    </VerticalStackLayout>
+                </Grid>
             <Button Text="Sign out" BackgroundColor="Red" TextColor="White" CornerRadius="8" HeightRequest="48" Command="{Binding ExitCommand}"/>
 
         </VerticalStackLayout>
