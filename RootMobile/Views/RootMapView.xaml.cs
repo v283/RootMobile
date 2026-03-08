@@ -95,6 +95,11 @@ public partial class RootMapView : ContentPage
 
     private async Task ShowForm(VisualElement form)
     {
+        //FormOverlay.IsVisible = true;
+        //form.IsVisible = true;
+        //BtnCreate.IsVisible = false;
+        //// Анімація: з 1000 (нище екрану) до 0 (своє місце) за 400мс
+        //await form.TranslateTo(0, 0, 400, Easing.SinOut);
 
         FormOverlay.IsVisible = true;
         form.IsVisible = true;
@@ -133,6 +138,11 @@ public partial class RootMapView : ContentPage
             LabelDetailCategory.Text = data.Category;
             LabelDetailComment.Text = string.IsNullOrEmpty(data.Comment) ? "No description" : data.Comment;
             ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+            //LabelDetailName.Text = data.Name;
+            //LabelDetailCategory.Text = data.Category;
+            //LabelDetailComment.Text = data.Comment;
+            //ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+
 
             await ShowForm(DetailsForm);
         }
