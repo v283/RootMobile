@@ -34,7 +34,7 @@ public partial class AccountViewModel  : ObservableObject
     [RelayCommand]
     private async Task GoToEditAccount()
     {
-        await Shell.Current.Navigation.PushAsync(new EditAccountView());
+        await Shell.Current.Navigation.PushAsync(new EditAccountView(_dataService, UserData));
     }
     
     [RelayCommand]

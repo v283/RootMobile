@@ -107,7 +107,7 @@ public partial class SignUpView : ContentPage
             SetBusy(true);
 
             // Підстав свій реальний метод реєстрації
-            var ok = await _dataService.SignUpAsync(name, email, password);
+            var ok = await _dataService.SignUpAsync(email = email, password =password, name = name);
 
             if (!ok)
             {
