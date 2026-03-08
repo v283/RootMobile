@@ -20,10 +20,10 @@ public partial class AccountViewModel : ObservableObject
     public bool IsBadgesSelected => Selected == "badges";
 
     [ObservableProperty]
-    private TreesViewModel treesVm = new();
+    private TreesViewModel treesVm;
 
     [ObservableProperty]
-    private BadgesViewModel badgesVm = new();
+    private BadgesViewModel badgesVm;
 
     public AccountViewModel(IDataService dataService)
     {
@@ -66,6 +66,8 @@ public partial class AccountViewModel : ObservableObject
     private async Task Initialize()
     {
         UserData = await _dataService.GetUserData();
+        TreesVm = new TreesViewModel(_dataService);
+        BadgesVm =  new BadgesViewModel(_dataService);
     }
 
     [RelayCommand]
