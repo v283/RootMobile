@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="RootMobile.Views.Templates.CreatePlantPinPopup"
+               Color="Transparent">
+
+    <!-- 1. Додаємо прозорий контейнер з Padding -->
+    <Grid BackgroundColor="Transparent" Padding="20">
+
+        <!-- 2. Ваш Border тепер всередині Grid, Margin тут більше не потрібен -->
+        <Border x:Name="PopupBorder" 
+                BackgroundColor="White" 
+                StrokeShape="RoundRectangle 25"
+                VerticalOptions="End" 
+                HorizontalOptions="Center" 
+                HeightRequest="650"
+                WidthRequest="360"
+                Padding="20">
+
+            <Grid RowDefinitions="Auto, *, Auto">
+                <!-- Заголовок -->
+                <Label Grid.Row="0" Text="New Plant" TextColor="Black" FontSize="20" 
+                       FontAttributes="Bold" HorizontalOptions="Center" Margin="0,0,0,20"/>
+
+                <ScrollView Grid.Row="1">
+                    <VerticalStackLayout Spacing="15">
+                        <!-- ... (весь ваш вміст ScrollView залишається без змін) ... -->
+                        <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
+                            <Border StrokeShape="RoundRectangle 20" HeightRequest="200" WidthRequest="160" 
+                                    StrokeThickness="0" BackgroundColor="#F0F0F0">
+                                <Grid>
+                                    <Image x:Name="PreviewImage" Aspect="AspectFill" />
+                                    <Image x:Name="CameraPlaceholder" Source="camera_icon.png" 
+                                           HeightRequest="40" Opacity="0.5" IsVisible="True"/>
+                                </Grid>
+                            </Border>
+                            <Button Text="Change Photo" Clicked="OnTakePhotoClicked" 
+                                    BackgroundColor="Transparent" TextColor="#27B96E" 
+                                    FontSize="14" FontAttributes="Bold" />
+                        </VerticalStackLayout>
+
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Plant Name" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Entry x:Name="PlantNameEntry" Placeholder="Enter name" TextColor="Black" 
+                                       FontSize="16" BackgroundColor="Transparent" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Category" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Picker x:Name="CategoryPicker" Title="Select category" TextColor="Black" 
+                                        FontSize="16" TitleColor="LightGray" BackgroundColor="Transparent">
+                                    <Picker.ItemsSource>
+                                        <x:Array Type="{x:Type x:String}">
+                                            <x:String>Не обрано</x:String>
+                                            <x:String>Листяні та паркові дерева 🌲</x:String>
+                                            <x:String>Ягідні 🫐</x:String>
+                                            <x:String>Декоративні рослини 🪴</x:String>
+                                            <x:String>Екзотичні плодові рослини 🍈</x:String>
+                                            <x:String>Цитрусові 🍊</x:String>
+                                            <x:String>Плодові дерева 🌴</x:String>
+                                        </x:Array>
+                                    </Picker.ItemsSource>
+                                </Picker>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
+                            <VerticalStackLayout>
+                                <Label Text="Comment" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                                <Editor x:Name="CommentEntry" Placeholder="Add a description..." TextColor="Black" 
+                                        FontSize="16" AutoSize="TextChanges" MinimumHeightRequest="80" 
+                                        BackgroundColor="Transparent" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- Кнопки внизу -->
+                <VerticalStackLayout Grid.Row="2" Spacing="10" Margin="0,15,0,0">
+                    <Button Text="Save Plant" Clicked="OnFinishPinClicked" 
+                            BackgroundColor="#27B96E" TextColor="White" 
+                            HeightRequest="55" CornerRadius="28" FontAttributes="Bold" FontSize="16" />
+
+                    <Button Text="Cancel" Clicked="OnCancelClicked" 
+                            BackgroundColor="Transparent" TextColor="Red" FontSize="14" />
+                </VerticalStackLayout>
+            </Grid>
+        </Border>
+    </Grid>
+</toolkit:Popup>

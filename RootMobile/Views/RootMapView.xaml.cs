@@ -1,14 +1,15 @@
+using CommunityToolkit.Maui.Views;
 using Maui.GoogleMaps;
+using RootMobile.Services;
+using RootMobile.Views.Templates;
 using SkiaSharp;
 using System.Text.Json;
-using RootMobile.Services;
 
 namespace RootMobile.Views;
 
 public partial class RootMapView : ContentPage
 {
     private IDataService _dataService;
-    string _tempImagePath;
 
     private Dictionary<Pin, PlantPinData> _pinDataMap = new();
 
@@ -95,8 +96,6 @@ public partial class RootMapView : ContentPage
 
     private async Task ShowForm(VisualElement form)
     {
-
-        FormOverlay.IsVisible = true;
         form.IsVisible = true;
         BtnCreate.IsVisible = false;
 
@@ -109,12 +108,9 @@ public partial class RootMapView : ContentPage
     private async Task HideForms()
     {
         await Task.WhenAll(
-            PinForm.TranslateTo(0, 1000, 400, Easing.SinIn),
             DetailsForm.TranslateTo(0, 1000, 400, Easing.SinIn)
         );
-        PinForm.IsVisible = false;
         DetailsForm.IsVisible = false;
-        FormOverlay.IsVisible = false;
         BtnCreate.IsVisible = true;
     }
 
@@ -265,95 +261,32 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    // --- ЛОГІКА ФОТО ТА АНКЕТИ ---
-
-    async void OnTakePhotoClicked(object sender, EventArgs e)
-    {
-        string action = await DisplayActionSheet("Оберіть фото", "Скасувати", null, "Зробити фото", "Обрати з галереї");
-        if (action == "Зробити фото") await TakePhotoAsync();
-        else if (action == "Обрати з галереї") await PickPhotoAsync();
-    }
-
-    async Task TakePhotoAsync()
-    {
-        try
-        {
-            var status = await Permissions.RequestAsync<Permissions.Camera>();
-            if (status != PermissionStatus.Granted) return;
-
-            FileResult photo = await MediaPicker.Default.CapturePhotoAsync();
-            if (photo != null) await SaveAndProcessPhoto(photo);
-        }
-        catch (Exception ex) { await DisplayAlert("Помилка", ex.Message, "OK"); }
-    }
-
-    async Task PickPhotoAsync()
-    {
-        try
-        {
-            FileResult photo = await MediaPicker.Default.PickPhotoAsync();
-            if (photo != null) await SaveAndProcessPhoto(photo);
-        }
-        catch (Exception ex) { await DisplayAlert("Помилка", ex.Message, "OK"); }
-    }
-
-    async Task SaveAndProcessPhoto(FileResult photo)
-    {
-        var localPath = Path.Combine(FileSystem.AppDataDirectory, Guid.NewGuid().ToString() + ".jpg");
-        using (var stream = await photo.OpenReadAsync())
-        using (var newStream = File.OpenWrite(localPath))
-        {
-            await stream.CopyToAsync(newStream);
-        }
-        _tempImagePath = localPath;
-        MainThread.BeginInvokeOnMainThread(() => {
-            PreviewImage.Source = ImageSource.FromFile(localPath);
-        });
-    }
-
-    async void OnFinishPinClicked(object sender, EventArgs e)
-    {
-        if (string.IsNullOrEmpty(PlantNameEntry.Text) || string.IsNullOrEmpty(_tempImagePath))
-        {
-            await DisplayAlert("Помилка", "Заповніть назву та додайте фото", "OK");
-            return;
-        }
-
-        var location = await Geolocation.Default.GetLocationAsync();
-        var newPinData = new PlantPinData
-        {
-            Id = Guid.NewGuid(),
-            Name = PlantNameEntry.Text,
-            Category = CategoryPicker.SelectedItem?.ToString() ?? "Не обрано",
-            Comment = CommentEntry.Text,
-            ImagePath = _tempImagePath,
-            Latitude = location.Latitude,
-            Longitude = location.Longitude
-        };
-
-        _savedPins.Add(newPinData);
-        File.WriteAllText(_dbPath, JsonSerializer.Serialize(_savedPins));
-
-        AddPinToMap(newPinData);
-        CloseAndClearForm();
-    }
-
     private async void OnCreatePinClicked(object sender, EventArgs e)
     {
-        //var location = await Geolocation.Default.GetLocationAsync();
         var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
+
         if (location != null)
         {
-            PinForm.IsVisible = true;
+            // 1. Центруємо карту
             await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
                 new CameraPosition(new Position(location.Latitude, location.Longitude), 17d, 0d, 0d)));
 
-            FormOverlay.IsVisible = true; // Показуємо фон
-            BtnCreate.IsVisible = false; // Ховаємо головну кнопку
+            // 2. Викликаємо Popup
+            var popup = new CreatePlantPinPopup();
+            var result = await this.ShowPopupAsync(popup);
 
-            CategoryPicker.SelectedIndex = 0; // "Не обрано" за замовчуванням
+            // 3. Якщо отримали дані (натиснуто Save)
+            if (result is PlantPinData newPinData)
+            {
+                newPinData.Id = Guid.NewGuid();
+                newPinData.Latitude = location.Latitude;
+                newPinData.Longitude = location.Longitude;
 
-            await ShowForm(PinForm);
+                _savedPins.Add(newPinData);
+                File.WriteAllText(_dbPath, JsonSerializer.Serialize(_savedPins));
+
+                AddPinToMap(newPinData);
+            }
         }
     }
 
@@ -365,12 +298,6 @@ public partial class RootMapView : ContentPage
     private async void CloseAndClearForm()
     {
         await HideForms();
-
-        PlantNameEntry.Text = string.Empty;
-        CommentEntry.Text = string.Empty;
-        CategoryPicker.SelectedIndex = 0;
-        PreviewImage.Source = null;
-        _tempImagePath = null;
 
     }
 
