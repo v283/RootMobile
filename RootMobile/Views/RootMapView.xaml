@@ -42,7 +42,8 @@
                                     <Image x:Name="PreviewImage" Aspect="AspectFill" />
                                     <!-- Іконка камери поверх, якщо фото ще немає -->
                                     <Image Source="camera_icon.png" HeightRequest="40" Opacity="0.5" 
-                                   IsVisible="{Binding Source={x:Reference PreviewImage}, Path=Source, Converter={StaticResource NullToTrueConverter}}" />
+                                           
+                                   IsVisible="True"/>
                                 </Grid>
                             </Border>
                             <Button Text="Change Photo" Clicked="OnTakePhotoClicked" 
