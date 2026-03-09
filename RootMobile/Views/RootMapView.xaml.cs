@@ -4,6 +4,8 @@ using RootMobile.Services;
 using RootMobile.Views.Templates;
 using SkiaSharp;
 using System.Text.Json;
+using RootMobile.Models;
+
 
 namespace RootMobile.Views;
 
@@ -94,43 +96,18 @@ public partial class RootMapView : ContentPage
     private List<PlantPinData> _savedPins = new();
     private string _dbPath = Path.Combine(FileSystem.AppDataDirectory, "pins.json");
 
-    private async Task ShowForm(VisualElement form)
-    {
-        form.IsVisible = true;
-        BtnCreate.IsVisible = false;
-
-        // Скидаємо позицію (якщо була змінена) і анімуємо виїзд знизу
-        form.TranslationY = DeviceDisplay.MainDisplayInfo.Height; // Початкова точка за межами
-        await form.TranslateTo(0, 0, 450, Easing.SinOut);
-    }
-
-    // 2. Плавне зникнення вікна
-    private async Task HideForms()
-    {
-        await Task.WhenAll(
-            DetailsForm.TranslateTo(0, 1000, 400, Easing.SinIn)
-        );
-        DetailsForm.IsVisible = false;
-        BtnCreate.IsVisible = true;
-    }
-
     // 3. Коли натиснули на Пін на карті
     private async void OnPinClicked(object sender, PinClickedEventArgs e)
     {
-        // Забороняємо стандартне спливаюче вікно Google
-        e.Handled = true;
+        e.Handled = true; // Вимикаємо стандартну бульбашку Google
 
         if (_pinDataMap.ContainsKey(e.Pin))
         {
             var data = _pinDataMap[e.Pin];
 
-            // Заповнюємо вікно перегляду
-            LabelDetailName.Text = data.Name;
-            LabelDetailCategory.Text = data.Category;
-            LabelDetailComment.Text = string.IsNullOrEmpty(data.Comment) ? "No description" : data.Comment;
-            ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
-
-            await ShowForm(DetailsForm);
+            // Викликаємо наш новий Popup і передаємо йому дані
+            var popup = new ShowPinDetailPopup(data);
+            await this.ShowPopupAsync(popup);
         }
     }
 
@@ -288,36 +265,6 @@ public partial class RootMapView : ContentPage
                 AddPinToMap(newPinData);
             }
         }
-    }
-
-    private async void OnCancelClicked(object sender, EventArgs e)
-    {
-        CloseAndClearForm();
-    }
-
-    private async void CloseAndClearForm()
-    {
-        await HideForms();
-
-    }
-
-    private void OnDetailsScrolled(object sender, ScrolledEventArgs e)
-    {
-        // Відстань, за яку профіль повністю зникне (наприклад, 150 пікселів)
-        double fadeDistance = 150;
-
-        // Обчислюємо прозорість: 1 при старті, 0 після прокрутки на fadeDistance
-        double opacity = 1 - (e.ScrollY / fadeDistance);
-
-        // Обмежуємо значення від 0 до 1
-        if (opacity < 0) opacity = 0;
-        if (opacity > 1) opacity = 1;
-
-        // Застосовуємо прозорість до блоку профілю
-        ProfileHeader.Opacity = opacity;
-
-        // Додатково: якщо прозорість 0, можна сховати елемент, щоб він не заважав клікам
-        ProfileHeader.IsVisible = opacity > 0;
     }
 
     async Task<PermissionStatus> CheckAndRequestLocationPermission()

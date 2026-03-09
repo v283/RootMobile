@@ -1,12 +1,76 @@
 <?xml version="1.0" encoding="utf-8" ?>
-<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RootMobile.Views.Templates.ShowPinDetailPopup"
-             Title="ShowPinDetailPopup">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
-</ContentPage>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="RootMobile.Views.Templates.ShowPinDetailPopup"
+               Color="Transparent">
+
+    <Grid BackgroundColor="Transparent" Padding="20">
+        <Border x:Name="PopupBorder" 
+                BackgroundColor="White" 
+                StrokeShape="RoundRectangle 25"
+                VerticalOptions="Fill" 
+                HorizontalOptions="Center" 
+                WidthRequest="380"
+                Padding="0">
+
+            <Grid RowDefinitions="*, Auto">
+                <!-- Скрол з основним контентом -->
+                <ScrollView Grid.Row="0" Scrolled="OnDetailsScrolled">
+                    <VerticalStackLayout Spacing="0">
+                        <!-- Велика фотографія рослини -->
+                        <Image x:Name="ImageDetail" HeightRequest="550" Aspect="AspectFill" BackgroundColor="#F0F0F0" />
+
+                        <!-- Контентна частина -->
+                        <VerticalStackLayout Padding="20" Spacing="15">
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Name" FontSize="14" TextColor="Gray" />
+                                <Label x:Name="LabelDetailName" FontSize="24" FontAttributes="Bold" TextColor="Black" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="2">
+                                <Label Text="Description" FontSize="14" TextColor="Gray" />
+                                <Label x:Name="LabelDetailComment" FontSize="16" TextColor="#333" />
+                            </VerticalStackLayout>
+
+                            <VerticalStackLayout Spacing="5">
+                                <Label Text="Category" FontSize="14" TextColor="Gray" />
+                                <Border BackgroundColor="#007AFF" HorizontalOptions="Start" 
+                                        Padding="12,5" StrokeShape="RoundRectangle 10" StrokeThickness="0">
+                                    <Label x:Name="LabelDetailCategory" TextColor="White" FontSize="14" FontAttributes="Bold" />
+                                </Border>
+                            </VerticalStackLayout>
+                            
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </ScrollView>
+
+                <!-- СТАТИЧНИЙ ПРОФІЛЬ (Поверх всього) -->
+                <HorizontalStackLayout x:Name="ProfileHeader" IsVisible="True"
+                                       VerticalOptions="Start" HorizontalOptions="Start" 
+                                       Margin="15,15,0,0" Spacing="12">
+                    <Border WidthRequest="45" HeightRequest="45" StrokeShape="RoundRectangle 22.5" Padding="0" StrokeThickness="2" Stroke="White">
+                        <Image Source="dotnet_bot.png" Aspect="AspectFill" BackgroundColor="White"/>
+                    </Border>
+                    <VerticalStackLayout VerticalOptions="Center">
+                        <Label Text="Valentine" TextColor="White" FontSize="15" FontAttributes="Bold">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="1,1" Radius="2" Opacity="0.8" />
+                            </Label.Shadow>
+                        </Label>
+                        <Label Text="eco warrior" TextColor="#E0E0E0" FontSize="11">
+                            <Label.Shadow>
+                                <Shadow Brush="Black" Offset="1,1" Radius="1" Opacity="0.8" />
+                            </Label.Shadow>
+                        </Label>
+                    </VerticalStackLayout>
+                </HorizontalStackLayout>
+
+                <!-- Кнопка закриття знизу -->
+                <Button Grid.Row="1" Text="Back to Map" Clicked="OnCloseClicked" 
+                        Margin="20" HeightRequest="50" CornerRadius="25" 
+                        BackgroundColor="#27B96E" TextColor="White" FontAttributes="Bold" />
+            </Grid>
+        </Border>
+    </Grid>
+</toolkit:Popup>

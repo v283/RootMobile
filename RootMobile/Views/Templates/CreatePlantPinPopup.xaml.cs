@@ -4,8 +4,10 @@ using Maui.GoogleMaps;
 using RootMobile.Services;
 using SkiaSharp;
 using System.Text.Json;
+using RootMobile.Models;
 
 namespace RootMobile.Views.Templates;
+
 
 public partial class CreatePlantPinPopup : Popup
 {
