@@ -513,7 +513,88 @@ namespace RootMobile.Services
             }
         }
 
+        // 1. Завантаження фото рослини у Storage (Бакет "plant_images")
+        public async Task<string> UploadPlantImageAsync(string localFilePath)
+        {
+            try
+            {
+                if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
+                    return null;
 
+                // Бакет має бути створений у Supabase з доступом Public
+                string bucketName = "plant_images";
+                string fileName = $"{Guid.NewGuid()}.jpg"; // Генеруємо унікальне ім'я
+
+                byte[] imageBytes = await File.ReadAllBytesAsync(localFilePath);
+
+                await _supabaseClient.Storage
+                    .From(bucketName)
+                    .Upload(imageBytes, fileName, new Supabase.Storage.FileOptions { Upsert = true });
+
+                return _supabaseClient.Storage.From(bucketName).GetPublicUrl(fileName);
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[UploadPlantImageAsync] Error: {ex.Message}");
+                return null;
+            }
+        }
+
+        // 2. Внесення анкетних даних у таблицю map_points
+        public async Task<bool> InsertPlantPinAsync(PlantPinDataModel model)
+        {
+            try
+            {
+                var response = await _supabaseClient.From<PlantPinDataModel>().Insert(model);
+
+                // Якщо запис додано, але політика SELECT не дає його прочитати, 
+                // Models буде порожнім, хоча помилки не буде.
+                if (response.Models.Count > 0) return true;
+
+                // Перевіряємо, чи була помилка в самому запиті
+                if (response.ResponseMessage != null && !response.ResponseMessage.IsSuccessStatusCode)
+                {
+                    Debug.WriteLine($"Error: {response.ResponseMessage.ReasonPhrase}");
+                    return false;
+                }
+
+                // Якщо помилки немає, але моделей 0 - це 100% проблема RLS SELECT
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[InsertPlantPinAsync] Critical Error: {ex.Message}");
+                return false;
+            }
+        }
+        //public async Task<bool> InsertPlantPinAsync(PlantPinDataModel model)
+        //{
+        //    try
+        //    {
+        //        var response = await _supabaseClient.From<PlantPinDataModel>().Insert(model);
+        //        return response.Models.Count > 0;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine($"[InsertPlantPinAsync] Error: {ex.Message}");
+        //        return false;
+        //    }
+        //}
+
+        // 3. Отримання всіх анкет із бази для відображення на карті
+        public async Task<List<PlantPinDataModel>> GetAllPlantPinsAsync()
+        {
+            try
+            {
+                var response = await _supabaseClient.From<PlantPinDataModel>().Get();
+                return response.Models;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GetAllPlantPinsAsync] Error: {ex.Message}");
+                return new List<PlantPinDataModel>();
+            }
+        }
 
 
         //comments and marks

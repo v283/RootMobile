@@ -42,21 +42,20 @@ public partial class CreatePlantPinPopup : Popup
         }
     }
 
-    async void OnFinishPinClicked(object sender, EventArgs e)
+    private void OnFinishPinClicked(object sender, EventArgs e)
     {
-        if (string.IsNullOrEmpty(PlantNameEntry.Text) || string.IsNullOrEmpty(_tempImagePath))
+        if (string.IsNullOrWhiteSpace(PlantNameEntry.Text) || string.IsNullOrEmpty(_tempImagePath))
         {
-            //await DisplayAlert("Помилка", "Заповніть назву та додайте фото", "OK");
+            // Додайте DisplayAlert або візуальну підказку
             return;
         }
 
-        // Створюємо об'єкт результату (але без координат, їх додамо в основному вікні)
-        var result = new PlantPinData
+        var result = new PlantPinDataModel
         {
-            Name = PlantNameEntry.Text,
+            Name = PlantNameEntry.Text.Trim(),
             Category = CategoryPicker.SelectedItem?.ToString(),
-            Comment = CommentEntry.Text,
-            ImagePath = _tempImagePath
+            Description = CommentEntry.Text?.Trim(),
+            Image = _tempImagePath // Поки що це локальний шлях до файлу
         };
 
         Close(result);

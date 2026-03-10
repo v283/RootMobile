@@ -5,15 +5,15 @@ namespace RootMobile.Views.Templates;
 
 public partial class ShowPinDetailPopup : Popup
 {
-    public ShowPinDetailPopup(PlantPinData data)
+    public ShowPinDetailPopup(PlantPinDataModel data)
     {
         InitializeComponent();
 
         // Заповнюємо дані
         LabelDetailName.Text = data.Name;
         LabelDetailCategory.Text = data.Category;
-        LabelDetailComment.Text = string.IsNullOrEmpty(data.Comment) ? "No description" : data.Comment;
-        ImageDetail.Source = ImageSource.FromFile(data.ImagePath);
+        LabelDetailComment.Text = string.IsNullOrEmpty(data.Description) ? "No description" : data.Description;
+        ImageDetail.Source = ImageSource.FromFile(data.Image);
 
         // Анімація появи
         Opened += async (s, e) =>

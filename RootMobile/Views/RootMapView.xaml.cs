@@ -6,14 +6,13 @@ using SkiaSharp;
 using System.Text.Json;
 using RootMobile.Models;
 
-
 namespace RootMobile.Views;
 
 public partial class RootMapView : ContentPage
 {
-    private IDataService _dataService;
+    private DataService _dataService;
 
-    private Dictionary<Pin, PlantPinData> _pinDataMap = new();
+    private Dictionary<Pin, PlantPinDataModel> _pinDataMap = new();
 
     private string _mapStyleJson = @"
 [
@@ -51,7 +50,7 @@ public partial class RootMapView : ContentPage
     public RootMapView(IDataService dataService)
     {
         InitializeComponent();
-        _dataService = dataService;
+        _dataService = (DataService)dataService;
         // ТИМЧАСОВО: Розкоментуйте цей рядок, щоб видалити всі збережені дані
         if (File.Exists(_dbPath)) File.Delete(_dbPath);
 
@@ -93,7 +92,7 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    private List<PlantPinData> _savedPins = new();
+    private List<PlantPinDataModel> _savedPins = new();
     private string _dbPath = Path.Combine(FileSystem.AppDataDirectory, "pins.json");
 
     // 3. Коли натиснули на Пін на карті
@@ -185,14 +184,16 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    private void AddPinToMap(PlantPinData data)
+    private async void AddPinToMap(PlantPinDataModel data)
     {
+        // Отримуємо локальний шлях (якщо це URL - завантажимо)
+        string localPath = await GetLocalPathForImage(data.Image);
         // Завжди виконуємо операції з UI (картою) в головному потоці
         MainThread.BeginInvokeOnMainThread(() =>
         {
             try
             {
-                var descriptor = CreateRoundMarker(data.ImagePath);
+                var descriptor = CreateRoundMarker(localPath);
 
                 var pin = new Pin
                 {
@@ -212,23 +213,18 @@ public partial class RootMapView : ContentPage
         });
     }
 
-    private void LoadSavedPins()
+    private async void LoadSavedPins()
     {
         try
         {
-            if (File.Exists(_dbPath))
-            {
-                string json = File.ReadAllText(_dbPath);
-                var loadedPins = JsonSerializer.Deserialize<List<PlantPinData>>(json);
+            // Отримуємо список із Supabase через сервіс
+            var pins = await _dataService.GetAllPlantPinsAsync();
 
-                if (loadedPins != null)
+            if (pins != null)
+            {
+                foreach (var pinData in pins)
                 {
-                    _savedPins = loadedPins;
-                    mymap.Pins.Clear();
-                    foreach (var pinData in _savedPins)
-                    {
-                        AddPinToMap(pinData);
-                    }
+                    AddPinToMap(pinData);
                 }
             }
         }
@@ -241,29 +237,98 @@ public partial class RootMapView : ContentPage
     private async void OnCreatePinClicked(object sender, EventArgs e)
     {
         var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
+        if (location == null) return;
 
-        if (location != null)
+        var popup = new CreatePlantPinPopup();
+        var result = await this.ShowPopupAsync(popup);
+
+        if (result is PlantPinDataModel newPin)
         {
-            // 1. Центруємо карту
-            await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
-                new CameraPosition(new Position(location.Latitude, location.Longitude), 17d, 0d, 0d)));
-
-            // 2. Викликаємо Popup
-            var popup = new CreatePlantPinPopup();
-            var result = await this.ShowPopupAsync(popup);
-
-            // 3. Якщо отримали дані (натиснуто Save)
-            if (result is PlantPinData newPinData)
+            try
             {
-                newPinData.Id = Guid.NewGuid();
-                newPinData.Latitude = location.Latitude;
-                newPinData.Longitude = location.Longitude;
+                var session = _dataService.SupabaseClient.Auth.CurrentSession;
+                if (session == null)
+                {
+                    await DisplayAlert("Error", "Ви не авторизовані", "OK");
+                    return;
+                }
 
-                _savedPins.Add(newPinData);
-                File.WriteAllText(_dbPath, JsonSerializer.Serialize(_savedPins));
+                // Зберігаємо локальний шлях для негайного відображення
+                string localPathForNow = newPin.Image;
 
-                AddPinToMap(newPinData);
+                newPin.UserId = Guid.Parse(session.User.Id);
+                newPin.Latitude = location.Latitude;
+                newPin.Longitude = location.Longitude;
+                newPin.Created = DateTime.Now;
+                newPin.Subcategory = "Smth";
+
+
+                // 1. Завантаження в Storage
+                string publicUrl = await _dataService.UploadPlantImageAsync(localPathForNow);
+
+                if (!string.IsNullOrEmpty(publicUrl))
+                {
+                    newPin.Image = publicUrl;
+
+                    // 2. Збереження в Таблицю
+                    bool success = await _dataService.InsertPlantPinAsync(newPin);
+
+                    if (success)
+                    {
+                        // Трюк: для AddPinToMap підсовуємо локальний шлях, щоб не чекати завантаження з мережі
+                        var pinToDraw = new PlantPinDataModel
+                        {
+                            Name = newPin.Name,
+                            Latitude = newPin.Latitude,
+                            Longitude = newPin.Longitude,
+                            Image = localPathForNow, // Локальний файл
+                            Category = newPin.Category,
+                            Description = newPin.Description,
+                        };
+
+                        AddPinToMap(pinToDraw);
+                        await DisplayAlert("Успіх", "Збережено в базу!", "OK");
+                    }
+                    else
+                    {
+                        await DisplayAlert("Помилка", "Дані не внесені в таблицю map_points. Перевірте RLS політики.", "OK");
+                    }
+                }
+                else
+                {
+                    await DisplayAlert("Помилка", "Фото не завантажено в Bucket. Перевірте назву бакета (plant_images) та права доступу.", "OK");
+                }
             }
+            catch (Exception ex)
+            {
+                await DisplayAlert("Критична помилка", ex.Message, "OK");
+            }
+        }
+    }
+
+    private async Task<string> GetLocalPathForImage(string pathOrUrl)
+    {
+        if (string.IsNullOrEmpty(pathOrUrl)) return null;
+
+        // Якщо це вже локальний файл — просто повертаємо його
+        if (!pathOrUrl.StartsWith("http")) return pathOrUrl;
+
+        try
+        {
+            // Якщо це URL — качаємо у тимчасову папку (кеш)
+            using var client = new HttpClient();
+            var bytes = await client.GetByteArrayAsync(pathOrUrl);
+
+            var fileName = Path.GetFileName(new Uri(pathOrUrl).LocalPath);
+            var localPath = Path.Combine(FileSystem.CacheDirectory, fileName);
+
+            File.WriteAllBytes(localPath, bytes);
+            return localPath;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Error downloading image: {ex.Message}");
+            return null;
         }
     }
 
