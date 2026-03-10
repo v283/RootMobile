@@ -28,7 +28,6 @@ public partial class AccountViewModel : ObservableObject
     public AccountViewModel(IDataService dataService)
     {
         _dataService = (DataService)dataService;
-        _ = Initialize();
     }
 
     partial void OnSelectedChanged(string value)
@@ -40,34 +39,21 @@ public partial class AccountViewModel : ObservableObject
     [RelayCommand]
     private void SelectTab(string tab)
     {
-        Selected = tab.ToLower();
-
-        if (tab == "trees")
+        string newTab = tab.ToLower();
+        if (Selected != newTab)
         {
-            TreesVm = new TreesViewModel(_dataService);
+            Selected = newTab;
         }
-        else if (tab == "badges")
-        {
-            BadgesVm = new BadgesViewModel(_dataService);
-        }
-            
-
     }
 
-    [RelayCommand]
-    private void Swipe(string direction)
-    {
-        if (direction == "left" && Selected == "trees")
-            Selected = "badges";
-        else if (direction == "right" && Selected == "badges")
-            Selected = "trees";
-    }
-
-    private async Task Initialize()
+    public async Task Initialize()
     {
         UserData = await _dataService.GetUserData();
+        
         TreesVm = new TreesViewModel(_dataService);
-        BadgesVm =  new BadgesViewModel(_dataService);
+        BadgesVm = new BadgesViewModel(_dataService);
+        
+        await TreesVm.InitializeAsync();
     }
 
     [RelayCommand]

@@ -224,12 +224,12 @@ namespace RootMobile.Services
 
                 byte[] imageBytes = await File.ReadAllBytesAsync(localFilePath);
 
-                // Upsert = true дозволяє перезаписати файл, якщо він уже існує
+
                 await _supabaseClient.Storage
                     .From(bucketName)
                     .Upload(imageBytes, fileName, new Supabase.Storage.FileOptions { Upsert = true });
 
-                // Отримуємо публічне посилання на завантажене фото
+
                 string publicUrl = _supabaseClient.Storage.From(bucketName).GetPublicUrl(fileName);
 
                 return publicUrl;
@@ -485,6 +485,34 @@ namespace RootMobile.Services
 
             return rezult;
         }
+        
+        public async Task<List<PlantPinDataModel>> GetAllUsersPlantPinsAsync(int limit, int page)
+        {
+            try
+            {
+                var currentUser = _supabaseClient.Auth.CurrentUser;
+                if (currentUser == null || !Guid.TryParse(currentUser.Id, out var userId))
+                    return new List<PlantPinDataModel>();
+
+                var offset = (page - 1) * limit;
+
+                var query = _supabaseClient
+                    .From<PlantPinDataModel>()
+                    .Where(x => x.UserId == userId);
+
+                query = query.Order(x => x.Created, Supabase.Postgrest.Constants.Ordering.Descending);
+
+                var response = await query.Range(offset, offset + limit - 1).Get();
+
+                return response?.Models ?? new List<PlantPinDataModel>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GetAllUsersPlantPinsAsync] Error: {ex.Message}");
+                return new List<PlantPinDataModel>();
+            }
+        }
+        
 
 // Додай цей метод у DataService.cs (і в IDataService)
         public async Task UpdateUserProfileAsync(UserDataModel user)

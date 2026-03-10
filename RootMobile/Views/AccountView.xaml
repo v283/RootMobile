@@ -1,14 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              xmlns:templates="clr-namespace:RootMobile.Views.Templates"
+             xmlns:vm="clr-namespace:RootMobile.ViewModels"
              x:Class="RootMobile.Views.AccountView"
+             x:DataType="vm:AccountViewModel"
              Shell.NavBarIsVisible="False"
              BackgroundColor="White">
-    <Grid Padding="16" RowDefinitions="Auto,*" ColumnDefinitions="*">
-        <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Grid.Column="0" Padding="0,6,0,1">
+
+    <Grid Padding="16" RowDefinitions="Auto,Auto,Auto,*">
+        
+        <Grid RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Padding="0,6,0,1">
             <Image HeightRequest="24" WidthRequest="24" Source="email.png" Grid.Column="0">
                 <Image.GestureRecognizers>
                     <TapGestureRecognizer Command="{Binding GoToEmailsCommand}" />
@@ -34,114 +37,52 @@
             </Image>
         </Grid>
 
-        <ScrollView Grid.Row="1" Grid.Column="0">
-            <VerticalStackLayout Spacing="20">
-                <Border StrokeThickness="0" Padding="16,0" StrokeShape="RoundRectangle 24">
+        <Border Grid.Row="1" StrokeThickness="0" Padding="16,20" StrokeShape="RoundRectangle 24">
+            <Grid RowDefinitions="20, Auto, Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="15" RowSpacing="15">
+                <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" WidthRequest="108" HeightRequest="108">
+                    <Border WidthRequest="96" HeightRequest="96" Stroke="#c7c9c7" StrokeThickness="0.2" StrokeShape="RoundRectangle 48">
+                        <Image Source="{Binding UserData.Image}" Aspect="AspectFill" />
+                    </Border>
+                    <BoxView WidthRequest="12" HeightRequest="12" BackgroundColor="#2FBF71" CornerRadius="6" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,4,4" />
+                </Grid>
 
-                    <VerticalStackLayout Spacing="10">
-                        <Grid RowDefinitions="20, Auto, Auto, Auto" ColumnDefinitions="Auto, *" ColumnSpacing="15"
-                              RowSpacing="15" HorizontalOptions="FillAndExpand">
-                            <Grid Grid.Row="0" Grid.Column="0" Grid.RowSpan="4" WidthRequest="108" HeightRequest="108">
-
-                                <Border WidthRequest="96" HeightRequest="96" Stroke="#c7c9c7" StrokeThickness="0.2"
-                                        StrokeShape="RoundRectangle 48">
-                                    <Image Source="{Binding UserData.Image}" Aspect="AspectFill" />
-                                </Border>
-                                <BoxView WidthRequest="12" HeightRequest="12" BackgroundColor="#2FBF71"
-                                         CornerRadius="6" HorizontalOptions="End" VerticalOptions="End"
-                                         Margin="0,0,4,4" />
-                            </Grid>
-
-                            <Label Padding="15,0,0,0" Grid.Row="1" Grid.Column="1" Text="{Binding UserData.Name}"
-                                   FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="End" />
-                            <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*">
-                                <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding UserData.TreesPlanted}" FontSize="16" FontAttributes="Bold"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Trees&#10;Planted" FontSize="10" TextColor="#6E6E6E"
-                                           HorizontalTextAlignment="Center" HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding UserData.TreesFound}" FontSize="16" FontAttributes="Bold"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Trees&#10;Found" FontSize="10" TextColor="#6E6E6E"
-                                           HorizontalTextAlignment="Center" HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                                <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
-                                    <Label Text="{Binding UserData.TopRating}" FontSize="16" FontAttributes="Bold"
-                                           HorizontalOptions="Center" />
-                                    <Label Text="Global&#10;Rank" FontSize="10" TextColor="#6E6E6E"
-                                           HorizontalTextAlignment="Center" HorizontalOptions="Center" />
-                                </VerticalStackLayout>
-                            </Grid>
-                            <Label Grid.Row="3" Grid.Column="0" Text="{Binding UserData.Status}" FontSize="12"
-                                   TextColor="#6E6E6E" HorizontalOptions="Center" VerticalOptions="Start" />
-
-                        </Grid>
-
-
+                <Label Padding="15,0,0,0" Grid.Row="1" Grid.Column="1" Text="{Binding UserData.Name}" FontSize="18" FontAttributes="Bold" HorizontalOptions="Start" VerticalOptions="End" />
+                
+                <Grid Grid.Row="2" Grid.Column="1" ColumnDefinitions="*,*,*">
+                    <VerticalStackLayout Grid.Column="0" Spacing="2" HorizontalOptions="Center">
+                        <Label Text="{Binding UserData.TreesPlanted}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="Trees&#10;Planted" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
                     </VerticalStackLayout>
-                </Border>
-
-                <!-- Tab strip -->
-                <Grid Grid.Column="0"
-                      Grid.Row="1"
-                      Padding="0"
-                      ColumnDefinitions="*,*"
-                      RowDefinitions="Auto,Auto">
-
-                    <Button Grid.Column="0"
-                            Command="{Binding SelectTabCommand}"
-                            CommandParameter="trees"
-                            Text="Trees"
-                            BackgroundColor="Transparent"
-                            TextColor="Black" />
-
-                    <Button Grid.Column="1"
-                            Command="{Binding SelectTabCommand}"
-                            CommandParameter="badges"
-                            Text="Badges"
-                            BackgroundColor="Transparent"
-                            TextColor="Black" />
-
-                    <BoxView Grid.Row="1"
-                             Grid.Column="0"
-                             BackgroundColor="#2FBF71"
-                             HeightRequest="2"
-                             IsVisible="{Binding IsTreesSelected}" />
-
-                    <BoxView Grid.Row="1"
-                             Grid.Column="1"
-                             BackgroundColor="#2FBF71"
-                             HeightRequest="2"
-                             IsVisible="{Binding IsBadgesSelected}" />
+                    <VerticalStackLayout Grid.Column="1" Spacing="2" HorizontalOptions="Center">
+                        <Label Text="{Binding UserData.TreesFound}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="Trees&#10;Found" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
+                    <VerticalStackLayout Grid.Column="2" Spacing="2" HorizontalOptions="Center">
+                        <Label Text="{Binding UserData.TopRating}" FontSize="16" FontAttributes="Bold" HorizontalOptions="Center" />
+                        <Label Text="Global&#10;Rank" FontSize="10" TextColor="#6E6E6E" HorizontalTextAlignment="Center" HorizontalOptions="Center" />
+                    </VerticalStackLayout>
                 </Grid>
+                
+                <Label Grid.Row="3" Grid.Column="0" Text="{Binding UserData.Status}" FontSize="12" TextColor="#6E6E6E" HorizontalOptions="Center" VerticalOptions="Start" />
+            </Grid>
+        </Border>
 
-                <Grid ColumnDefinitions="*"
-                      RowDefinitions="*"
-                      Padding="16"
-                      Grid.Column="0"
-                      Grid.Row="2">
+        <Grid Grid.Row="2" Padding="0" ColumnDefinitions="*,*" RowDefinitions="Auto,Auto">
+            <Button Grid.Column="0" Command="{Binding SelectTabCommand}" CommandParameter="trees" Text="Trees" BackgroundColor="Transparent" TextColor="Black" />
+            <Button Grid.Column="1" Command="{Binding SelectTabCommand}" CommandParameter="badges" Text="Badges" BackgroundColor="Transparent" TextColor="Black" />
 
-                    <Grid.GestureRecognizers>
-                        <PanGestureRecognizer PanUpdated="OnPanUpdated" />
-                    </Grid.GestureRecognizers>
+            <BoxView Grid.Row="1" Grid.Column="0" BackgroundColor="#2FBF71" HeightRequest="2" IsVisible="{Binding IsTreesSelected}" />
+            <BoxView Grid.Row="1" Grid.Column="1" BackgroundColor="#2FBF71" HeightRequest="2" IsVisible="{Binding IsBadgesSelected}" />
+        </Grid>
 
-                    <templates:TreesView Grid.Column="0"
-                                         Grid.Row="0"
-                                         x:Name="treesView"
-                                         BindingContext="{Binding TreesVm}"
-                                         IsVisible="{Binding IsTreesSelected}" />
+        <Grid Grid.Row="3" Padding="0,16,0,0" IsClippedToBounds="True">
+            <Grid.GestureRecognizers>
+                <PanGestureRecognizer PanUpdated="OnPanUpdated" />
+            </Grid.GestureRecognizers>
 
-                    <templates:BadgesView Grid.Column="0"
-                                          Grid.Row="0"
-                                          x:Name="badgesView"
-                                          BindingContext="{Binding BadgesVm}"
-                                          IsVisible="{Binding IsBadgesSelected}" />
-                </Grid>
+            <templates:TreesView x:Name="treesView" BindingContext="{Binding TreesVm}" />
+            <templates:BadgesView x:Name="badgesView" BindingContext="{Binding BadgesVm}" IsVisible="False" />
+        </Grid>
 
-
-            </VerticalStackLayout>
-        </ScrollView>
     </Grid>
 </ContentPage>
