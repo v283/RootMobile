@@ -24,6 +24,55 @@ public partial class AccountView : ContentPage
         await vm.Initialize();
     }
 
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+
+        if (BindingContext is AccountViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+            viewModel.PropertyChanged += ViewModel_PropertyChanged;
+        }
+
+        // Підписуємось на скрол
+        treesView.Scrolled += TreesView_Scrolled;
+    }
+
+    protected override void OnDisappearing()
+    {
+        base.OnDisappearing();
+        if (BindingContext is AccountViewModel viewModel)
+        {
+            viewModel.PropertyChanged -= ViewModel_PropertyChanged;
+        }
+
+        // Відписуємось від скролу
+        treesView.Scrolled -= TreesView_Scrolled;
+    }
+
+    // ЛОГІКА ПІДНЯТТЯ ТАБІВ ТА ПРИХОВУВАННЯ ПРОФІЛЮ
+    private void TreesView_Scrolled(object sender, ItemsViewScrolledEventArgs e)
+    {
+        double maxTranslation = ProfileSection.Height;
+        
+        if (maxTranslation <= 0) 
+            return;
+
+        double currentScroll = e.VerticalOffset;
+
+        // Не даємо елементам піднятися вище, ніж висота блоку профілю
+        double translationY = Math.Clamp(currentScroll, 0, maxTranslation);
+
+        // Зсуваємо блоки вгору
+        ProfileSection.TranslationY = -translationY;
+        ProfileSection.Opacity = 1 - (translationY / maxTranslation); // плавне зникнення профілю
+        
+        TabsSection.TranslationY = -translationY;
+        ContentSection.TranslationY = -translationY;
+    }
+
+    // --- Далі йде ваш старий код свайпів та переключення ---
+
     void OnPanUpdated(object sender, PanUpdatedEventArgs e)
     {
         if (BindingContext is not AccountViewModel viewModel || _isAnimating)
@@ -43,26 +92,6 @@ public partial class AccountView : ContentPage
 
                 _panX = 0;
                 break;
-        }
-    }
-
-    protected override void OnAppearing()
-    {
-        base.OnAppearing();
-
-        if (BindingContext is AccountViewModel viewModel)
-        {
-            viewModel.PropertyChanged -= ViewModel_PropertyChanged;
-            viewModel.PropertyChanged += ViewModel_PropertyChanged;
-        }
-    }
-
-    protected override void OnDisappearing()
-    {
-        base.OnDisappearing();
-        if (BindingContext is AccountViewModel viewModel)
-        {
-            viewModel.PropertyChanged -= ViewModel_PropertyChanged;
         }
     }
 

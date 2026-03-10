@@ -9,15 +9,21 @@
              BackgroundColor="White">
 
     <Grid>
-            <CollectionView ItemsSource="{Binding UsersTrees}"
-                            RemainingItemsThreshold="5"
-                            RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
+        <CollectionView x:Name="treesCollection"
+                        Scrolled="OnCollectionViewScrolled"
+                        ItemsSource="{Binding UsersTrees}"
+                        RemainingItemsThreshold="5"
+                        RemainingItemsThresholdReachedCommand="{Binding LoadMoreCommand}">
                 
-                <CollectionView.ItemsLayout>
-                    <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
-                </CollectionView.ItemsLayout>
+            <CollectionView.Footer>
+                <BoxView HeightRequest="130" BackgroundColor="White" />
+            </CollectionView.Footer>
 
-                <CollectionView.EmptyView>
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="0" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.EmptyView>
                     <Grid IsVisible="{Binding IsEmpty}" HorizontalOptions="Center" VerticalOptions="Center">
                         <Label Text="Ви ще не висадили жодного дерева" TextColor="Gray" FontSize="16" HorizontalOptions="Center" />
                     </Grid>
