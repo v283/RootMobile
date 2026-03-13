@@ -12,15 +12,18 @@
         <ShellContent Title="Map" Route="rootmapview"
                       Icon="map_tree.png" 
                       ContentTemplate="{DataTemplate views:RootMapView}"/>
-        <ShellContent Title="Challenges" Route="challengesview"
-                      Icon="challenges.png"
-                      ContentTemplate="{DataTemplate views:ChallengesView}" />
+        <ShellContent Title="Nearby" Route="shopview"
+                      Icon="shop.png"
+                      ContentTemplate="{DataTemplate views:CommunityPostsView}" />
+
         <ShellContent Title="Game" Route="treegameview"
                       Icon="game_tree.png" 
                       ContentTemplate="{DataTemplate views:TreeGameView}" />
-        <ShellContent Title="Shop" Route="shopview"
-                      Icon="shop.png"
-                      ContentTemplate="{DataTemplate views:ShopView}" />
+        
+        <ShellContent Title="Challenges" Route="challengesview"
+                      Icon="challenges.png"
+                      ContentTemplate="{DataTemplate views:ChallengesView}" />
+        
         <ShellContent Title="Account" Route="accountview"
                       Icon="account.png"
                       ContentTemplate="{DataTemplate views:AccountView}" />

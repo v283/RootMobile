@@ -14,28 +14,23 @@
         <ScrollView Grid.Row="0">
             <VerticalStackLayout Spacing="0">
 
-                <!-- POST -->
-                <Border Margin="16,12,16,8"
-                        Padding="12"
-                        Stroke="#EFF3F4"
-                        StrokeThickness="1"
-                        StrokeShape="RoundRectangle 16"
-                        BackgroundColor="White">
 
-                    <VerticalStackLayout Spacing="10">
+
+                    <VerticalStackLayout Margin="16,12,16,8"
+                                         Padding="12" Spacing="10">
 
                         <Label Text="{Binding Post.Name}"
                                FontSize="18"
                                FontAttributes="Bold"
                                TextColor="Black" />
-
+<Border                      StrokeShape="RoundRectangle 16">
                         <ffimageloading:CachedImage Source="{Binding Post.Image}"
                                                     Aspect="AspectFill"
                                                     HeightRequest="240"
                                                     DownsampleToViewSize="True"
                                                     LoadingPlaceholder="camera.png"
                                                     ErrorPlaceholder="camera.png" />
-
+</Border>
                         <Label Text="{Binding Post.Description}"
                                FontSize="15"
                                TextColor="#0F1419"
@@ -45,7 +40,6 @@
                                FontSize="12"
                                TextColor="#536471" />
                     </VerticalStackLayout>
-                </Border>
                 
                 <Label Text="Коментарі"
                        Margin="16,8,16,8"

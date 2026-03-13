@@ -99,20 +99,36 @@
                                     </Label.Triggers>
                                 </Label>
 
-                                <HorizontalStackLayout Spacing="0" Margin="0,4,0,4">
-                                    <HorizontalStackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenCommentsAsync}" CommandParameter="{Binding .}" />
-                                    </HorizontalStackLayout.GestureRecognizers>
-
-                                    <Image Source="comments.png"
+                                <Grid ColumnDefinitions="Auto ,Auto, *" RowDefinitions="Auto" Margin="0,4,0,4">
+                                    <Image Source="comments.png" Grid.Column="0" Grid.Row="0"
                                            WidthRequest="18"
                                            HeightRequest="18"
                                            VerticalOptions="Center"
-                                           Margin="0,0,6,0" />
-                                    <Label Text="Коментувати"
+                                           Margin="0,0,6,0" >
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TreesViewModel}}, Path=OpenCommentsCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Image.GestureRecognizers>
+                                    </Image>
+                                    <Label Text="Коментувати" Grid.Column="1" Grid.Row="0"
                                            TextColor="#536471"
                                            FontSize="13"
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center" >
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer
+                                                Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TreesViewModel}}, Path=OpenCommentsCommand}"
+                                                CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
+                                    <Label Text="{Binding Created, StringFormat='{0:dd.MM.yyyy HH:mm}'}" Grid.Column="2" Grid.Row="0"
+                                           FontSize="12" TextColor="#536471" HorizontalOptions="End" />
+
+                                </Grid>
+                                <HorizontalStackLayout Spacing="0" >
+            
+
+
                                 </HorizontalStackLayout>
 
                             </VerticalStackLayout>

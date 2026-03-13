@@ -42,6 +42,8 @@ public static class MauiProgram
         builder.Services.AddSingleton<AccountView>();
         builder.Services.AddSingleton<AccountViewModel>();
         
+        builder.Services.AddSingleton<CommunityPostsView>();
+        builder.Services.AddSingleton<CommunityPostsViewModel>();
         
         builder.Services.AddSingleton<SignInView>();
         builder.Services.AddSingleton<SignUpView>();

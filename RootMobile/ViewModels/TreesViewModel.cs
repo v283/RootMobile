@@ -125,7 +125,7 @@ public partial class TreesViewModel : ObservableObject
             CommentsView commentsView = new CommentsView(_dataService);
             commentsView.InitializeAsync(post);
             
-            await Shell.Current.Navigation.PushAsync(commentsView);
+            await Shell.Current.Navigation.PushModalAsync(commentsView);
         }
         catch (Exception ex)
         {

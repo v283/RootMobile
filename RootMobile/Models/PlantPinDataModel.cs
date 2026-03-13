@@ -160,6 +160,54 @@ namespace RootMobile.Models
             }
         }
         
+        private string userName;
+        public string UserName
+        {
+            get => userName;
+            set
+            {
+                if (userName != value)
+                {
+                    userName = value;
+                    OnPropertyChanged(nameof(UserName));
+                }
+            }
+        }
+
+        private string userImage;
+        public string UserImage
+        {
+            get => userImage;
+            set
+            {
+                if (userImage != value)
+                {
+                    userImage = value;
+                    OnPropertyChanged(nameof(UserImage));
+                }
+            }
+        }
+
+        private double? distanceKm;
+        public double? DistanceKm
+        {
+            get => distanceKm;
+            set
+            {
+                if (distanceKm != value)
+                {
+                    distanceKm = value;
+                    OnPropertyChanged(nameof(DistanceKm));
+                    OnPropertyChanged(nameof(DistanceText));
+                    OnPropertyChanged(nameof(HasDistance));
+                }
+            }
+        }
+
+        public string DistanceText => DistanceKm.HasValue ? $"{DistanceKm.Value:0.0} км" : "";
+        public bool HasDistance => DistanceKm.HasValue;
+
+        
         public event PropertyChangedEventHandler PropertyChanged;
         
         

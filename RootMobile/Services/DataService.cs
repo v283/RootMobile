@@ -1,12 +1,18 @@
-﻿using System.ComponentModel;
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
 using System.Diagnostics;
-
+using System.Linq;
+using System.Threading.Tasks;
 using RootMobile;
 using RootMobile.Models;
 using RootMobile.Views;
 using RootMobile.Constants;
 using CommunityToolkit.Maui.Views;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.Maui.Authentication;
+using Microsoft.Maui.Controls;
+using Microsoft.Maui.Storage;
 using RootMobile.Views.Templates;
 using Supabase;
 using Supabase.Gotrue;
@@ -693,7 +699,149 @@ namespace RootMobile.Services
                 return new List<PlantPinDataModel>();
             }
         }
+        
+        
+        public async Task<List<PlantPinDataModel>> GetPlantPinsFiltteredAsync(int km)
+        {
+            try
+            {
+                var response = await _supabaseClient.From<PlantPinDataModel>().Get();
+                return response.Models;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GetAllPlantPinsAsync] Error: {ex.Message}");
+                return new List<PlantPinDataModel>();
+            }
+        }
+        
+public async Task<List<PlantPinDataModel>> GetCommunityPlantPinsAsync(
+    int limit,
+    int page,
+    string searchText,
+    int? radiusKm,
+    double? userLatitude,
+    double? userLongitude)
+{
+    try
+    {
+        var normalizedSearch = searchText?.Trim().ToLower();
+        int neededCount = page * limit;
 
+        const int rawChunkSize = 80;
+        int rawOffset = 0;
+
+        var matchedPosts = new List<PlantPinDataModel>();
+
+        var usersResponse = await _supabaseClient
+            .From<UserDataModel>()
+            .Get();
+
+        var usersMap = (usersResponse?.Models ?? new List<UserDataModel>())
+            .GroupBy(x => x.UserId)
+            .ToDictionary(g => g.Key, g => g.First());
+
+        while (matchedPosts.Count < neededCount)
+        {
+            var response = await _supabaseClient
+                .From<PlantPinDataModel>()
+                .Order(x => x.Created, Supabase.Postgrest.Constants.Ordering.Descending)
+                .Range(rawOffset, rawOffset + rawChunkSize - 1)
+                .Get();
+
+            var rawPosts = response?.Models ?? new List<PlantPinDataModel>();
+
+            if (rawPosts.Count == 0)
+                break;
+
+            foreach (var post in rawPosts)
+            {
+                if (usersMap.TryGetValue(post.UserId, out var user))
+                {
+                    post.UserName = string.IsNullOrWhiteSpace(user.Name) ? "Користувач" : user.Name;
+                    post.UserImage = string.IsNullOrWhiteSpace(user.Image) ? "svg_user.png" : user.Image;
+                }
+                else
+                {
+                    post.UserName = "Користувач";
+                    post.UserImage = "svg_user.png";
+                }
+
+                if (userLatitude.HasValue && userLongitude.HasValue)
+                {
+                    post.DistanceKm = CalculateDistanceKm(
+                        userLatitude.Value,
+                        userLongitude.Value,
+                        post.Latitude,
+                        post.Longitude
+                    );
+                }
+
+                if (!MatchesSearch(post, normalizedSearch))
+                    continue;
+
+                if (radiusKm.HasValue)
+                {
+                    if (!post.DistanceKm.HasValue)
+                        continue;
+
+                    if (post.DistanceKm.Value > radiusKm.Value)
+                        continue;
+                }
+
+                matchedPosts.Add(post);
+
+                if (matchedPosts.Count >= neededCount)
+                    break;
+            }
+
+            rawOffset += rawChunkSize;
+
+            if (rawPosts.Count < rawChunkSize)
+                break;
+        }
+
+        return matchedPosts
+            .Skip((page - 1) * limit)
+            .Take(limit)
+            .ToList();
+    }
+    catch (Exception ex)
+    {
+        Debug.WriteLine($"[GetCommunityPlantPinsAsync] Error: {ex.Message}");
+        return new List<PlantPinDataModel>();
+    }
+}
+
+private bool MatchesSearch(PlantPinDataModel post, string search)
+{
+    if (string.IsNullOrWhiteSpace(search))
+        return true;
+
+    return (post.Name?.ToLower().Contains(search) ?? false)
+           || (post.Description?.ToLower().Contains(search) ?? false)
+           || (post.Category?.ToLower().Contains(search) ?? false)
+           || (post.Subcategory?.ToLower().Contains(search) ?? false)
+           || (post.UserName?.ToLower().Contains(search) ?? false);
+}
+
+private double CalculateDistanceKm(double lat1, double lon1, double lat2, double lon2)
+{
+    const double R = 6371.0;
+
+    double dLat = DegreesToRadians(lat2 - lat1);
+    double dLon = DegreesToRadians(lon2 - lon1);
+
+    double a =
+        Math.Sin(dLat / 2) * Math.Sin(dLat / 2) +
+        Math.Cos(DegreesToRadians(lat1)) * Math.Cos(DegreesToRadians(lat2)) *
+        Math.Sin(dLon / 2) * Math.Sin(dLon / 2);
+
+    double c = 2 * Math.Atan2(Math.Sqrt(a), Math.Sqrt(1 - a));
+    return R * c;
+}
+
+private double DegreesToRadians(double degrees) => degrees * Math.PI / 180.0;
 
         //comments and marks
         
