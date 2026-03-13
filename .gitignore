@@ -418,6 +418,7 @@ FodyWeavers.xsd
 !.vscode/extensions.json
 !.vscode/*.code-snippets
 
+*.csproj.user
 # Local History for Visual Studio Code
 .history/
 
