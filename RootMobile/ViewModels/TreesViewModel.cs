@@ -1,8 +1,10 @@
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using RootMobile.Models;
 using RootMobile.Services;
+using RootMobile.Views;
 
 namespace RootMobile.ViewModels;
 
@@ -110,6 +112,24 @@ public partial class TreesViewModel : ObservableObject
         finally
         {
             IsLoading = false;
+        }
+    }
+    
+    [RelayCommand]
+    private async Task OpenCommentsAsync(PlantPinDataModel post)
+    {
+        try
+        {
+            if (post == null)
+                return;
+            CommentsView commentsView = new CommentsView(_dataService);
+            commentsView.InitializeAsync(post);
+            
+            await Shell.Current.Navigation.PushAsync(commentsView);
+        }
+        catch (Exception ex)
+        {
+            Debug.WriteLine($"[OpenCommentsAsync] Error: {ex.Message}");
         }
     }
 }

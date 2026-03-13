@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:RootMobile.Models"
+             xmlns:vm="clr-namespace:RootMobile.ViewModels"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             x:Class="RootMobile.Views.CommentsView"
+             x:DataType="vm:CommentsViewModel"
+             Title="Коментарі"
+             BackgroundColor="White">
+
+    <Grid RowDefinitions="*,Auto">
+
+        <ScrollView Grid.Row="0">
+            <VerticalStackLayout Spacing="0">
+
+                <!-- POST -->
+                <Border Margin="16,12,16,8"
+                        Padding="12"
+                        Stroke="#EFF3F4"
+                        StrokeThickness="1"
+                        StrokeShape="RoundRectangle 16"
+                        BackgroundColor="White">
+
+                    <VerticalStackLayout Spacing="10">
+
+                        <Label Text="{Binding Post.Name}"
+                               FontSize="18"
+                               FontAttributes="Bold"
+                               TextColor="Black" />
+
+                        <ffimageloading:CachedImage Source="{Binding Post.Image}"
+                                                    Aspect="AspectFill"
+                                                    HeightRequest="240"
+                                                    DownsampleToViewSize="True"
+                                                    LoadingPlaceholder="camera.png"
+                                                    ErrorPlaceholder="camera.png" />
+
+                        <Label Text="{Binding Post.Description}"
+                               FontSize="15"
+                               TextColor="#0F1419"
+                               LineBreakMode="WordWrap" />
+
+                        <Label Text="{Binding Post.Created, StringFormat='Опубліковано: {0:dd.MM.yyyy HH:mm}'}"
+                               FontSize="12"
+                               TextColor="#536471" />
+                    </VerticalStackLayout>
+                </Border>
+                
+                <Label Text="Коментарі"
+                       Margin="16,8,16,8"
+                       FontSize="18"
+                       FontAttributes="Bold"
+                       TextColor="Black" />
+
+
+                <CollectionView ItemsSource="{Binding Comments}"
+                                Margin="0,0,0,12"
+                                SelectionMode="None">
+                    <CollectionView.EmptyView>
+                        <Grid Padding="20">
+                            <Label Text="Коментарів ще немає"
+                                   HorizontalOptions="Center"
+                                   VerticalOptions="Center"
+                                   TextColor="Gray"
+                                   FontSize="15" />
+                        </Grid>
+                    </CollectionView.EmptyView>
+
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:PlantCommentModel">
+                            <Border Margin="16,0,16,10"
+                                    Padding="12"
+                                    Stroke="#EFF3F4"
+                                    StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 14"
+                                    BackgroundColor="White">
+                                <VerticalStackLayout Spacing="8">
+
+                                    <Grid ColumnDefinitions="42,*" ColumnSpacing="10">
+                                        <Border WidthRequest="42"
+                                                HeightRequest="42"
+                                                StrokeThickness="0"
+                                                StrokeShape="RoundRectangle 21"
+                                                BackgroundColor="#F2F2F2"
+                                                VerticalOptions="Start">
+                                            <ffimageloading:CachedImage Source="{Binding UserImage}"
+                                                                        Aspect="AspectFill"
+                                                                        LoadingPlaceholder="svg_user.png"
+                                                                        ErrorPlaceholder="svg_user.png" />
+                                        </Border>
+
+                                        <VerticalStackLayout Grid.Column="1" Spacing="2">
+                                            <Label Text="{Binding UserName}"
+                                                   FontSize="14"
+                                                   FontAttributes="Bold"
+                                                   TextColor="Black" />
+                                            <Label Text="{Binding CreatedAt, StringFormat='{0:dd.MM.yyyy HH:mm}'}"
+                                                   FontSize="12"
+                                                   TextColor="#536471" />
+                                        </VerticalStackLayout>
+                                    </Grid>
+
+                                    <Label Text="{Binding CommentText}"
+                                           FontSize="15"
+                                           TextColor="#0F1419"
+                                           LineBreakMode="WordWrap" />
+                                </VerticalStackLayout>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <Border Grid.Row="1"
+                Stroke="#EFF3F4"
+                StrokeThickness="1"
+                BackgroundColor="White"
+                Padding="12">
+            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="10">
+                <Editor Text="{Binding NewCommentText}"
+                        Placeholder="Напишіть коментар..."
+                        AutoSize="TextChanges"
+                        MaxLength="500"
+                        FontSize="15"
+                        TextColor="Black"
+                        BackgroundColor="#F5F8FA"
+                        HeightRequest="44" />
+
+                <Button Grid.Column="1"
+                        Text="Надіслати"
+                        Command="{Binding AddCommentCommand}"
+                        BackgroundColor="#2FBF71"
+                        TextColor="White"
+                        CornerRadius="12"
+                        Padding="16,12"
+                        VerticalOptions="End" />
+            </Grid>
+        </Border>
+
+        <ActivityIndicator IsRunning="{Binding IsLoading}"
+                           IsVisible="{Binding IsLoading}"
+                           HorizontalOptions="Center"
+                           VerticalOptions="Center"
+                           Color="#2FBF71" />
+    </Grid>
+</ContentPage>

@@ -101,7 +101,7 @@
 
                                 <HorizontalStackLayout Spacing="0" Margin="0,4,0,4">
                                     <HorizontalStackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer />
+                                        <TapGestureRecognizer Command="{Binding OpenCommentsAsync}" CommandParameter="{Binding .}" />
                                     </HorizontalStackLayout.GestureRecognizers>
 
                                     <Image Source="comments.png"
