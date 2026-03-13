@@ -71,7 +71,16 @@ public partial class TreesViewModel : ObservableObject
 
         await LoadNextPageAsync();
     }
+    
+    [RelayCommand]
+    private void ToggleExpand(PlantPinDataModel pin)
+    {
+        if (pin == null)
+            return;
 
+        pin.IsExpanded = !pin.IsExpanded;
+    }
+    
     private async Task LoadNextPageAsync()
     {
         if (IsLoading)

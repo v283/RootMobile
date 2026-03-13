@@ -10,6 +10,7 @@ using Microsoft.IdentityModel.Tokens;
 using RootMobile.Views.Templates;
 using Supabase;
 using Supabase.Gotrue;
+using Supabase.Postgrest;
 using static Supabase.Postgrest.Constants;
 
 namespace RootMobile.Services
@@ -96,8 +97,8 @@ namespace RootMobile.Services
                                 Birth = null,
                                 Image = "svg_user.png"
                             };
-
-                            await _supabaseClient.From<UserDataModel>().Insert(newUser);
+                            
+                            await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });           
                         }
                         await SecureStorage.Default.SetAsync("authToken", accessToken);
                         await SecureStorage.Default.SetAsync("refreshToken", refreshToken);
@@ -186,7 +187,7 @@ namespace RootMobile.Services
                             Image = "svg_user.png"
                         };
 
-                        await _supabaseClient.From<UserDataModel>().Insert(newUser);
+                        await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });  
                     }
 
                 }
@@ -476,7 +477,7 @@ namespace RootMobile.Services
                         Image = "svg_user.png"
                     };
 
-                    await _supabaseClient.From<UserDataModel>().Insert(newUser);
+                    await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });  
                     return newUser; // Return the new user directly
                 }
 
@@ -626,47 +627,61 @@ namespace RootMobile.Services
 
 
         //comments and marks
-        public async Task<bool> AddMarkAsync(ProductModel product, string commentText, string location, int mark, string shop)
+        
+        public async Task<List<PlantCommentModel>> GetPlantCommentsAsync(long plantPinId)
         {
             try
             {
-                var userData = await GetUserData();
-                if (userData == null || userData.UserId == Guid.Empty)
-                {
-                    return false;
-                }
+                var response = await _supabaseClient
+                    .From<PlantCommentModel>()
+                    .Where(x => x.PlantPinId == plantPinId)
+                    .Order(x => x.CreatedAt, Supabase.Postgrest.Constants.Ordering.Descending)
+                    .Get();
 
-                var currentTime = DateTime.UtcNow;
-                var roundedTime = new DateTime(
-                    currentTime.Year,
-                    currentTime.Month,
-                    currentTime.Day
-                );
+                return response.Models ?? new List<PlantCommentModel>();
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GetPlantCommentsAsync] Error: {ex.Message}");
+                return new List<PlantCommentModel>();
+            }
+        }
+        public async Task<PlantCommentModel> AddPlantCommentAsync(long plantPinId, string commentText)
+        {
+            try
+            {
+                var currentUser = _supabaseClient.Auth.CurrentUser;
+                if (currentUser == null || !Guid.TryParse(currentUser.Id, out var userId))
+                    return null;
 
-                MarkModel newMark = new()
+                var userDataResponse = await _supabaseClient
+                    .From<UserDataModel>()
+                    .Where(x => x.UserId == userId)
+                    .Get();
+
+                var userData = userDataResponse.Models.FirstOrDefault();
+
+                var newComment = new PlantCommentModel
                 {
-                    UserId = userData.UserId,
-                    Name = userData.Name,
-                    WritenAt = roundedTime,
-                    Text = commentText,
-                    Images = " ",
-                    Mark = mark,
-                    ProductId = product.Id,
-                    Shop = shop,
-                    Location = location
+                    PlantPinId = plantPinId,
+                    UserId = userId,
+                    UserName = userData?.Name ?? "Користувач",
+                    UserImage = userData?.Image ?? "svg_user.png",
+                    CommentText = commentText,
+                    CreatedAt = DateTime.UtcNow
                 };
 
-                var response = await _supabaseClient.From<MarkModel>().Insert(newMark);
+                var insertResponse = await _supabaseClient
+                    .From<PlantCommentModel>()
+                    .Insert(newComment);
 
-                if (response != null && response.Models.Count > 0) { return true; }
-                else { return false; }
+                return insertResponse.Models.FirstOrDefault();
             }
-            catch (Exception ex) { return false; }
-        }
-        public async Task<List<MarkModel>> GetMarksAsync(ProductModel product)
-        {
-            var response = await _supabaseClient.From<MarkModel>().Where(x => x.ProductId == product.Id).Get();
-            return response.Models;
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[AddPlantCommentAsync] Error: {ex.Message}");
+                return null;
+            }
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

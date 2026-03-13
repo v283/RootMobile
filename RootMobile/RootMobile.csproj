@@ -81,10 +81,6 @@
     </ItemGroup>
 
     <ItemGroup>
-      <Folder Include="Services\" />
-    </ItemGroup>
-
-    <ItemGroup>
       <MauiImage Include="Resources\Images\GameImgs\background.png" />
       <MauiImage Include="Resources\Images\GameImgs\ground.png" />
       <MauiImage Include="Resources\Images\GameImgs\ground_with_manure.png" />
