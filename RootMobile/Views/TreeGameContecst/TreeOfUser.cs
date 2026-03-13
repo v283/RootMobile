@@ -15,6 +15,18 @@ namespace RootMobile.Views.TreeGameContecst
         public string nameOfImage { get; private set; }
         public float offsetX { get; private set; }
         public float offsetY { get; private set; }
+        private string _baseImgName = "lvl_";
+        public TreeOfUser(int lvlOfTree, int amountOfGrow, int amountToLvlUp, string nameOfTree, int indexOfNameImg, float offsetX, float offsetY)
+        {
+            this.lvlOfTree = lvlOfTree;
+            this.amountOfGrow = amountOfGrow;
+            this.amountToLvlUp = amountToLvlUp;
+            this.nameOfTree = nameOfTree;
+            this.nameOfImage = _baseImgName+indexOfNameImg+".png";
+            this.offsetX = offsetX;
+            this.offsetY = offsetY;
+        }
+
         public TreeOfUser()
         {
             lvlOfTree = 0;
