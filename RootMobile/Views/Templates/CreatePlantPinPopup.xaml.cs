@@ -12,11 +12,17 @@ namespace RootMobile.Views.Templates;
 public partial class CreatePlantPinPopup : Popup
 {
     private string _tempImagePath;
+    private readonly DataService _dataService;
+    private List<CategoriesMapModel> _categories;
 
-    public CreatePlantPinPopup()
+    public CreatePlantPinPopup(IDataService dataService)
     {
         InitializeComponent();
+        _dataService = (DataService)dataService;
         CategoryPicker.SelectedIndex = 0;
+
+        // Завантажуємо категорії при ініціалізації
+        LoadCategories();
 
         // Анімація при відкритті
         Opened += async (s, e) =>
@@ -24,6 +30,19 @@ public partial class CreatePlantPinPopup : Popup
             PopupBorder.TranslationY = 700;
             await PopupBorder.TranslateTo(0, 0, 400, Easing.SinOut);
         };
+    }
+
+    private async void LoadCategories()
+    {
+        try
+        {
+            _categories = await _dataService.GetCategoriesAsync();
+            CategoryPicker.ItemsSource = _categories;
+        }
+        catch (Exception ex)
+        {
+            //Debug.WriteLine(ex.Message);
+        }
     }
 
     private async void OnTakePhotoClicked(object sender, EventArgs e)
@@ -45,17 +64,16 @@ public partial class CreatePlantPinPopup : Popup
     private void OnFinishPinClicked(object sender, EventArgs e)
     {
         if (string.IsNullOrWhiteSpace(PlantNameEntry.Text) || string.IsNullOrEmpty(_tempImagePath))
-        {
-            // Додайте DisplayAlert або візуальну підказку
             return;
-        }
+
+        var selectedCat = CategoryPicker.SelectedItem as CategoriesMapModel;
 
         var result = new PlantPinDataModel
         {
             Name = PlantNameEntry.Text.Trim(),
-            Category = CategoryPicker.SelectedItem?.ToString(),
+            Category = selectedCat?.Name ?? "Не обрано",
             Description = CommentEntry.Text?.Trim(),
-            Image = _tempImagePath // Поки що це локальний шлях до файлу
+            Image = _tempImagePath
         };
 
         Close(result);

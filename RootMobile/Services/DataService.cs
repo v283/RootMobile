@@ -1,17 +1,21 @@
-﻿using System.ComponentModel;
-using System.Diagnostics;
-
+﻿using CommunityToolkit.Maui.Views;
+using Microsoft.IdentityModel.Tokens;
 using RootMobile;
+using RootMobile.Constants;
 using RootMobile.Models;
 using RootMobile.Views;
-using RootMobile.Constants;
-using CommunityToolkit.Maui.Views;
-using Microsoft.IdentityModel.Tokens;
 using RootMobile.Views.Templates;
 using Supabase;
 using Supabase.Gotrue;
+using Supabase.Interfaces;
+using Supabase.Realtime;
+using Supabase.Realtime.PostgresChanges;
+using System.ComponentModel;
+using System.Diagnostics;
 using Supabase.Postgrest;
 using static Supabase.Postgrest.Constants;
+using static Supabase.Realtime.PostgresChanges.PostgresChangesOptions;
+
 
 namespace RootMobile.Services
 {
@@ -434,6 +438,100 @@ namespace RootMobile.Services
             return rezult;
         }
 
+        public async Task<List<CategoriesMapModel>> GetCategoriesAsync()
+        {
+            try
+            {
+                // Отримуємо дані з таблиці categories_ssub
+                var response = await _supabaseClient
+                    .From<CategoriesMapModel>()
+                    .Get();
+
+                return response.Models;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[GetCategoriesAsync] Error: {ex.Message}");
+                return new List<CategoriesMapModel>();
+            }
+        }
+
+        // ... решта коду ...
+
+        //public async Task SubscribeToRealtimePins(Action<PlantPinDataModel> onNewPinReceived)
+        //{
+        //    try
+        //    {
+        //        // 1. Використовуємо метод прямо з твого прикладу
+        //        // ВАЖЛИВО: .On повертає Task<RealtimeChannel>
+        //        var channel = await _supabaseClient.From<PlantPinDataModel>().On(ListenType.Inserts, (sender, change) =>
+        //        {
+        //            // change.Model<T>() автоматично перетворює JSON з бази в твій клас
+        //            var newPin = change.Model<PlantPinDataModel>();
+        //            if (newPin != null)
+        //            {
+        //                onNewPinReceived?.Invoke(newPin);
+        //            }
+        //        });
+
+        //        // 2. Фікс для MAUI: Явно викликаємо Subscribe через dynamic, 
+        //        // щоб обійти конфлікт імен методів
+        //        await ((dynamic)channel).Subscribe();
+
+        //        Debug.WriteLine("Realtime: Підписка на map_points активована.");
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        Debug.WriteLine($"[Realtime Error]: {ex.Message}");
+        //    }
+        //}
+
+        public async Task SubscribeToRealtimePins(Action<PlantPinDataModel> onNewPinReceived)
+        {
+            try
+            {
+                // 1. ПЕРЕВІРКА ПІДКЛЮЧЕННЯ (Socket)
+                // Якщо сокет ще не створений (null), викликаємо ConnectAsync
+                if (_supabaseClient.Realtime.Socket == null)
+                {
+                    Debug.WriteLine("Realtime: Ініціалізація та підключення сокета...");
+                    await _supabaseClient.Realtime.ConnectAsync();
+                }
+
+                // 2. РЕЄСТРАЦІЯ СЛУХАЧА ТАБЛИЦІ
+                // Тепер сокет точно існує, тому .On() спрацює без помилок
+                var channel = await _supabaseClient.From<PlantPinDataModel>().On(ListenType.Inserts, (sender, change) =>
+                {
+                    // Виводимо сирий лог для перевірки, чи прийшли дані
+                    Debug.WriteLine($"[REALTIME PAYLOAD]: {change.Payload.Data}");
+
+                    try
+                    {
+                        var newPin = change.Model<PlantPinDataModel>();
+                        if (newPin != null)
+                        {
+                            onNewPinReceived?.Invoke(newPin);
+                        }
+                    }
+                    catch (Exception modelEx)
+                    {
+                        // Сюди потрапимо, якщо ID у C# (Guid) не збігається з ID в базі (long)
+                        Debug.WriteLine($"[REALTIME MODEL ERROR]: {modelEx.Message}");
+                    }
+                });
+
+                // 3. ПЕРЕХІД У СТАН ПІДПИСКИ (Force Subscribe)
+                // Використовуємо dynamic, щоб MAUI не плутав це з System.Reactive
+                await ((dynamic)channel).Subscribe();
+
+                Debug.WriteLine("Realtime: Канал для map_points успішно активовано.");
+            }
+            catch (Exception ex)
+            {
+                // Сюди потрапимо, якщо сокет не зміг підключитися (наприклад, немає інтернету)
+                Debug.WriteLine($"[Realtime Critical Error]: {ex.Message}");
+            }
+        }
 
         //cart
         public async Task<bool> AddCartItemAsync(Guid userId, int productId, string productTable, int quantity)
@@ -619,16 +717,26 @@ namespace RootMobile.Services
                 if (string.IsNullOrEmpty(localFilePath) || !File.Exists(localFilePath))
                     return null;
 
-                // Бакет має бути створений у Supabase з доступом Public
+                // 1. Отримуємо ID поточного користувача
+                var currentUser = _supabaseClient.Auth.CurrentUser;
+                if (currentUser == null) return null;
+                string userId = currentUser.Id;
+
                 string bucketName = "plant_images";
-                string fileName = $"{Guid.NewGuid()}.jpg"; // Генеруємо унікальне ім'я
+
+                // 2. Формуємо шлях: "ID_користувача/Унікальне_ім'я.jpg"
+                // Це автоматично створить папку з назвою userId всередині бакета
+                string extension = Path.GetExtension(localFilePath);
+                string fileName = $"{userId}/{Guid.NewGuid()}{extension}";
 
                 byte[] imageBytes = await File.ReadAllBytesAsync(localFilePath);
 
+                // 3. Завантажуємо файл
                 await _supabaseClient.Storage
                     .From(bucketName)
                     .Upload(imageBytes, fileName, new Supabase.Storage.FileOptions { Upsert = true });
 
+                // 4. Повертаємо публічне посилання
                 return _supabaseClient.Storage.From(bucketName).GetPublicUrl(fileName);
             }
             catch (Exception ex)
@@ -665,19 +773,6 @@ namespace RootMobile.Services
                 return false;
             }
         }
-        //public async Task<bool> InsertPlantPinAsync(PlantPinDataModel model)
-        //{
-        //    try
-        //    {
-        //        var response = await _supabaseClient.From<PlantPinDataModel>().Insert(model);
-        //        return response.Models.Count > 0;
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.WriteLine($"[InsertPlantPinAsync] Error: {ex.Message}");
-        //        return false;
-        //    }
-        //}
 
         // 3. Отримання всіх анкет із бази для відображення на карті
         public async Task<List<PlantPinDataModel>> GetAllPlantPinsAsync()

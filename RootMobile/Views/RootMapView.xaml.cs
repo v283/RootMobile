@@ -14,6 +14,9 @@ public partial class RootMapView : ContentPage
 
     private Dictionary<Pin, PlantPinDataModel> _pinDataMap = new();
 
+    private bool _isFirstAppearance = true;
+    private bool _isSubscribed = false;
+
     private string _mapStyleJson = @"
 [
   {
@@ -74,20 +77,40 @@ public partial class RootMapView : ContentPage
 
         if (result == PermissionStatus.Granted)
         {
+            // 1. ПІДПИСКА (тільки один раз за все життя сторінки)
+            if (!_isSubscribed)
+            {
+                await _dataService.SubscribeToRealtimePins((newPin) =>
+                {
+                    MainThread.BeginInvokeOnMainThread(() =>
+                    {
+                        if (!_pinDataMap.Values.Any(x => x.Id == newPin.Id))
+                        {
+                            System.Diagnostics.Debug.WriteLine($"[REALTIME] Отримано новий пін: {newPin.Name}");
+                            AddPinToMap(newPin);
+                        }
+                    });
+                });
+                _isSubscribed = true;
+            }
+
             mymap.UiSettings.MyLocationButtonEnabled = true;
             mymap.MyLocationEnabled = true;
-            // Завантажуємо тільки те, що є в пам'яті
+
             LoadSavedPins();
 
-            Location location = await Geolocation.Default.GetLocationAsync();
-
-            if (location != null)
+            // 2. ЦЕНТРУВАННЯ КАМЕРИ (тільки при першому вході)
+            if (_isFirstAppearance)
             {
-                Position myposition = new Position(location.Latitude, location.Longitude);
+                Location location = await Geolocation.Default.GetLocationAsync();
+                if (location != null)
+                {
+                    Position myposition = new Position(location.Latitude, location.Longitude);
+                    await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
+                               new CameraPosition(myposition, 17d, 0d, 0d)));
 
-                await mymap.MoveCamera(CameraUpdateFactory.NewCameraPosition(
-                           new CameraPosition(myposition, 17d, 0d, 0d)));
-
+                    _isFirstAppearance = false; // Більше не центруємо автоматично
+                }
             }
         }
     }
@@ -186,14 +209,15 @@ public partial class RootMapView : ContentPage
 
     private async void AddPinToMap(PlantPinDataModel data)
     {
-        // Отримуємо локальний шлях (якщо це URL - завантажимо)
-        string localPath = await GetLocalPathForImage(data.Image);
-        // Завжди виконуємо операції з UI (картою) в головному потоці
+        // Отримуємо локальний шлях (якщо це URL - завантажимо у кеш)
+        string imageSource = await GetLocalPathForImage(data.Image);
+
         MainThread.BeginInvokeOnMainThread(() =>
         {
             try
             {
-                var descriptor = CreateRoundMarker(localPath);
+                // Створюємо маркер
+                var descriptor = CreateRoundMarker(imageSource);
 
                 var pin = new Pin
                 {
@@ -203,12 +227,13 @@ public partial class RootMapView : ContentPage
                     Icon = descriptor ?? BitmapDescriptorFactory.DefaultMarker(Colors.Green)
                 };
 
-                _pinDataMap[pin] = data; // Зберігаємо зв'язок
+                // Додаємо в словник для перегляду деталей
+                _pinDataMap[pin] = data;
                 mymap.Pins.Add(pin);
             }
             catch (Exception ex)
             {
-                System.Diagnostics.Debug.WriteLine($"Помилка додавання піна: {ex.Message}");
+                System.Diagnostics.Debug.WriteLine($"Error adding pin: {ex.Message}");
             }
         });
     }
@@ -239,7 +264,8 @@ public partial class RootMapView : ContentPage
         var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
         if (location == null) return;
 
-        var popup = new CreatePlantPinPopup();
+        // ПЕРЕДАЄМО _dataService у конструктор
+        var popup = new CreatePlantPinPopup(_dataService);
         var result = await this.ShowPopupAsync(popup);
 
         if (result is PlantPinDataModel newPin)
