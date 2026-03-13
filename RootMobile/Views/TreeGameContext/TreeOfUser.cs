@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace RootMobile.Views.TreeGameContecst
+namespace RootMobile.Views.TreeGameContext
 {
     public class TreeOfUser
     {
@@ -17,7 +17,7 @@ namespace RootMobile.Views.TreeGameContecst
         public float offsetY { get; private set; }
         public TreeOfUser()
         {
-            lvlOfTree = 0;
+            lvlOfTree = 1;
             amountOfGrow = 0;
             amountToLvlUp = 0;
             nameOfTree = "default";

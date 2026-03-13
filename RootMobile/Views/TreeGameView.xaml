@@ -1,28 +1,142 @@
-<?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RootMobile.Views.TreeGameView">
-    <ContentPage.Content>
-        <AbsoluteLayout>
 
-            <Image
+    <AbsoluteLayout>
+
+        <!-- BACKGROUND -->
+        <Image
+            Source="background.png"
+            Aspect="AspectFill"
+            AbsoluteLayout.LayoutBounds="0,0,1,1"
+            AbsoluteLayout.LayoutFlags="All"/>
+
+        <!-- TREE COMPONENTS-->
+        <Image
             x:Name="TreeSprite"
             AbsoluteLayout.LayoutBounds="100,150,200,200"
             AbsoluteLayout.LayoutFlags="None"/>
+        <Image
+            Source="lvl_1.png"
+            AbsoluteLayout.LayoutBounds="100,450,200,200"
+            AbsoluteLayout.LayoutFlags="None"/>
+        <Image
+            Source="lvl_11.png"
+            AnchorY="1"
+            AnchorX="0.5"
+            AbsoluteLayout.LayoutBounds="-20,50,400,400"
+            AbsoluteLayout.LayoutFlags="None"/>
 
-            <Image
-                Source="background.png"
-                Aspect="AspectFill"
-                AbsoluteLayout.LayoutBounds="0,0,1,1"
-                AbsoluteLayout.LayoutFlags="All"/>
+        <!-- ================= TREE HUD ================= -->
 
-            <Label
-            Text="Tree 12Game"
-            TextColor="Yellow"
-            FontSize="24"
-            AbsoluteLayout.LayoutBounds="0.5,0.1,-1,-1"
-            AbsoluteLayout.LayoutFlags="PositionProportional"/>
+        <!-- LEVEL + PROGRESS -->
+        <Border
+            AbsoluteLayout.LayoutBounds="0.5,0.85,0.9,-1"
+            AbsoluteLayout.LayoutFlags="WidthProportional, PositionProportional"
+            Padding="10"
+            BackgroundColor="#66000000"
+            StrokeThickness="0"
+            StrokeShape="RoundRectangle 20">
+
+            <VerticalStackLayout Spacing="6">
+
+                <!-- LEVEL + BAR -->
+                <Grid ColumnDefinitions="Auto,*" ColumnSpacing="10">
+
+                    <!-- LEVEL -->
+                    <Label
+                        Text="1"
+                        x:Name="LevelText"
+                        FontSize="22"
+                        TextColor="White"
+                        VerticalOptions="Center"/>
+
+                    <!-- PROGRESS BAR -->
+                    <ProgressBar
+                x:Name="TreeProgress"
+                Grid.Column="1"
+                Progress="0.4"
+                HeightRequest="14"/>
+
+                </Grid>
+
+                <!-- PROGRESS TEXT -->
+                <Label
+            x:Name="ProgressText"
+            Text="40 / 100"
+            FontSize="14"
+            TextColor="White"
+            HorizontalOptions="Center"/>
+
+            </VerticalStackLayout>
+        </Border>
+        <!-- BUTTONS -->
+        <Grid
+            AbsoluteLayout.LayoutBounds="0.5,0.97,0.9,-1"
+            AbsoluteLayout.LayoutFlags="PositionProportional,WidthProportional"
+            ColumnDefinitions="*,*"
+            ColumnSpacing="15">
+
+            <!-- WATER BUTTON -->
+            <Button
+                  Text="💧 Water"
+                  Clicked="OnWaterClicked"
+                   BackgroundColor="#2E86DE"
+                   TextColor="White"
+                   CornerRadius="20"
+                   HeightRequest="55"/>
+
+            <!-- FERTILIZE BUTTON -->
+            <Button
+                     Grid.Column="1"
+                     Text="🌿 Fertilize"
+                     Clicked="OnFertilizeClicked"
+                     BackgroundColor="#27AE60"
+                     TextColor="White"
+                      CornerRadius="20"
+                     HeightRequest="55"/>
+
+        </Grid>
+        <!-- ✅ FAKE POPUP LAYER -->
+        <AbsoluteLayout
+             x:Name="DialogLayer"
+             IsVisible="False"
+             AbsoluteLayout.LayoutBounds="0,0,1,1"
+             AbsoluteLayout.LayoutFlags="All">
+
+            <Border
+                x:Name="DialogBox"
+                AbsoluteLayout.LayoutBounds="4,10,350,-1"
+                AbsoluteLayout.LayoutFlags="None"
+                Padding="20"
+                BackgroundColor="#1f703e"
+                Stroke="Black"
+                StrokeThickness="3"
+                StrokeShape="RoundRectangle 20">
+
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Tapped="OnDialogTapped"/>
+                </Border.GestureRecognizers>
+
+                <VerticalStackLayout>
+
+                    <Label
+                        x:Name="DialogText"
+                        TextColor="White"
+                        FontSize="20"
+                        LineBreakMode="WordWrap"/>
+
+                    <Label
+                        Text="(tap to continue)"
+                        FontSize="12"
+                        TextColor="#AAAAAA"
+                        HorizontalOptions="End"/>
+
+                </VerticalStackLayout>
+
+            </Border>
+
         </AbsoluteLayout>
-    </ContentPage.Content>
+
+    </AbsoluteLayout>
 </ContentPage>

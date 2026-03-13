@@ -1,0 +1,45 @@
+<toolkit:Popup
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+    x:Class="RootMobile.Views.TreeGameContext.DialogPopUp"
+    CanBeDismissedByTappingOutsideOfPopup="False"
+    Color="Transparent">
+
+    <Grid>
+
+        <Border
+        x:Name="PopupFrame"
+        Padding="20"
+        BackgroundColor="#1f703e"
+        MaximumWidthRequest="350"
+        MaximumHeightRequest="350"
+        HorizontalOptions="Center"
+        Stroke="Black"
+        StrokeThickness="3"
+        StrokeShape="RoundRectangle 20">
+
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnTapped"/>
+            </Border.GestureRecognizers>
+
+            <VerticalStackLayout>
+
+                <Label
+                x:Name="DialogText"
+                TextColor="White"
+                FontSize="20"
+                LineBreakMode="WordWrap"/>
+
+                <Label
+                Text="(tap to continue)"
+                FontSize="12"
+                TextColor="#AAAAAA"
+                HorizontalOptions="End"/>
+
+            </VerticalStackLayout>
+
+        </Border>
+
+    </Grid>
+</toolkit:Popup>
