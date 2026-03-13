@@ -7,12 +7,49 @@
              Shell.NavBarIsVisible="False">
 
     <Grid>
-        <maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" PinClicked="OnPinClicked" />
+        <!--<maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" PinClicked="OnPinClicked" />-->
 
-        <!-- Кнопка "Створити" -->
-        <Button x:Name="BtnCreate" Text="Create Pin" VerticalOptions="End" HorizontalOptions="Center" 
-            Margin="20" Clicked="OnCreatePinClicked" HeightRequest="60" CornerRadius="30" WidthRequest="160"
-                BackgroundColor="#27B96E" TextColor="White"  FontAttributes="Bold" FontSize="16"/>
+
+        <!-- Розділяємо на Рядок для Навбару та Рядок для Карти -->
+        <Grid RowDefinitions="Auto, *">
+
+            <!-- TOP NAVBAR SECTION -->
+            <Border Grid.Row="0" 
+                BackgroundColor="White" 
+                Padding="15, 10" 
+                StrokeThickness="0"
+                HeightRequest="60">
+                <!-- Додаємо невелику тінь, щоб відділити навбар від карти -->
+                <Border.Shadow>
+                    <Shadow Brush="Black" Offset="0,2" Opacity="0.1" Radius="5" />
+                </Border.Shadow>
+
+                <Grid ColumnDefinitions="Auto, *, Auto">
+                    <!-- Кнопка Фільтра зліва -->
+                    <Image Grid.Column="0" 
+                       Source="filter.png" 
+                       HeightRequest="25" 
+                       VerticalOptions="Center">
+                        <Image.GestureRecognizers>
+                            <TapGestureRecognizer Tapped="OnFilterClicked" />
+                        </Image.GestureRecognizers>
+                    </Image>
+
+                </Grid>
+            </Border>
+
+            <!-- MAP SECTION -->
+            <Grid Grid.Row="1">
+                <maps:Map x:Name="mymap" VerticalOptions="FillAndExpand" PinClicked="OnPinClicked" />
+
+                <!-- Кнопка "Створити" (плаває поверх карти знизу) -->
+                <Button x:Name="BtnCreate" Text="Create Pin" VerticalOptions="End" HorizontalOptions="Center" 
+    Margin="20" Clicked="OnCreatePinClicked" HeightRequest="60" CornerRadius="30" WidthRequest="160"
+        BackgroundColor="#27B96E" TextColor="White"  FontAttributes="Bold" FontSize="16"/>
+            </Grid>
+
+        </Grid>
+
     </Grid>
 
 </ContentPage>

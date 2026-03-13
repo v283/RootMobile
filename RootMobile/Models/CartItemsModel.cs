@@ -83,11 +83,6 @@ namespace RootMobile.Models
             }
         }
 
-
-
-
-
-
         // INotifyPropertyChanged implementation
         public event PropertyChangedEventHandler PropertyChanged;
 

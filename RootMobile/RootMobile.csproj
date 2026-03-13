@@ -96,6 +96,9 @@
       <MauiXaml Update="Views\Templates\CreatePlantPinPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+      <MauiXaml Update="Views\Templates\FilterPopup.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Views\Templates\ShowPinDetailPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
