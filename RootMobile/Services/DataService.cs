@@ -64,65 +64,110 @@ namespace RootMobile.Services
             try
             {
                 var response = await _supabaseClient.Auth.SignIn(Supabase.Gotrue.Constants.Provider.Google);
-
                 var authUri = new Uri(response.Uri.ToString());
-
-                Uri redirectUri = new Uri("com.valentineos.rootmobile://callback");
+                var redirectUri = new Uri("com.valentineos.rootmobile://callback");
 
                 var authResult = await WebAuthenticator.AuthenticateAsync(authUri, redirectUri);
 
-                if (authResult != null)
+                if (authResult == null)
                 {
+                    await Shell.Current.DisplayAlert("Error", "Authentication failed: No auth result.", "OK");
+                    return;
+                }
 
-                    if (authResult.Properties.ContainsKey("access_token"))
+                if (!authResult.Properties.TryGetValue("access_token", out var accessToken) ||
+                    string.IsNullOrWhiteSpace(accessToken))
+                {
+                    await Shell.Current.DisplayAlert("Error", "Authentication failed: No access token found.", "OK");
+                    return;
+                }
+
+                if (!authResult.Properties.TryGetValue("refresh_token", out var refreshToken) ||
+                    string.IsNullOrWhiteSpace(refreshToken))
+                {
+                    await Shell.Current.DisplayAlert("Error", "Authentication failed: No refresh token found.", "OK");
+                    return;
+                }
+
+                await _supabaseClient.Auth.SetSession(accessToken, refreshToken);
+
+                var user = _supabaseClient.Auth.CurrentUser;
+                if (user == null)
+                {
+                    await Shell.Current.DisplayAlert("Error",
+                        "Authentication failed: User is null after session setup.", "OK");
+                    return;
+                }
+
+                if (!Guid.TryParse(user.Id, out var userId))
+                {
+                    await Shell.Current.DisplayAlert("Error", "Authentication failed: Invalid user id.", "OK");
+                    return;
+                }
+
+                string email = user.Email ?? string.Empty;
+                string name = "User";
+
+                if (user.UserMetadata != null)
+                {
+                    if (user.UserMetadata.TryGetValue("name", out var nameObj) && nameObj != null)
+                        name = nameObj.ToString() ?? "User";
+                    else if (user.UserMetadata.TryGetValue("full_name", out var fullNameObj) && fullNameObj != null)
+                        name = fullNameObj.ToString() ?? "User";
+                }
+
+                var existingUserResponse = await _supabaseClient
+                    .From<UserDataModel>()
+                    .Where(x => x.UserId == userId)
+                    .Get();
+
+                var existingUser = existingUserResponse.Models.FirstOrDefault();
+
+                if (existingUser == null)
+                {
+                    var newUser = new UserDataModel
                     {
-                        var accessToken = authResult.Properties["access_token"];
-                        var refreshToken = authResult.Properties["refresh_token"];
+                        UserId = userId,
+                        Email = email,
+                        Name = name,
+                        Birth = null,
+                        Image = "svg_user.png"
+                    };
 
-
-                        await _supabaseClient.Auth.SetSession(accessToken, refreshToken);
-
-                        var user = _supabaseClient.Auth.CurrentUser;
-
-                        if (user != null && Guid.TryParse(user.Id, out var userId))
-                        {
-                            string email = user.Email;
-                            string name = user.UserMetadata?["name"]?.ToString() ?? "User";
-
-                            var newUser = new UserDataModel
-                            {
-                                UserId = userId,
-                                Email = email,
-                                Name = name,
-                                Birth = null,
-                                Image = "svg_user.png"
-                            };
-                            
-                            await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });           
-                        }
-                        await SecureStorage.Default.SetAsync("authToken", accessToken);
-                        await SecureStorage.Default.SetAsync("refreshToken", refreshToken);
-
-                    }
-                    else
-                    {
-                        await Shell.Current.DisplayAlert("Error", "Authentication failed: No access token found.", "OK");
-                    }
-
+                    await _supabaseClient.From<UserDataModel>().Insert(newUser);
                 }
                 else
                 {
-                    await Shell.Current.DisplayAlert("Error", "Authentication failed: No auth result.", "OK");
+                    bool changed = false;
+
+                    if (string.IsNullOrWhiteSpace(existingUser.Email) && !string.IsNullOrWhiteSpace(email))
+                    {
+                        existingUser.Email = email;
+                        changed = true;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(existingUser.Name) && !string.IsNullOrWhiteSpace(name))
+                    {
+                        existingUser.Name = name;
+                        changed = true;
+                    }
+
+                    if (string.IsNullOrWhiteSpace(existingUser.Image))
+                    {
+                        existingUser.Image = "svg_user.png";
+                        changed = true;
+                    }
+
+                    if (changed)
+                        await existingUser.Update<UserDataModel>();
                 }
-            }
-            catch (TaskCanceledException)
-            {
-                await Shell.Current.DisplayAlert("Error", "Authentication was canceled by the user.", "OK");
+
+                await SecureStorage.Default.SetAsync("authToken", accessToken);
+                await SecureStorage.Default.SetAsync("refreshToken", refreshToken);
             }
             catch (Exception ex)
             {
-                Debug.WriteLine($"Authentication failed: {ex.Message}");
-                await Shell.Current.DisplayAlert("Error", $"Authentication failed: {ex.Message}", "OK");
+                await Shell.Current.DisplayAlert("Error", ex.Message, "OK");
             }
         }
 
@@ -171,37 +216,61 @@ namespace RootMobile.Services
             try
             {
                 var response = await _supabaseClient.Auth.SignUp(email, password);
-                var emailCkeck = await Shell.Current.CurrentPage.ShowPopupAsync(new EmailCkeckPopup());
 
-                if ((response != null) && (emailCkeck is bool result && result))
+                if (response?.User == null)
                 {
-                    if (Guid.TryParse(response.User.Id, out var userId))
-                    {
-                        var newUser = new UserDataModel
-                        {
-                            UserId = userId,
-                            Email = email,
-                            Name = name,
-                            Status = "Eco-Warrior",
-                            Birth = null,
-                            Image = "svg_user.png"
-                        };
-
-                        await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });  
-                    }
-
+                    await Shell.Current.DisplayAlert("Помилка", "Не вдалося створити акаунт.", "Ок");
+                    return false;
                 }
-                return true;
 
+                var emailCheckResult = await Shell.Current.CurrentPage.ShowPopupAsync(new EmailCkeckPopup());
+
+                if (emailCheckResult is not bool isConfirmed || !isConfirmed)
+                    return false;
+
+                if (!Guid.TryParse(response.User.Id, out var userId))
+                {
+                    await Shell.Current.DisplayAlert("Помилка", "Некоректний ідентифікатор користувача.", "Ок");
+                    return false;
+                }
+
+                var newUser = new UserDataModel
+                {
+                    UserId = userId,
+                    Email = email,
+                    Name = name,
+                    Status = "Eco-Warrior",
+                    Birth = null,
+                    Image = "svg_user.png"
+                };
+
+                await _supabaseClient
+                    .From<UserDataModel>()
+                    .Upsert(newUser, options: new QueryOptions
+                    {
+                        OnConflict = "user_id"
+                    });
+
+                return true;
             }
             catch (Exception ex)
             {
-                await Shell.Current.DisplayAlert("Помилка", "Такий email уже використовується", "Ок");
+                string message = ex.Message;
+
+                if (!string.IsNullOrWhiteSpace(message) &&
+                    (message.Contains("already registered", StringComparison.OrdinalIgnoreCase) ||
+                     message.Contains("already been registered", StringComparison.OrdinalIgnoreCase) ||
+                     message.Contains("user already registered", StringComparison.OrdinalIgnoreCase)))
+                {
+                    await Shell.Current.DisplayAlert("Помилка", "Такий email уже використовується.", "Ок");
+                }
+                else
+                {
+                    await Shell.Current.DisplayAlert("Помилка", $"Не вдалося зареєструватися: {message}", "Ок");
+                }
+
+                return false;
             }
-
-            // треба буде іще удаляти токен авторизації якщо видалено акаунт користувача і обробляи ошибку якщо він є а акаунта в супі немає
-
-            return false;
         }
         
         public async Task<string> UploadProfileImageAsync(string localFilePath)
