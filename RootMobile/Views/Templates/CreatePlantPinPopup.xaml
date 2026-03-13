@@ -48,23 +48,17 @@
                             </VerticalStackLayout>
                         </Border>
 
+                        <!-- Поле Category -->
                         <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
                             <VerticalStackLayout>
                                 <Label Text="Category" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
-                                <Picker x:Name="CategoryPicker" Title="Select category" TextColor="Black" 
-                                        FontSize="16" TitleColor="LightGray" BackgroundColor="Transparent">
-                                    <Picker.ItemsSource>
-                                        <x:Array Type="{x:Type x:String}">
-                                            <x:String>Не обрано</x:String>
-                                            <x:String>Листяні та паркові дерева 🌲</x:String>
-                                            <x:String>Ягідні 🫐</x:String>
-                                            <x:String>Декоративні рослини 🪴</x:String>
-                                            <x:String>Екзотичні плодові рослини 🍈</x:String>
-                                            <x:String>Цитрусові 🍊</x:String>
-                                            <x:String>Плодові дерева 🌴</x:String>
-                                        </x:Array>
-                                    </Picker.ItemsSource>
-                                </Picker>
+                                <Picker x:Name="CategoryPicker" 
+                                        Title="Select category" 
+                                        TextColor="Black" 
+                                        FontSize="16" 
+                                        TitleColor="LightGray" 
+                                        BackgroundColor="Transparent"
+                                        ItemDisplayBinding="{Binding Name}"/>
                             </VerticalStackLayout>
                         </Border>
 
