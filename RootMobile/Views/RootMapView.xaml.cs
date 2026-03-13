@@ -17,6 +17,8 @@ public partial class RootMapView : ContentPage
     private bool _isFirstAppearance = true;
     private bool _isSubscribed = false;
 
+    private string _currentFilter = "ALL";
+
     private string _mapStyleJson = @"
 [
   {
@@ -84,9 +86,13 @@ public partial class RootMapView : ContentPage
                 {
                     MainThread.BeginInvokeOnMainThread(() =>
                     {
-                        if (!_pinDataMap.Values.Any(x => x.Id == newPin.Id))
+                        // Перевіряємо: 
+                        // 1. Чи немає вже такого піна 
+                        // 2. Чи підходить він під наш поточний фільтр
+                        bool matchesFilter = _currentFilter == "ALL" || newPin.Category == _currentFilter;
+
+                        if (!_pinDataMap.Values.Any(x => x.Id == newPin.Id) && matchesFilter)
                         {
-                            System.Diagnostics.Debug.WriteLine($"[REALTIME] Отримано новий пін: {newPin.Name}");
                             AddPinToMap(newPin);
                         }
                     });
@@ -132,6 +138,38 @@ public partial class RootMapView : ContentPage
             await this.ShowPopupAsync(popup);
         }
     }
+
+    private async void OnFilterClicked(object sender, EventArgs e)
+    {
+        var popup = new FilterPopup(_dataService);
+        var result = await this.ShowPopupAsync(popup);
+
+        if (result is string categoryName)
+        {
+            _currentFilter = categoryName;
+            await ApplyFilter();
+        }
+    }
+
+    private async Task ApplyFilter()
+    {
+        // 1. Очищуємо поточну карту
+        mymap.Pins.Clear();
+        _pinDataMap.Clear();
+
+        // 2. Завантажуємо відфільтровані дані
+        var pins = await _dataService.GetPlantPinsByCategoryAsync(_currentFilter);
+
+        if (pins != null)
+        {
+            foreach (var pin in pins)
+            {
+                AddPinToMap(pin);
+            }
+        }
+    }
+
+
 
     // БЕЗПЕЧНИЙ МЕТОД СТВОРЕННЯ МАРКЕРА
     private BitmapDescriptor CreateRoundMarker(string imagePath)

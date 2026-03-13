@@ -11,11 +11,11 @@ public partial class TreeGameView : ContentPage
 {
     private TreeOfUser treeOfUser;
     private WateringCan wateringCan;
-    public TreeGameView()
-    {
-        treeOfUser = new TreeOfUser();
-        wateringCan = new WateringCan();
-        InitializeComponent();
-        TreeSprite.Source = treeOfUser.nameOfImage;
-    }
+    //public TreeGameView()
+    //{
+    //    treeOfUser = new TreeOfUser();
+    //    wateringCan = new WateringCan();
+    //    InitializeComponent();
+    //    TreeSprite.Source = treeOfUser.nameOfImage;
+    //}
 }

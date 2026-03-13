@@ -456,35 +456,27 @@ namespace RootMobile.Services
             }
         }
 
-        // ... решта коду ...
+        public async Task<List<PlantPinDataModel>> GetPlantPinsByCategoryAsync(string category)
+        {
+            try
+            {
+                var query = _supabaseClient.From<PlantPinDataModel>();
 
-        //public async Task SubscribeToRealtimePins(Action<PlantPinDataModel> onNewPinReceived)
-        //{
-        //    try
-        //    {
-        //        // 1. Використовуємо метод прямо з твого прикладу
-        //        // ВАЖЛИВО: .On повертає Task<RealtimeChannel>
-        //        var channel = await _supabaseClient.From<PlantPinDataModel>().On(ListenType.Inserts, (sender, change) =>
-        //        {
-        //            // change.Model<T>() автоматично перетворює JSON з бази в твій клас
-        //            var newPin = change.Model<PlantPinDataModel>();
-        //            if (newPin != null)
-        //            {
-        //                onNewPinReceived?.Invoke(newPin);
-        //            }
-        //        });
+                // Якщо категорія не "ALL", додаємо фільтр
+                if (category != "ALL")
+                {
+                    query = (ISupabaseTable<PlantPinDataModel, RealtimeChannel>)query.Where(x => x.Category == category);
+                }
 
-        //        // 2. Фікс для MAUI: Явно викликаємо Subscribe через dynamic, 
-        //        // щоб обійти конфлікт імен методів
-        //        await ((dynamic)channel).Subscribe();
-
-        //        Debug.WriteLine("Realtime: Підписка на map_points активована.");
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        Debug.WriteLine($"[Realtime Error]: {ex.Message}");
-        //    }
-        //}
+                var response = await query.Get();
+                return response.Models;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"[Filter Error]: {ex.Message}");
+                return new List<PlantPinDataModel>();
+            }
+        }
 
         public async Task SubscribeToRealtimePins(Action<PlantPinDataModel> onNewPinReceived)
         {
