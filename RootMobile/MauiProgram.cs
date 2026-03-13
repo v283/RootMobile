@@ -36,6 +36,7 @@ public static class MauiProgram
             AutoConnectRealtime = true,
         }));
         builder.Services.AddSingleton<LaunchView>();
+        builder.Services.AddSingleton<TreeGameView>();
         builder.Services.AddSingleton<RootMapView>();
         builder.Services.AddSingleton<ShopView>();
         builder.Services.AddSingleton<ShopViewModel>();
