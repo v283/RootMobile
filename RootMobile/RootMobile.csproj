@@ -61,7 +61,8 @@
 
     <ItemGroup>
       <None Remove="Resources\Images\GameImgs\background.png" />
-      <None Remove="Resources\Images\GameImgs\seed.png" />
+      <None Remove="Resources\Images\GameImgs\fire.png" />
+      <None Remove="Resources\Images\GameImgs\tree.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -82,22 +83,13 @@
 
     <ItemGroup>
       <MauiImage Include="Resources\Images\GameImgs\background.png" />
-      <MauiImage Include="Resources\Images\GameImgs\ground.png" />
-      <MauiImage Include="Resources\Images\GameImgs\ground_with_manure.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_1.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_10.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_11.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_2.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_3.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_4.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_5.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_6.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_7.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_8.png" />
-      <MauiImage Include="Resources\Images\GameImgs\lvl_9.png" />
-      <MauiImage Include="Resources\Images\GameImgs\seed.png" />
-      <MauiImage Include="Resources\Images\GameImgs\seed_in_ground.png" />
-      <MauiImage Include="Resources\Images\GameImgs\seed_in_ground_with_manure.png" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <MauiImage Include="Resources\Images\GameImgs\fire.png" />
+      <MauiImage Include="Resources\Images\GameImgs\fire_dragon.png" />
+      <MauiImage Include="Resources\Images\GameImgs\tree.png" />
+      <MauiImage Include="Resources\Images\GameImgs\water_cat.png" />
     </ItemGroup>
 
     <ItemGroup>

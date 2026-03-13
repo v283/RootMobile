@@ -1,14 +1,9 @@
 ﻿using System.ComponentModel;
 using System.Diagnostics;
-
-using RootMobile;
 using RootMobile.Models;
-using RootMobile.Views;
-using RootMobile.Constants;
 using CommunityToolkit.Maui.Views;
 using Microsoft.IdentityModel.Tokens;
 using RootMobile.Views.Templates;
-using Supabase;
 using Supabase.Gotrue;
 using Supabase.Postgrest;
 using static Supabase.Postgrest.Constants;
@@ -20,7 +15,7 @@ namespace RootMobile.Services
         // log
         // pasw 1234567
         private readonly Supabase.Client _supabaseClient;
-        
+
 
         private List<SuperCartModel> cart;
         public List<SuperCartModel> Cart
@@ -38,7 +33,14 @@ namespace RootMobile.Services
                 cart = value;
             }
         }
-        
+        public async Task<UserAnimalModel> GetUserCurrentTree()
+        {
+            var animals = await _supabaseClient
+                .From<UserAnimalModel>()
+                .Select("*,animal_types(*)")
+                .Get();
+            return animals.Model;
+        }
 
         public Supabase.Client SupabaseClient { get => _supabaseClient; }
 
@@ -54,7 +56,7 @@ namespace RootMobile.Services
             Cart = await GetCartItemAsync();
         }
 
-        
+
 
         //auth
 
@@ -135,6 +137,21 @@ namespace RootMobile.Services
                     };
 
                     await _supabaseClient.From<UserDataModel>().Insert(newUser);
+                    var starterAnimal = new UserAnimalModel
+                    {
+                        AnimalTypeId = 3, // дефолтний персонаж
+                        Level = 1,
+                        Exp = 0,
+                        CurrentHp = 100,
+                        Nickname = "Starter",
+                        IsActive = true,
+                        Owner = userId
+                    };
+
+                    await _supabaseClient
+                        .From<UserAnimalModel>()
+                        .Insert(starterAnimal);
+
                 }
                 else
                 {
@@ -250,7 +267,20 @@ namespace RootMobile.Services
                     {
                         OnConflict = "user_id"
                     });
+                var starterAnimal = new UserAnimalModel
+                {
+                    AnimalTypeId = 3, // дефолтний персонаж
+                    Level = 1,
+                    Exp = 0,
+                    CurrentHp = 100,
+                    Nickname = "Starter",
+                    IsActive = true,
+                    Owner = userId
+                };
 
+                await _supabaseClient
+                    .From<UserAnimalModel>()
+                    .Insert(starterAnimal);
                 return true;
             }
             catch (Exception ex)
@@ -272,7 +302,7 @@ namespace RootMobile.Services
                 return false;
             }
         }
-        
+
         public async Task<string> UploadProfileImageAsync(string localFilePath)
         {
             try
@@ -286,11 +316,11 @@ namespace RootMobile.Services
 
                 // ВАЖЛИВО: Переконайся, що бакет "avatars" створено в Supabase 
                 // і для нього налаштовано політику доступу (Public для читання)
-                string bucketName = "avatars"; 
+                string bucketName = "avatars";
                 string extension = Path.GetExtension(localFilePath);
-        
+
                 // Формуємо ім'я файлу на основі ID користувача, щоб старе фото перезаписувалось
-                string fileName = $"{userId}/profile{extension}"; 
+                string fileName = $"{userId}/profile{extension}";
 
                 byte[] imageBytes = await File.ReadAllBytesAsync(localFilePath);
 
@@ -330,6 +360,7 @@ namespace RootMobile.Services
                 };
 
                 await _supabaseClient.From<DeteleUserModel>().Insert(newUser);
+
             }
         }
 
@@ -406,10 +437,10 @@ namespace RootMobile.Services
             }
         }
 
-        public async Task<List<ProductModel>> GetProductsAsync(int limit, int page, string category = "", string sub = "",  int sortOrder = 0, string findField = "")
+        public async Task<List<ProductModel>> GetProductsAsync(int limit, int page, string category = "", string sub = "", int sortOrder = 0, string findField = "")
         {
-            List<ProductModel> rezult =new(); 
-            rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField); 
+            List<ProductModel> rezult = new();
+            rezult = await FallbackData.GetProductsAsync(_supabaseClient, limit, page, category, sub, sortOrder, findField);
 
             foreach (var item in Cart)
             {
@@ -546,7 +577,7 @@ namespace RootMobile.Services
                         Image = "svg_user.png"
                     };
 
-                    await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });  
+                    await _supabaseClient.From<UserDataModel>().Upsert(newUser, options: new QueryOptions { OnConflict = "user_id" });
                     return newUser; // Return the new user directly
                 }
 
@@ -555,7 +586,7 @@ namespace RootMobile.Services
 
             return rezult;
         }
-        
+
         public async Task<List<PlantPinDataModel>> GetAllUsersPlantPinsAsync(int limit, int page)
         {
             try
@@ -582,9 +613,9 @@ namespace RootMobile.Services
                 return new List<PlantPinDataModel>();
             }
         }
-        
 
-// Додай цей метод у DataService.cs (і в IDataService)
+
+        // Додай цей метод у DataService.cs (і в IDataService)
         public async Task UpdateUserProfileAsync(UserDataModel user)
         {
             try
@@ -597,9 +628,9 @@ namespace RootMobile.Services
                         .Where(x => x.UserId == userId)
                         .Set(x => x.Name, user.Name)
                         .Set(x => x.Phone, user.Phone)
-                        
+
                         // Розкоментуй наступний рядок, якщо поле Status є в таблиці Supabase
-                        .Set(x => x.Status, user.Status) 
+                        .Set(x => x.Status, user.Status)
                         .Set(x => x.Image, user.Image)
                         .Update();
                 }
@@ -696,7 +727,7 @@ namespace RootMobile.Services
 
 
         //comments and marks
-        
+
         public async Task<List<PlantCommentModel>> GetPlantCommentsAsync(long plantPinId)
         {
             try
