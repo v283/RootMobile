@@ -1,4 +1,4 @@
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -93,6 +93,9 @@
     </ItemGroup>
 
     <ItemGroup>
+      <MauiXaml Update="Views\PlantMapView.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Views\Templates\CreatePlantPinPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
