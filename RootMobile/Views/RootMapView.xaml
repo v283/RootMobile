@@ -45,23 +45,16 @@
                 <!-- Кнопка "Створити" (плаває поверх карти знизу) -->
                 <HorizontalStackLayout VerticalOptions="End" HorizontalOptions="Center" Margin="20" Spacing="10">
                     <!-- Нова кнопка "Посадити" -->
-                    <Button x:Name="BtnDoPlant" Text="Посадити" 
+                    <Button x:Name="BtnDoPlant" Text="Plant Here" 
                 Clicked="OnDoPlantClicked" 
-                HeightRequest="60" CornerRadius="30" WidthRequest="120"
-                BackgroundColor="#2FBF71" TextColor="White" FontAttributes="Bold" FontSize="16">
-                        <Button.Shadow>
-                            <Shadow Brush="Black" Offset="0,4" Opacity="0.3" Radius="10" />
-                        </Button.Shadow>
-                    </Button>
+                HeightRequest="60" CornerRadius="30" WidthRequest="110"
+                BackgroundColor="#2FBF71" TextColor="White" FontAttributes="Bold" FontSize="16"></Button>
 
                     <!-- Кнопка "Create Pin" -->
                     <Button x:Name="BtnCreate" Text="Create Pin" 
                 Clicked="OnCreatePinClicked" 
-                HeightRequest="60" CornerRadius="30" WidthRequest="160"
+                HeightRequest="60" CornerRadius="30" WidthRequest="150"
                 BackgroundColor="#27B96E" TextColor="White" FontAttributes="Bold" FontSize="16">
-                        <Button.Shadow>
-                            <Shadow Brush="Black" Offset="0,4" Opacity="0.3" Radius="10" />
-                        </Button.Shadow>
                     </Button>
                 </HorizontalStackLayout>
             </Grid>
