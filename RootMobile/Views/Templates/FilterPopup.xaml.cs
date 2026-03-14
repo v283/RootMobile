@@ -1,32 +1,58 @@
 using CommunityToolkit.Maui.Views;
 using RootMobile.Services;
 using RootMobile.Models;
+using System.Collections.ObjectModel;
 
 namespace RootMobile.Views.Templates;
 
 public partial class FilterPopup : Popup
 {
     private readonly DataService _dataService;
+    public ObservableCollection<CategoriesMapModel> Categories { get; set; } = new();
 
-    public FilterPopup(IDataService dataService)
+    public FilterPopup(IDataService dataService, List<string> selectedNames = null)
     {
         InitializeComponent();
         _dataService = (DataService)dataService;
-        LoadCategories();
+
+        // Встановлюємо ItemsSource для BindableLayout
+        BindableLayout.SetItemsSource(CategoriesFlex, Categories);
+
+        LoadCategories(selectedNames);
     }
 
-    private async void LoadCategories()
+    private async void LoadCategories(List<string> selectedNames)
     {
         var cats = await _dataService.GetCategoriesAsync();
-        CategoriesList.ItemsSource = cats;
+        if (cats == null) return;
+
+        foreach (var cat in cats)
+        {
+            // Якщо назва категорії є у списку вже обраних — ставимо IsSelected = true
+            if (selectedNames != null && selectedNames.Contains(cat.Name))
+                cat.IsSelected = true;
+            else
+                cat.IsSelected = false;
+
+            Categories.Add(cat);
+        }
     }
 
-    private void OnSelectionChanged(object sender, SelectionChangedEventArgs e)
+    private void OnCategoryTapped(object sender, TappedEventArgs e)
     {
-        var selected = e.CurrentSelection.FirstOrDefault() as CategoriesMapModel;
-        Close(selected?.Name); // Повертаємо назву категорії
+        if (e.Parameter is CategoriesMapModel tappedCategory)
+        {
+            // Перемикаємо стан
+            tappedCategory.IsSelected = !tappedCategory.IsSelected;
+        }
     }
 
-    private void OnClearClicked(object sender, EventArgs e) => Close("ALL");
+    private void OnApplyClicked(object sender, EventArgs e)
+    {
+        // Збираємо назви всіх категорій, де IsSelected == true
+        var result = Categories.Where(x => x.IsSelected).Select(x => x.Name).ToList();
+        Close(result);
+    }
+
     private void OnCloseClicked(object sender, EventArgs e) => Close(null);
 }

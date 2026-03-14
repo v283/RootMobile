@@ -1,26 +1,70 @@
+<?xml version="1.0" encoding="utf-8" ?>
 <toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
                xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
                xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
                x:Class="RootMobile.Views.Templates.FilterPopup"
                Color="Transparent">
 
-    <Border BackgroundColor="White" StrokeShape="RoundRectangle 20"
-            Padding="20" WidthRequest="320" VerticalOptions="Center">
-        <VerticalStackLayout Spacing="15">
-            <Label Text="Filter by Category" FontSize="20" FontAttributes="Bold" HorizontalOptions="Center" />
+    <Border BackgroundColor="White" StrokeShape="RoundRectangle 25"
+            Padding="20" WidthRequest="350" VerticalOptions="Center">
+        <VerticalStackLayout Spacing="20">
+            <Label Text="Фільтрація" FontSize="20" FontAttributes="Bold" 
+                   HorizontalOptions="Center" TextColor="Black" />
 
-            <CollectionView x:Name="CategoriesList" SelectionMode="Single" SelectionChanged="OnSelectionChanged">
-                <CollectionView.ItemTemplate>
-                    <DataTemplate>
-                        <Grid Padding="10">
-                            <Label Text="{Binding Name}" FontSize="16" TextColor="Black" />
-                        </Grid>
-                    </DataTemplate>
-                </CollectionView.ItemTemplate>
-            </CollectionView>
+            <ScrollView HeightRequest="400">
+                <!-- FlexLayout дозволяє елементам переноситися (Wrap) -->
+                <FlexLayout x:Name="CategoriesFlex" 
+                            Wrap="Wrap" 
+                            Direction="Row" 
+                            JustifyContent="Start" 
+                            AlignItems="Start" 
+                            AlignContent="Start">
 
-            <Button Text="Clear Filter" Clicked="OnClearClicked" BackgroundColor="Gray" TextColor="White" CornerRadius="10" />
-            <Button Text="Close" Clicked="OnCloseClicked" BackgroundColor="Transparent" TextColor="#27B96E" />
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="4" Padding="15,8" StrokeThickness="1"
+                                    StrokeShape="RoundRectangle 20">
+                                <!-- Динамічна зміна кольору залежно від IsSelected -->
+                                <Border.Triggers>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#27B96E" />
+                                        <Setter Property="Stroke" Value="#27B96E" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Border" Binding="{Binding IsSelected}" Value="False">
+                                        <Setter Property="BackgroundColor" Value="Transparent" />
+                                        <Setter Property="Stroke" Value="#CCCCCC" />
+                                    </DataTrigger>
+                                </Border.Triggers>
+
+                                <Label Text="{Binding Name}" FontSize="14">
+                                    <Label.Triggers>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="True">
+                                            <Setter Property="TextColor" Value="White" />
+                                        </DataTrigger>
+                                        <DataTrigger TargetType="Label" Binding="{Binding IsSelected}" Value="False">
+                                            <Setter Property="TextColor" Value="Gray" />
+                                        </DataTrigger>
+                                    </Label.Triggers>
+                                </Label>
+
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnCategoryTapped" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </FlexLayout>
+            </ScrollView>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                <Button Grid.Column="0" Text="Відхилити" Clicked="OnCloseClicked" 
+                        BackgroundColor="Transparent" TextColor="Red" 
+                        BorderColor="Red" BorderWidth="1" CornerRadius="20" />
+
+                <Button Grid.Column="1" Text="Підтвердити" Clicked="OnApplyClicked" 
+                        BackgroundColor="#27B96E" TextColor="White" 
+                        FontAttributes="Bold" CornerRadius="20" />
+            </Grid>
         </VerticalStackLayout>
     </Border>
 </toolkit:Popup>

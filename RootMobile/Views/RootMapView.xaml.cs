@@ -18,6 +18,7 @@ public partial class RootMapView : ContentPage
     private bool _isSubscribed = false;
 
     private string _currentFilter = "ALL";
+    private List<string> _currentFilters = new();
 
     private string _mapStyleJson = @"
 [
@@ -141,31 +142,65 @@ public partial class RootMapView : ContentPage
 
     private async void OnFilterClicked(object sender, EventArgs e)
     {
-        var popup = new FilterPopup(_dataService);
+        // Передаємо список уже обраних фільтрів, щоб попап їх підсвітив
+        var popup = new FilterPopup(_dataService, _currentFilters);
         var result = await this.ShowPopupAsync(popup);
 
-        if (result is string categoryName)
+        if (result is List<string> selectedList)
         {
-            _currentFilter = categoryName;
-            await ApplyFilter();
+            _currentFilters = selectedList;
+            // Викликаємо оновлення карти
+            await ApplyFiltersToMap();
         }
     }
 
-    private async Task ApplyFilter()
+
+    // 2. Реалізація самого фільтра
+    private async Task ApplyFiltersToMap()
     {
-        // 1. Очищуємо поточну карту
-        mymap.Pins.Clear();
-        _pinDataMap.Clear();
-
-        // 2. Завантажуємо відфільтровані дані
-        var pins = await _dataService.GetPlantPinsByCategoryAsync(_currentFilter);
-
-        if (pins != null)
+        try
         {
-            foreach (var pin in pins)
+            // Показуємо індикатор завантаження (опціонально)
+            // LoadingIndicator.IsVisible = true;
+
+            // Очищуємо карту та словник
+            mymap.Pins.Clear();
+            _pinDataMap.Clear();
+
+            List<PlantPinModel> pins;
+
+            // Якщо фільтрів немає (порожній список) — вантажимо все
+            if (_currentFilters == null || _currentFilters.Count == 0)
             {
-                AddPinToMap(pin);
+                pins = await _dataService.GetAllPlantPinsAsync();
             }
+            else
+            {
+                // Використовуємо оператор "In" для фільтрації в Supabase
+                // Це вибере всі записи, де категорія входить у вибраний список
+                var response = await _dataService.SupabaseClient
+                    .From<PlantPinModel>()
+                    .Filter("category", Supabase.Postgrest.Constants.Operator.In, _currentFilters)
+                    .Get();
+
+                pins = response.Models;
+            }
+
+            if (pins != null)
+            {
+                foreach (var pin in pins)
+                {
+                    AddPinToMap(pin);
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"[Filter Error]: {ex.Message}");
+        }
+        finally
+        {
+            // LoadingIndicator.IsVisible = false;
         }
     }
 
