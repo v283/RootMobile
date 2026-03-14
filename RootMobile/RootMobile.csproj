@@ -1,4 +1,4 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
     <PropertyGroup>
         <TargetFrameworks>net9.0-android;net9.0-ios;net9.0-maccatalyst</TargetFrameworks>
@@ -62,8 +62,10 @@
     <ItemGroup>
       <None Remove="Resources\Images\GameImgs\background.png" />
       <None Remove="Resources\Images\GameImgs\eagle.png" />
+      <None Remove="Resources\Images\GameImgs\fight_background.png" />
       <None Remove="Resources\Images\GameImgs\fire_ghnom.png" />
       <None Remove="Resources\Images\GameImgs\ghnom.png" />
+      <None Remove="Resources\Images\GameImgs\ice_fox_mask.png" />
       <None Remove="Resources\Images\GameImgs\owl.png" />
     </ItemGroup>
 
@@ -85,6 +87,7 @@
 
     <ItemGroup>
       <MauiImage Include="Resources\Images\GameImgs\background.png" />
+      <MauiImage Include="Resources\Images\GameImgs\fight_background.png" />
       <MauiImage Include="Resources\Images\GameImgs\ice_fox.png" />
       <MauiImage Include="Resources\Images\GameImgs\eagle.png" />
     </ItemGroup>
@@ -94,6 +97,7 @@
       <MauiImage Include="Resources\Images\GameImgs\fire_dragon.png" />
       <MauiImage Include="Resources\Images\GameImgs\fire_ghnom.png" />
       <MauiImage Include="Resources\Images\GameImgs\ghnom.png" />
+      <MauiImage Include="Resources\Images\GameImgs\ice_fox_mask.png" />
       <MauiImage Include="Resources\Images\GameImgs\nature_fox.png" />
       <MauiImage Include="Resources\Images\GameImgs\owl.png" />
       <MauiImage Include="Resources\Images\GameImgs\water_cat.png" />

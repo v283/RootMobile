@@ -1,91 +1,84 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="RootMobile.Views.NewPage1"
              Title="Battle">
 
-    <Grid RowDefinitions="Auto,*,Auto">
+    <Grid>
+        <Image Source="fight_background.png" 
+               Aspect="AspectFill" 
+               HorizontalOptions="Fill" 
+               VerticalOptions="Fill" />
 
-        <VerticalStackLayout Grid.Row="0" Padding="20">
-            <Label Text="Enemy HP" HorizontalOptions="Center" FontAttributes="Bold"/>
-            <ProgressBar x:Name="EnemyHpBar" Progress="1" HeightRequest="20" ProgressColor="Red"/>
-        </VerticalStackLayout>
+        <Grid RowDefinitions="Auto,*,Auto">
 
-        <Grid x:Name="BattleCamera" Grid.Row="1">
+            <VerticalStackLayout Grid.Row="0" Padding="20">
+                <Label Text="Enemy HP" HorizontalOptions="Center" FontAttributes="Bold" TextColor="White">
+                    <Label.Shadow>
+                        <Shadow Brush="Black" Offset="1,1" Radius="1" />
+                    </Label.Shadow>
+                </Label>
+                <ProgressBar x:Name="EnemyHpBar" Progress="1" HeightRequest="20" ProgressColor="Red"/>
+            </VerticalStackLayout>
 
-            <Grid x:Name="IdleContainer" HorizontalOptions="Center" VerticalOptions="Center">
-
-                <Grid x:Name="EnemyContainer">
-                    <Image x:Name="EnemySprite" Source="ice_fox.png" HeightRequest="200" />
-
-                    <Grid x:Name="EnemyDamageSprite" Opacity="0" HeightRequest="200">
-                        <Image Source="ice_fox.png"/>
-                        <BoxView Color="Red" Opacity="0.5"/>
+            <Grid x:Name="BattleCamera" Grid.Row="1">
+                <Grid x:Name="IdleContainer" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Grid x:Name="EnemyContainer">
+                        <Image x:Name="EnemySprite" Source="ice_fox.png" HeightRequest="200" />
+                        <Grid x:Name="EnemyDamageSprite" Opacity="0" HeightRequest="200">
+                            <Image Source="ice_fox_mask.png">
+                                <Image.Behaviors>
+                                    <toolkit:IconTintColorBehavior TintColor="Red" />
+                                </Image.Behaviors>
+                            </Image>
+                        </Grid>
                     </Grid>
+
+                    <AbsoluteLayout x:Name="ParticleContainer" 
+                                    HorizontalOptions="Fill" 
+                                    VerticalOptions="Fill" 
+                                    InputTransparent="True" />
                 </Grid>
 
-                <AbsoluteLayout x:Name="ParticleContainer" 
-                                HorizontalOptions="Fill" 
-                                VerticalOptions="Fill" 
-                                InputTransparent="True" />
+                <Label x:Name="DamageText" FontSize="32" FontAttributes="Bold" 
+                       IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center">
+                    <Label.Shadow>
+                        <Shadow Brush="Black" Offset="2,2" Radius="2" Opacity="0.8" />
+                    </Label.Shadow>
+                </Label>
+
+                <Label x:Name="AttackText" FontSize="26" TextColor="White" BackgroundColor="#80000000"
+                       IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center" Padding="10"/>
+
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Margin="0,10,0,0" Spacing="10">
+                    <Label x:Name="BleedIcon" Text="🩸" FontSize="24" IsVisible="False"/>
+                    <Label x:Name="PoisonIcon" Text="☠" FontSize="24" IsVisible="False"/>
+                </HorizontalStackLayout>
             </Grid>
 
-            <Label x:Name="DamageText" TextColor="Yellow" FontSize="32" FontAttributes="Bold" 
-                   IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center">
-                <Label.Shadow>
-                    <Shadow Brush="Black" Offset="2,2" Radius="2" Opacity="0.8" />
-                </Label.Shadow>
-            </Label>
+            <VerticalStackLayout Grid.Row="2" Padding="20" Spacing="10" BackgroundColor="#60000000">
+                <Label Text="Player HP" HorizontalOptions="Center" TextColor="White"/>
+                <ProgressBar x:Name="PlayerHpBar" Progress="1" HeightRequest="15" ProgressColor="Green"/>
 
-            <Label x:Name="AttackText" FontSize="26" TextColor="White" BackgroundColor="#80000000"
-                   IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center" Padding="10"/>
-
-            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Margin="0,10,0,0" Spacing="10">
-                <Label x:Name="BleedIcon" Text="🩸" FontSize="24" IsVisible="False"/>
-                <Label x:Name="PoisonIcon" Text="☠" FontSize="24" IsVisible="False"/>
-            </HorizontalStackLayout>
-        </Grid>
-
-        <VerticalStackLayout Grid.Row="2" Padding="20" Spacing="10">
-            <Label Text="Player HP" HorizontalOptions="Center"/>
-            <ProgressBar x:Name="PlayerHpBar" Progress="1" HeightRequest="15" ProgressColor="Green"/>
-
-            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
-                <Button Grid.Row="0" Grid.Column="0" Text="Strong Attack" Clicked="StrongAttack" BackgroundColor="DarkRed"/>
-                <Button Grid.Row="0" Grid.Column="1" Text="Quick Attack" Clicked="QuickAttack"/>
-                <Button Grid.Row="1" Grid.Column="0" Text="Bleed" Clicked="BleedAttack" BackgroundColor="Crimson"/>
-                <Button Grid.Row="1" Grid.Column="1" Text="Poison" Clicked="PoisonAttack" BackgroundColor="Green"/>
-            </Grid>
-        </VerticalStackLayout>
-        <Frame x:Name="WinPanel"
-       IsVisible="False"
-       Opacity="0"
-       BackgroundColor="#CC000000"
-       BorderColor="Gold"
-       CornerRadius="20"
-       Padding="30"
-       HorizontalOptions="Center"
-       VerticalOptions="Center"
-       Grid.RowSpan="3">
-
-            <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
-                <Label Text="ПЕРЕМОГА!" 
-               TextColor="Gold" 
-               FontSize="32" 
-               FontAttributes="Bold" 
-               HorizontalOptions="Center"/>
-
-                <Label Text="Ворога подолано!" 
-               TextColor="White" 
-               HorizontalTextAlignment="Center"/>
-
-                <Button Text="ПОВЕРНУТИСЯ" 
-                Clicked="OnReturnClicked"
-                BackgroundColor="DarkOrange" 
-                TextColor="Black" 
-                FontAttributes="Bold"
-                WidthRequest="200"/>
+                <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                    <Button Grid.Row="0" Grid.Column="0" Text="Strong Attack" Clicked="StrongAttack" BackgroundColor="DarkRed"/>
+                    <Button Grid.Row="0" Grid.Column="1" Text="Quick Attack" Clicked="QuickAttack"/>
+                    <Button Grid.Row="1" Grid.Column="0" Text="Bleed" Clicked="BleedAttack" BackgroundColor="Crimson"/>
+                    <Button Grid.Row="1" Grid.Column="1" Text="Poison" Clicked="PoisonAttack" BackgroundColor="Green"/>
+                </Grid>
             </VerticalStackLayout>
-        </Frame>
+
+            <Frame x:Name="WinPanel" IsVisible="False" Opacity="0" BackgroundColor="#CC000000"
+                   BorderColor="Gold" CornerRadius="20" Padding="30"
+                   HorizontalOptions="Center" VerticalOptions="Center" Grid.RowSpan="3">
+                <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                    <Label Text="ПЕРЕМОГА!" TextColor="Gold" FontSize="32" FontAttributes="Bold" HorizontalOptions="Center"/>
+                    <Label Text="Ворога подолано!" TextColor="White" HorizontalTextAlignment="Center"/>
+                    <Button Text="ПОВЕРНУТИСЯ" Clicked="OnReturnClicked" BackgroundColor="DarkOrange" 
+                            TextColor="Black" FontAttributes="Bold" WidthRequest="200"/>
+                </VerticalStackLayout>
+            </Frame>
+        </Grid>
     </Grid>
 </ContentPage>
