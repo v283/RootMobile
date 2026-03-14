@@ -75,7 +75,7 @@
                FontAttributes="Bold" 
                HorizontalOptions="Center"/>
 
-                <Label Text="Ворога подолано. Ви отримали досвід та монети!" 
+                <Label Text="Ворога подолано!" 
                TextColor="White" 
                HorizontalTextAlignment="Center"/>
 
