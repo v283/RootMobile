@@ -400,6 +400,20 @@ public partial class RootMapView : ContentPage
         }
     }
 
+    private async void OnDoPlantClicked(object sender, EventArgs e)
+    {
+        var location = await Geolocation.Default.GetLocationAsync(new GeolocationRequest(GeolocationAccuracy.Medium));
+        if (location != null)
+        {
+            // Переходимо на сторінку посадки, передаючи координати
+            await Navigation.PushAsync(new DoPlantView(location.Latitude, location.Longitude));
+        }
+        else
+        {
+            await DisplayAlert("Помилка", "Не вдалося визначити місцезнаходження для аналізу ґрунту", "OK");
+        }
+    }
+
     async Task<PermissionStatus> CheckAndRequestLocationPermission()
     {
         var status = await Permissions.CheckStatusAsync<Permissions.LocationWhenInUse>();
