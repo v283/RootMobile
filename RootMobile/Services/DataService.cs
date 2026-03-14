@@ -802,12 +802,17 @@ namespace RootMobile.Services
 
 
         //user
-        public async Task<UserDataModel> GetUserData()
+        public async Task<UserDataModel> GetUserData(Guid id = default)
         {
             var rezult = new UserDataModel();
 
             if (Guid.TryParse(_supabaseClient.Auth.CurrentUser?.Id, out var userId))
             {
+                if (id!= default)
+                {
+                    userId = id;
+                }
+
                 var existingUser = await _supabaseClient
                     .From<UserDataModel>()
                     .Select("*").Where(x => x.UserId == userId).Get();
@@ -835,12 +840,21 @@ namespace RootMobile.Services
             return rezult;
         }
 
-        public async Task<List<PlantPinDataModel>> GetAllUsersPlantPinsAsync(int limit, int page)
+        public async Task<List<PlantPinDataModel>> GetAllUsersPlantPinsAsync(int limit, int page,Guid gestuser = default)
         {
             try
-            {
-                var currentUser = _supabaseClient.Auth.CurrentUser;
-                if (currentUser == null || !Guid.TryParse(currentUser.Id, out var userId))
+            { 
+                string currentUser;
+                if (gestuser == default)
+                {
+                     currentUser = _supabaseClient.Auth.CurrentUser.Id;
+                }
+                else
+                {
+                    currentUser = gestuser.ToString();
+                }
+
+                if (currentUser == null || !Guid.TryParse(currentUser, out var userId))
                     return new List<PlantPinDataModel>();
 
                 var offset = (page - 1) * limit;

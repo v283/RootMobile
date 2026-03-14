@@ -27,16 +27,19 @@ public partial class TreesViewModel : ObservableObject
     [ObservableProperty]
     private ObservableRangeCollection<PlantPinDataModel> usersTrees = new();
 
+    private Guid gestUserId;
+
     public TreesViewModel(DataService dataService)
     {
         _dataService = dataService;
     }
 
-    public async Task InitializeAsync()
+    public async Task InitializeAsync(Guid userId)
     {
         if (_initialized)
             return;
-
+        
+        gestUserId = userId;
         _initialized = true;
         await RefreshAsync();
     }
@@ -92,7 +95,7 @@ public partial class TreesViewModel : ObservableObject
         {
             IsLoading = true;
 
-            var trees = await _dataService.GetAllUsersPlantPinsAsync(ElementsOnPage, _currentPage);
+            var trees = await _dataService.GetAllUsersPlantPinsAsync(ElementsOnPage, _currentPage, gestUserId );
 
             if (trees == null || trees.Count == 0)
             {

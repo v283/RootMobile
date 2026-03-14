@@ -64,6 +64,9 @@
                             </Label.Shadow>
                         </Label>
                     </VerticalStackLayout>
+                    <HorizontalStackLayout.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="OnUserTapped"/>
+                    </HorizontalStackLayout.GestureRecognizers>
                 </HorizontalStackLayout>
 
                 <!-- Кнопка закриття знизу -->
