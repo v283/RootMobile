@@ -303,8 +303,12 @@ public partial class RootMapView : ContentPage
         if (location == null) return;
 
         // ПЕРЕДАЄМО _dataService у конструктор
-        var popup = new CreatePlantPinPopup(_dataService);
+        // Отримуємо сервіс ШІ (можна через конструктор RootMapView або ServiceProvider)
+        var aiService = Handler.MauiContext.Services.GetService<IOpenAIService>();
+
+        var popup = new CreatePlantPinPopup(_dataService, aiService);
         var result = await this.ShowPopupAsync(popup);
+
 
         if (result is PlantPinModel newPin)
         {

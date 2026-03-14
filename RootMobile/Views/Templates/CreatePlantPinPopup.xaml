@@ -5,10 +5,18 @@
                x:Class="RootMobile.Views.Templates.CreatePlantPinPopup"
                Color="Transparent">
 
-    <!-- 1. Додаємо прозорий контейнер з Padding -->
     <Grid BackgroundColor="Transparent" Padding="20">
+        <!-- Індикатор завантаження -->
+        <ActivityIndicator x:Name="LoadingIndicator"
+                           IsRunning="False"
+                           IsVisible="False"
+                           VerticalOptions="Center"
+                           HorizontalOptions="Center"
+                           Color="#27B96E"
+                           ZIndex="10" 
+                           HeightRequest="50"
+                           WidthRequest="50"/>
 
-        <!-- 2. Ваш Border тепер всередині Grid, Margin тут більше не потрібен -->
         <Border x:Name="PopupBorder" 
                 BackgroundColor="White" 
                 StrokeShape="RoundRectangle 25"
@@ -25,7 +33,8 @@
 
                 <ScrollView Grid.Row="1">
                     <VerticalStackLayout Spacing="15">
-                        <!-- ... (весь ваш вміст ScrollView залишається без змін) ... -->
+
+                        <!-- Секція Фото -->
                         <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
                             <Border StrokeShape="RoundRectangle 20" HeightRequest="200" WidthRequest="160" 
                                     StrokeThickness="0" BackgroundColor="#F0F0F0">
@@ -40,6 +49,7 @@
                                     FontSize="14" FontAttributes="Bold" />
                         </VerticalStackLayout>
 
+                        <!-- Поле Name -->
                         <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
                             <VerticalStackLayout>
                                 <Label Text="Plant Name" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
@@ -52,21 +62,23 @@
                         <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
                             <VerticalStackLayout>
                                 <Label Text="Category" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
-                                <Picker x:Name="CategoryPicker" 
-                                        Title="Select category" 
-                                        TextColor="Black" 
-                                        FontSize="16" 
-                                        TitleColor="LightGray" 
-                                        BackgroundColor="Transparent"
+                                <Picker x:Name="CategoryPicker" Title="Select category" TextColor="Black" 
+                                        FontSize="16" TitleColor="LightGray" BackgroundColor="Transparent"
                                         ItemDisplayBinding="{Binding Name}"/>
                             </VerticalStackLayout>
                         </Border>
 
+                        <!-- Поле Comment з кнопкою ШІ -->
                         <Border StrokeShape="RoundRectangle 15" Stroke="#E8E8E8" Padding="15,8" BackgroundColor="White">
-                            <VerticalStackLayout>
-                                <Label Text="Comment" FontSize="12" TextColor="Gray" Margin="0,0,0,-5" />
+                            <VerticalStackLayout Spacing="5">
+                                <Grid ColumnDefinitions="*, Auto">
+                                    <Label Grid.Column="0" Text="Comment" FontSize="12" TextColor="Gray" VerticalOptions="Center" />
+                                    <Button Grid.Column="1" Text="✨ AI Допомога" Clicked="OnAiHelpClicked"
+                                            BackgroundColor="Transparent" TextColor="#27B96E" 
+                                            FontSize="10" HeightRequest="30" Padding="5,0"/>
+                                </Grid>
                                 <Editor x:Name="CommentEntry" Placeholder="Add a description..." TextColor="Black" 
-                                        FontSize="16" AutoSize="TextChanges" MinimumHeightRequest="80" 
+                                        FontSize="15" AutoSize="TextChanges" MinimumHeightRequest="80" 
                                         BackgroundColor="Transparent" />
                             </VerticalStackLayout>
                         </Border>
