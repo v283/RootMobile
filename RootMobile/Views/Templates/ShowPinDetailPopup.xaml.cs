@@ -5,7 +5,7 @@ namespace RootMobile.Views.Templates;
 
 public partial class ShowPinDetailPopup : Popup
 {
-    public ShowPinDetailPopup(PlantPinDataModel data)
+    public ShowPinDetailPopup(PlantPinModel data)
     {
         InitializeComponent();
 

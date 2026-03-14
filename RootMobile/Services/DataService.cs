@@ -491,16 +491,16 @@ namespace RootMobile.Services
             }
         }
 
-        public async Task<List<PlantPinDataModel>> GetPlantPinsByCategoryAsync(string category)
+        public async Task<List<PlantPinModel>> GetPlantPinsByCategoryAsync(string category)
         {
             try
             {
-                var query = _supabaseClient.From<PlantPinDataModel>();
+                var query = _supabaseClient.From<PlantPinModel>();
 
                 // Якщо категорія не "ALL", додаємо фільтр
                 if (category != "ALL")
                 {
-                    query = (ISupabaseTable<PlantPinDataModel, RealtimeChannel>)query.Where(x => x.Category == category);
+                    query = (ISupabaseTable<PlantPinModel, RealtimeChannel>)query.Where(x => x.Category == category);
                 }
 
                 var response = await query.Get();
@@ -509,11 +509,11 @@ namespace RootMobile.Services
             catch (Exception ex)
             {
                 Debug.WriteLine($"[Filter Error]: {ex.Message}");
-                return new List<PlantPinDataModel>();
+                return new List<PlantPinModel>();
             }
         }
 
-        public async Task SubscribeToRealtimePins(Action<PlantPinDataModel> onNewPinReceived)
+        public async Task SubscribeToRealtimePins(Action<PlantPinModel> onNewPinReceived)
         {
             try
             {
@@ -527,14 +527,14 @@ namespace RootMobile.Services
 
                 // 2. РЕЄСТРАЦІЯ СЛУХАЧА ТАБЛИЦІ
                 // Тепер сокет точно існує, тому .On() спрацює без помилок
-                var channel = await _supabaseClient.From<PlantPinDataModel>().On(ListenType.Inserts, (sender, change) =>
+                var channel = await _supabaseClient.From<PlantPinModel>().On(ListenType.Inserts, (sender, change) =>
                 {
                     // Виводимо сирий лог для перевірки, чи прийшли дані
                     Debug.WriteLine($"[REALTIME PAYLOAD]: {change.Payload.Data}");
 
                     try
                     {
-                        var newPin = change.Model<PlantPinDataModel>();
+                        var newPin = change.Model<PlantPinModel>();
                         if (newPin != null)
                         {
                             onNewPinReceived?.Invoke(newPin);
@@ -774,11 +774,11 @@ namespace RootMobile.Services
         }
 
         // 2. Внесення анкетних даних у таблицю map_points
-        public async Task<bool> InsertPlantPinAsync(PlantPinDataModel model)
+        public async Task<bool> InsertPlantPinAsync(PlantPinModel model)
         {
             try
             {
-                var response = await _supabaseClient.From<PlantPinDataModel>().Insert(model);
+                var response = await _supabaseClient.From<PlantPinModel>().Insert(model);
 
                 // Якщо запис додано, але політика SELECT не дає його прочитати, 
                 // Models буде порожнім, хоча помилки не буде.
@@ -802,17 +802,17 @@ namespace RootMobile.Services
         }
 
         // 3. Отримання всіх анкет із бази для відображення на карті
-        public async Task<List<PlantPinDataModel>> GetAllPlantPinsAsync()
+        public async Task<List<PlantPinModel>> GetAllPlantPinsAsync()
         {
             try
             {
-                var response = await _supabaseClient.From<PlantPinDataModel>().Get();
+                var response = await _supabaseClient.From<PlantPinModel>().Get();
                 return response.Models;
             }
             catch (Exception ex)
             {
                 Debug.WriteLine($"[GetAllPlantPinsAsync] Error: {ex.Message}");
-                return new List<PlantPinDataModel>();
+                return new List<PlantPinModel>();
             }
         }
 
