@@ -91,9 +91,20 @@ public partial class CreatePlantPinPopup : Popup
             // 3. Викликаємо ваш OpenAIService
             string aiResult = await _aiService.IdentifyPlantAsync(compressedImage);
 
-            if (aiResult.ToUpper().Contains("NOT_PLANT"))
+            // ЛОГІКА ПЕРЕВІРКИ: Якщо ШІ не розпізнав рослину
+            if (string.IsNullOrEmpty(aiResult) || aiResult.ToUpper().Contains("NOT_PLANT"))
             {
-                await App.Current.MainPage.DisplayAlert("Помилка", "ШІ не впізнав рослину. Зробіть фото чіткішим.", "ОК");
+                // 1. Очищуємо поле з назвою
+                PlantNameEntry.Text = string.Empty;
+
+                // 2. Виводимо сповіщення
+                await App.Current.MainPage.DisplayAlert("Опізнання неможливе",
+                    "ШІ не розпізнав рослину на цьому фото. Будь ласка, зробіть чіткіше фото саме рослини.", "ОК");
+
+                // Очищуємо прев'ю, бо фото не пройшло валідацію
+                PreviewImage.Source = null;
+                _tempImagePath = null;
+                CameraPlaceholder.IsVisible = true;
                 return;
             }
 
