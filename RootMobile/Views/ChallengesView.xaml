@@ -1,9 +1,103 @@
-<?xml version="1.0" encoding="utf-8"?>
-
+<?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="RootMobile.Views.ChallengesView">
-    <ContentPage.Content>
-        
-    </ContentPage.Content>
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+             xmlns:viewmodels="clr-namespace:RootMobile.ViewModels"
+             xmlns:views="clr-namespace:RootMobile.Views"
+             xmlns:services="clr-namespace:RootMobile.Services"
+             x:Class="RootMobile.Views.ChallengesView"
+             Title="Challenges"
+             BackgroundColor="#F7F8FA">
+
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <services:InverseBooleanConverter x:Key="InvertedBoolConverter" />
+            
+            <Color x:Key="CardBg">White</Color>
+            <Color x:Key="PrimaryText">#1F2937</Color>
+            <Color x:Key="SecondaryText">#6B7280</Color>
+            <Color x:Key="AccentColor">#2E8B57</Color>
+            <Color x:Key="CoinColor">#F4B400</Color>
+            <Color x:Key="BorderColor">#E5E7EB</Color>
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <Grid RowDefinitions="Auto,*">
+        <VerticalStackLayout Padding="20,20,20,10" Spacing="6">
+            <Label Text="Челенджі"
+                   FontSize="28"
+                   FontAttributes="Bold"
+                   TextColor="{StaticResource PrimaryText}" />
+            <Label Text="Виконуй прості завдання та отримуй монетки"
+                   FontSize="14"
+                   TextColor="{StaticResource SecondaryText}" />
+        </VerticalStackLayout>
+
+        <CollectionView Grid.Row="1"
+                        Margin="16,8,16,16"
+                        ItemsSource="{Binding Challenges}">
+            <CollectionView.ItemsLayout>
+                <LinearItemsLayout Orientation="Vertical" ItemSpacing="12" />
+            </CollectionView.ItemsLayout>
+
+            <CollectionView.ItemTemplate>
+                <DataTemplate x:DataType="views:ChallengeItemModel">
+                    <Frame Padding="16"
+                           CornerRadius="20"
+                           HasShadow="False"
+                           BorderColor="{StaticResource BorderColor}"
+                           BackgroundColor="{StaticResource CardBg}">
+                        <Grid RowDefinitions="Auto,Auto,Auto"
+                              ColumnDefinitions="*,Auto"
+                              RowSpacing="10">
+
+                            <Label Grid.Row="0" Text="{Binding Title}"
+                                   FontSize="18" FontAttributes="Bold"
+                                   TextColor="{StaticResource PrimaryText}" />
+
+                            <Frame Grid.Row="0" Grid.Column="1"
+                                   Padding="10,4" CornerRadius="14"
+                                   HasShadow="False" BackgroundColor="#FFF7E0"
+                                   BorderColor="#FDE68A">
+                                <HorizontalStackLayout Spacing="4">
+                                    <Label Text="🪙" FontSize="14" />
+                                    <Label Text="{Binding RewardText}"
+                                           FontSize="13" FontAttributes="Bold"
+                                           TextColor="{StaticResource CoinColor}" />
+                                </HorizontalStackLayout>
+                            </Frame>
+
+                            <Label Grid.Row="1" Grid.ColumnSpan="2"
+                                   Text="{Binding Description}"
+                                   FontSize="14" TextColor="{StaticResource SecondaryText}" />
+
+                            <Grid Grid.Row="2" Grid.ColumnSpan="2"
+                                  ColumnDefinitions="Auto,*" ColumnSpacing="10">
+                                
+                                <Frame Padding="10,5" CornerRadius="12" HasShadow="False"
+                                       BackgroundColor="#ECFDF3" BorderColor="#BBF7D0"
+                                       IsVisible="{Binding IsCompleted}">
+                                    <Label Text="Виконано" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{StaticResource AccentColor}" />
+                                </Frame>
+
+                                <Frame Padding="10,5" CornerRadius="12" HasShadow="False"
+                                       BackgroundColor="#F3F4F6" BorderColor="#E5E7EB"
+                                       IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}">
+                                    <Label Text="Доступно" FontSize="12" FontAttributes="Bold"
+                                           TextColor="{StaticResource SecondaryText}" />
+                                </Frame>
+
+                                <Button Grid.Column="1" Text="Відкрити"  IsVisible="{Binding IsCompleted, Converter={StaticResource InvertedBoolConverter}}"
+                                        CornerRadius="14" HeightRequest="42" WidthRequest="110"
+                                        BackgroundColor="{StaticResource AccentColor}"
+                                        HorizontalOptions="End"
+                                        Clicked="OnChallengeClicked" />
+                            </Grid>
+                        </Grid>
+                    </Frame>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
 </ContentPage>

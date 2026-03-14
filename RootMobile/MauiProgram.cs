@@ -43,6 +43,7 @@ public static class MauiProgram
         builder.Services.AddSingleton<ShopViewModel>();
         builder.Services.AddSingleton<AccountView>();
         builder.Services.AddSingleton<AccountViewModel>();
+        builder.Services.AddSingleton<ChallengesView>();
         
         builder.Services.AddSingleton<IOpenAIService, OpenAIService>();
         builder.Services.AddTransient<ConversationViewModel>();

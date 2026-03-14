@@ -14,7 +14,7 @@
                       ContentTemplate="{DataTemplate views:RootMapView}"/>
         <ShellContent Title="Challenges" Route="challengesview"
                       Icon="challenges.png"
-                      ContentTemplate="{DataTemplate views:DoPlantView}" />
+                      ContentTemplate="{DataTemplate views:ChallengesView}" />
         <ShellContent Title="Game" Route="treegameview"
                       Icon="game_tree.png" 
                       ContentTemplate="{DataTemplate views:TreeGameView}" />
