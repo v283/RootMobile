@@ -9,6 +9,14 @@
                AbsoluteLayout.LayoutBounds="0,0,1,1"
                AbsoluteLayout.LayoutFlags="All"/>
 
+        <HorizontalStackLayout BackgroundColor="#80000000" Padding="10" Margin="10"
+                       AbsoluteLayout.LayoutBounds="1, 0.02, -1, -1"
+                       AbsoluteLayout.LayoutFlags="PositionProportional">
+            <Label Text="💰" FontSize="20" VerticalOptions="Center"/>
+            <Label x:Name="CoinsLabel" Text="0" TextColor="Gold" FontSize="20" 
+           FontAttributes="Bold" Margin="5,0,0,0"/>
+        </HorizontalStackLayout>
+
         <Image x:Name="TreeSprite"
                AbsoluteLayout.LayoutBounds="100,350,200,200"
                AbsoluteLayout.LayoutFlags="None">
@@ -16,41 +24,44 @@
                 <TapGestureRecognizer Tapped="OnCharacterTapped" />
             </Image.GestureRecognizers>
         </Image>
-        <Button Text="Отримати нового героя"
-        Clicked="OnOpenSummonPanelClicked"
-        BackgroundColor="Purple"
-        TextColor="White"
-        AbsoluteLayout.LayoutBounds="0.5,0.05,220,50"
-        AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+        <Button Text="Призвати героя (5 🪙)"
+                Clicked="OnOpenSummonPanelClicked"
+                BackgroundColor="Purple"
+                TextColor="White"
+                FontAttributes="Bold"
+                AbsoluteLayout.LayoutBounds="0.5,0.1,250,55"
+                AbsoluteLayout.LayoutFlags="PositionProportional"/>
 
         <Frame x:Name="SummonPanel"
-       IsVisible="False"
-       Opacity="0"
-       BackgroundColor="#EE000000"
-       CornerRadius="30"
-       AbsoluteLayout.LayoutBounds="0.5,0.5,320,450"
-       AbsoluteLayout.LayoutFlags="PositionProportional">
+               IsVisible="False"
+               Opacity="0"
+               BackgroundColor="#EE000000"
+               CornerRadius="30"
+               AbsoluteLayout.LayoutBounds="0.5,0.5,320,450"
+               AbsoluteLayout.LayoutFlags="PositionProportional">
 
             <VerticalStackLayout Spacing="20" VerticalOptions="Center">
                 <Label Text="НОВИЙ ПЕРСОНАЖ!" 
-               TextColor="Gold" FontSize="24" FontAttributes="Bold" 
-               HorizontalOptions="Center"/>
+                       TextColor="Gold" FontSize="24" FontAttributes="Bold" 
+                       HorizontalOptions="Center"/>
 
                 <Image x:Name="NewCharacterImage" 
-               HeightRequest="180" 
-               Scale="0.5"
-               HorizontalOptions="Center"/>
+                       HeightRequest="180" 
+                       Scale="0.5"
+                       HorizontalOptions="Center"/>
 
                 <Label x:Name="NewCharacterName" 
-               TextColor="White" FontSize="20" 
-               HorizontalOptions="Center"/>
+                       TextColor="White" FontSize="20" 
+                       HorizontalOptions="Center"/>
 
                 <Button Text="ДОДАТИ В КОЛЕКЦІЮ" 
-                Clicked="OnConfirmSummonClicked"
-                BackgroundColor="DarkOrange"
-                TextColor="Black" FontAttributes="Bold"/>
+                        Clicked="OnConfirmSummonClicked"
+                        BackgroundColor="DarkOrange"
+                        TextColor="Black" FontAttributes="Bold"/>
             </VerticalStackLayout>
         </Frame>
+
         <Button Text="Почати бій"
                 Clicked="OnStartBattleClicked"
                 BackgroundColor="Orange"
@@ -98,6 +109,5 @@
                 <Button Text="Закрити" Clicked="OnClosePanelClicked" BackgroundColor="Gray"/>
             </VerticalStackLayout>
         </Frame>
-
     </AbsoluteLayout>
 </ContentPage>

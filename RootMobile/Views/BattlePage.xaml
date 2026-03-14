@@ -16,10 +16,10 @@
             <Grid x:Name="IdleContainer" HorizontalOptions="Center" VerticalOptions="Center">
 
                 <Grid x:Name="EnemyContainer">
-                    <Image x:Name="EnemySprite" Source="wolf.png" HeightRequest="200" />
+                    <Image x:Name="EnemySprite" Source="ice_fox.png" HeightRequest="200" />
 
                     <Grid x:Name="EnemyDamageSprite" Opacity="0" HeightRequest="200">
-                        <Image Source="nature_fox.png"/>
+                        <Image Source="ice_fox.png"/>
                         <BoxView Color="Red" Opacity="0.5"/>
                     </Grid>
                 </Grid>
@@ -57,6 +57,35 @@
                 <Button Grid.Row="1" Grid.Column="1" Text="Poison" Clicked="PoisonAttack" BackgroundColor="Green"/>
             </Grid>
         </VerticalStackLayout>
+        <Frame x:Name="WinPanel"
+       IsVisible="False"
+       Opacity="0"
+       BackgroundColor="#CC000000"
+       BorderColor="Gold"
+       CornerRadius="20"
+       Padding="30"
+       HorizontalOptions="Center"
+       VerticalOptions="Center"
+       Grid.RowSpan="3">
 
+            <VerticalStackLayout Spacing="20" HorizontalOptions="Center">
+                <Label Text="ПЕРЕМОГА!" 
+               TextColor="Gold" 
+               FontSize="32" 
+               FontAttributes="Bold" 
+               HorizontalOptions="Center"/>
+
+                <Label Text="Ворога подолано. Ви отримали досвід та монети!" 
+               TextColor="White" 
+               HorizontalTextAlignment="Center"/>
+
+                <Button Text="ПОВЕРНУТИСЯ" 
+                Clicked="OnReturnClicked"
+                BackgroundColor="DarkOrange" 
+                TextColor="Black" 
+                FontAttributes="Bold"
+                WidthRequest="200"/>
+            </VerticalStackLayout>
+        </Frame>
     </Grid>
 </ContentPage>

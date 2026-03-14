@@ -53,6 +53,89 @@ namespace RootMobile.Services
 
             return animals.Models.FirstOrDefault();
         }
+        public async Task<bool> AddCoins(int amount)
+        {
+            try
+            {
+                var userId = _supabaseClient.Auth.CurrentUser?.Id;
+                if (userId == null) return false;
+
+                // 1. Отримуємо поточну кількість монет
+                var result = await _supabaseClient
+                    .From<UserCoinModel>()
+                    .Where(x => x.Id == userId)
+                    .Single();
+
+                if (result == null) return false;
+
+                // 2. Оновлюємо значення
+                result.Coins += amount;
+
+                // 3. Зберігаємо назад у базу
+                await _supabaseClient
+                    .From<UserCoinModel>()
+                    .Update(result);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Помилка при додаванні монет: {ex.Message}");
+                return false;
+            }
+        }
+        // Отримати кількість монет
+        public async Task<UserCoinModel> GetUserCoinAmount()
+        {
+            try
+            {
+                var userId = _supabaseClient.Auth.CurrentUser?.Id;
+                if (userId == null) return null;
+
+                var result = await _supabaseClient
+                    .From<UserCoinModel>()
+                    .Where(x => x.Id == userId)
+                    .Single();
+
+                return result;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Помилка отримання монет: {ex.Message}");
+                return null;
+            }
+        }
+        // Витратити монети (наприклад, 50 за крутку)
+        public async Task<bool> TrySpendCoins(int amount)
+        {
+            try
+            {
+                // 1. Отримуємо поточний стан монет (використовуємо твій робочий метод)
+                var userCoins = await GetUserCoinAmount();
+
+                // 2. Перевірка: чи вистачає грошей
+                if (userCoins == null || userCoins.Coins < amount)
+                {
+                    return false;
+                }
+
+                // 3. Віднімаємо локально
+                userCoins.Coins -= amount;
+
+                // 4. Оновлюємо рядок у базі даних
+                // Supabase автоматично знайде рядок за PrimaryKey (id)
+                await _supabaseClient
+                    .From<UserCoinModel>()
+                    .Update(userCoins);
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                System.Diagnostics.Debug.WriteLine($"Помилка при списанні: {ex.Message}");
+                return false;
+            }
+        }
         public async Task<List<UserAnimalModel>> GetAllUserAnimals()
         {
             Guid userId = Guid.Parse(_supabaseClient.Auth.CurrentUser.Id);
@@ -232,7 +315,6 @@ namespace RootMobile.Services
                     var result = await _supabaseClient
         .From<UserAnimalModel>()
         .Insert(starterAnimal);
-                   
                 }
                 else
                 {
@@ -356,7 +438,6 @@ namespace RootMobile.Services
                     IsActive = true,
                     Owner = userId
                 };
-
 
                 var result = await _supabaseClient
     .From<UserAnimalModel>()
