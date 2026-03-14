@@ -12,7 +12,7 @@ public partial class RootMapView : ContentPage
 {
     private DataService _dataService;
 
-    private Dictionary<Pin, PlantPinDataModel> _pinDataMap = new();
+    private Dictionary<Pin, PlantPinModel> _pinDataMap = new();
 
     private bool _isFirstAppearance = true;
     private bool _isSubscribed = false;
@@ -121,7 +121,7 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    private List<PlantPinDataModel> _savedPins = new();
+    private List<PlantPinModel> _savedPins = new();
     private string _dbPath = Path.Combine(FileSystem.AppDataDirectory, "pins.json");
 
     // 3. Коли натиснули на Пін на карті
@@ -245,7 +245,7 @@ public partial class RootMapView : ContentPage
         }
     }
 
-    private async void AddPinToMap(PlantPinDataModel data)
+    private async void AddPinToMap(PlantPinModel data)
     {
         // Отримуємо локальний шлях (якщо це URL - завантажимо у кеш)
         string imageSource = await GetLocalPathForImage(data.Image);
@@ -306,7 +306,7 @@ public partial class RootMapView : ContentPage
         var popup = new CreatePlantPinPopup(_dataService);
         var result = await this.ShowPopupAsync(popup);
 
-        if (result is PlantPinDataModel newPin)
+        if (result is PlantPinModel newPin)
         {
             try
             {
@@ -340,7 +340,7 @@ public partial class RootMapView : ContentPage
                     if (success)
                     {
                         // Трюк: для AddPinToMap підсовуємо локальний шлях, щоб не чекати завантаження з мережі
-                        var pinToDraw = new PlantPinDataModel
+                        var pinToDraw = new PlantPinModel
                         {
                             Name = newPin.Name,
                             Latitude = newPin.Latitude,

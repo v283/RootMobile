@@ -68,7 +68,7 @@ public partial class CreatePlantPinPopup : Popup
 
         var selectedCat = CategoryPicker.SelectedItem as CategoriesMapModel;
 
-        var result = new PlantPinDataModel
+        var result = new PlantPinModel
         {
             Name = PlantNameEntry.Text.Trim(),
             Category = selectedCat?.Name ?? "Не обрано",
