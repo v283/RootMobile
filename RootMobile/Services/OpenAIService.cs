@@ -69,5 +69,49 @@ namespace RootMobile.Services
             return response.Trim().ToLower().Contains("так");
         }
 
+        public async Task<string> IdentifyPlantAsync(byte[] imageBytes)
+        {
+            try
+            {
+                // 1. Конвертуємо байти в Base64
+                string base64Image = Convert.ToBase64String(imageBytes);
+
+                // 2. Створюємо структуру запиту для Vision API
+                // OpenAI очікує, що content може бути масивом об'єктів (текст + посилання на фото)
+                var messageContent = new object[]
+                {
+            new { type = "text", text = "Ти професійний ботанік. Що це за рослина на фото? Відповідай ТІЛЬКИ назвою українською мовою. Якщо на фото не рослина, відповідай точно: NOT_PLANT" },
+            new { type = "image_url", image_url = new { url = $"data:image/jpeg;base64,{base64Image}" } }
+                };
+
+                // Формуємо запит (додаємо модель gpt-4o-mini, вона найшвидша для фото)
+                var requestData = new
+                {
+                    model = "gpt-4o-mini",
+                    messages = new[]
+                    {
+                new { role = "user", content = messageContent }
+            },
+                    max_tokens = 50 // Нам потрібна лише коротка назва
+                };
+
+                var json = JsonConvert.SerializeObject(requestData);
+                var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+                // Відправляємо на вашу функцію Supabase
+                var response = await _httpClient.PostAsync(SupabaseFunctionUrl, content);
+                response.EnsureSuccessStatusCode();
+
+                var responseString = await response.Content.ReadAsStringAsync();
+                dynamic result = JsonConvert.DeserializeObject(responseString);
+
+                return result.choices[0].message.content.ToString().Trim();
+            }
+            catch (Exception ex)
+            {
+                return $"Помилка: {ex.Message}";
+            }
+        }
+
     }
 }
