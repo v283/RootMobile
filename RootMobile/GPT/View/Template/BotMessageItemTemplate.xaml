@@ -1,0 +1,49 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<Grid
+    x:Class="RootMobile.Views.Templates.BotMessageItemTemplate"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:model="clr-namespace:RootMobile.Models"
+    x:DataType="model:Message"
+    ColumnDefinitions="Auto, 10, Auto, *"
+    RowDefinitions="Auto"
+    SizeChanged="ParentGrid_SizeChanged">
+
+    <Border 
+        x:Name="borderText"
+        Grid.Column="2" Grid.Row="0"
+        Padding="12"
+
+        StrokeShape="RoundRectangle 16,16,0,16"
+        StrokeThickness="1">
+
+            <Label
+                IsVisible="{Binding IsTextActive}"
+                Style="{StaticResource TxtSubtitle2_2}"
+                Text="{Binding Text}" >
+                
+        </Label>
+
+
+
+    </Border>
+
+    <Border
+        x:Name="borderImage"
+        Grid.Column="0" Grid.Row="0"
+
+        HeightRequest="35"
+        StrokeShape="RoundRectangle 5,5,0,5"
+        StrokeThickness="1"
+        VerticalOptions="End"
+        WidthRequest="35">
+
+        <Image x:Name="botImg"
+            HeightRequest="30"
+            Source="{AppThemeBinding Light=bot_light.png,
+                                          Dark=bot_dark.png}"
+            WidthRequest="30" />
+    </Border>
+
+</Grid>

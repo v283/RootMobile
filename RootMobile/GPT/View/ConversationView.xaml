@@ -1,0 +1,98 @@
+﻿<?xml version="1.0" encoding="UTF-8" ?>
+<?xaml-comp compile="true" ?>
+<ContentPage
+    x:Class="RootMobile.Views.ConversationView"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:templates="clr-namespace:RootMobile.Views.Templates"
+    xmlns:viewmodel="clr-namespace:RootMobile.ViewModels"
+    x:Name="mainPage"
+    x:DataType="viewmodel:ConversationViewModel"
+
+    >
+
+    <ContentPage.Resources>
+        <DataTemplate x:Key="UserMessageItemTemplate">
+            <templates:UserMessageItemTemplate />
+        </DataTemplate>
+
+        <DataTemplate x:Key="BotMessageItemTemplate">
+            <templates:BotMessageItemTemplate />
+        </DataTemplate>
+
+        <templates:MessageDataTemplateSelector
+            x:Key="MessageDataTemplateSelector"
+            BotMessageTemplate="{StaticResource BotMessageItemTemplate}"
+            UserMessageItemTemplate="{StaticResource UserMessageItemTemplate}"
+             />
+    </ContentPage.Resources>
+    <Grid Background="Transparent"  RowDefinitions="*, Auto">
+
+        <Border
+            Grid.Row="0" 
+            Padding="16,0,16,7"
+
+            StrokeShape="RoundRectangle 0,0,15,15"
+            StrokeThickness="0">
+            <CollectionView
+                x:Name="myCollectionView"
+                ItemTemplate="{StaticResource MessageDataTemplateSelector}"
+                ItemsSource="{Binding Messages}">
+
+                <CollectionView.ItemsLayout>
+                    <LinearItemsLayout
+                        ItemSpacing="20"
+                        Orientation="Vertical" />
+                </CollectionView.ItemsLayout>
+
+            </CollectionView>
+        </Border>
+
+
+
+        <Grid BackgroundColor="Transparent"
+            Grid.Row="1"
+            Padding="10,0" 
+            ColumnDefinitions="*, Auto"
+            ColumnSpacing="10">
+            <Border
+                                Style="{DynamicResource mainViewBorder}"
+                Grid.Column="0"
+                Padding="{OnPlatform iOS=-15}"
+                HeightRequest="48"
+                StrokeShape="RoundRectangle 36,36,36,36"
+                StrokeThickness="1">
+
+                <Entry
+                        x:Name="QuestionEntry"
+                        Margin="16,0"
+                        Placeholder="Enter text here..."
+                        Style="{StaticResource TxtSubtitle2_3}"
+                        Text="{Binding Query}"
+                        TranslationY="4" />
+
+            </Border>
+
+            <Border
+                                Style="{DynamicResource mainViewBorder}"
+                Grid.Column="1"
+                HeightRequest="48"
+                StrokeShape="RoundRectangle 24,24,24,24"
+                StrokeThickness="0"
+                WidthRequest="48">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding CurrentCommand}" />
+                </Border.GestureRecognizers>
+
+                <Image
+                    HeightRequest="25"
+                    Source="send.png"
+                    WidthRequest="25" />
+            </Border>
+
+
+        </Grid>
+
+    </Grid>
+
+</ContentPage>

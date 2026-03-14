@@ -1,4 +1,5 @@
-﻿using Maui.GoogleMaps.Hosting;
+﻿
+using Maui.GoogleMaps.Hosting;
 using Microsoft.Extensions.Logging;
 using CommunityToolkit.Maui;
 using FFImageLoading.Maui;
@@ -43,6 +44,9 @@ public static class MauiProgram
         builder.Services.AddSingleton<AccountView>();
         builder.Services.AddSingleton<AccountViewModel>();
         
+        builder.Services.AddSingleton<IOpenAIService, OpenAIService>();
+        builder.Services.AddTransient<ConversationViewModel>();
+        builder.Services.AddSingleton<ConversationView>();
         
         builder.Services.AddSingleton<SignInView>();
         builder.Services.AddSingleton<SignUpView>();
