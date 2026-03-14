@@ -25,9 +25,13 @@ public partial class AccountViewModel : ObservableObject
     [ObservableProperty]
     private BadgesViewModel badgesVm;
 
+    private PlantPinModel _pinDataMode;
+    
+
     public AccountViewModel(IDataService dataService)
     {
         _dataService = (DataService)dataService;
+        
     }
 
     partial void OnSelectedChanged(string value)
@@ -46,14 +50,25 @@ public partial class AccountViewModel : ObservableObject
         }
     }
 
-    public async Task Initialize()
+    public async Task Initialize(PlantPinModel pinDataModel = null)
     {
-        UserData = await _dataService.GetUserData();
-        
+        _pinDataMode = pinDataModel;
+        if (pinDataModel == null)
+        {
+            UserData = await _dataService.GetUserData();
+        }
+        else
+        {
+            UserData = await _dataService.GetUserData(_pinDataMode.UserId);
+        }
+
         TreesVm = new TreesViewModel(_dataService);
         BadgesVm = new BadgesViewModel(_dataService);
-        
-        await TreesVm.InitializeAsync();
+        if (_pinDataMode != null)
+        {
+            await TreesVm.InitializeAsync(_pinDataMode.UserId);
+        }
+
     }
 
     [RelayCommand]

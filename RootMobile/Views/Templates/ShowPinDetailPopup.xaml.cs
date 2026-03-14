@@ -1,14 +1,19 @@
 using CommunityToolkit.Maui.Views;
 using RootMobile.Models;
+using RootMobile.Services;
 
 namespace RootMobile.Views.Templates;
 
 public partial class ShowPinDetailPopup : Popup
 {
-    public ShowPinDetailPopup(PlantPinModel data)
+    private PlantPinModel _dataModel;
+    private DataService _dataService;
+    public ShowPinDetailPopup(PlantPinModel data , DataService dataService)
     {
         InitializeComponent();
 
+        _dataModel = data;
+        _dataService = dataService;
         // Заповнюємо дані
         LabelDetailName.Text = data.Name;
         LabelDetailCategory.Text = data.Category;
@@ -34,6 +39,13 @@ public partial class ShowPinDetailPopup : Popup
         ProfileHeader.Opacity = opacity;
         ProfileHeader.IsVisible = opacity > 0.05; // Повністю ховаємо, якщо майже невидимий
     }
+
+    private async void OnUserTapped(object sender, TappedEventArgs e)
+    {
+        await Shell.Current.Navigation.PushAsync( new OtherUserPrifileView(_dataModel, _dataService ));
+        Close();
+    }
+    
 
     private void OnCloseClicked(object sender, EventArgs e) => Close();
 }

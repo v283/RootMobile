@@ -134,7 +134,7 @@ public partial class RootMapView : ContentPage
             var data = _pinDataMap[e.Pin];
 
             // Викликаємо наш новий Popup і передаємо йому дані
-            var popup = new ShowPinDetailPopup(data);
+            var popup = new ShowPinDetailPopup(data, _dataService);
             await this.ShowPopupAsync(popup);
         }
     }

@@ -1,28 +1,34 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 using RootMobile.Models;
 using RootMobile.Services;
 using RootMobile.ViewModels;
 
 namespace RootMobile.Views;
 
-public partial class AccountView : ContentPage
+public partial class OtherUserPrifileView : ContentPage
 {
     private readonly DataService _dataService;
     private double _panX;
     private AccountViewModel vm;
     private bool _isAnimating;
-
-    public AccountView(IDataService dataService)
+    private PlantPinModel _pinDataModel;
+    public OtherUserPrifileView(PlantPinModel pinDataModel, DataService dataService)
     {
         InitializeComponent();
         _dataService = (DataService)dataService;
+        _pinDataModel = pinDataModel;
         InitializeAsync();
     }
-    
-    private async void InitializeAsync(PlantPinModel plantPinDataModel = default)
+
+    private async void InitializeAsync()
     {
         vm = new AccountViewModel(_dataService);
         BindingContext = vm;
-        await vm.Initialize(plantPinDataModel);
+        await vm.Initialize(_pinDataModel);
     }
 
     protected override async void OnAppearing()
@@ -34,7 +40,7 @@ public partial class AccountView : ContentPage
             viewModel.PropertyChanged += ViewModel_PropertyChanged;
         }
 
-        if (vm!= null)
+        if (vm != null)
         {
             if (vm.TreesVm != null)
             {
@@ -64,8 +70,8 @@ public partial class AccountView : ContentPage
     private void TreesView_Scrolled(object sender, ItemsViewScrolledEventArgs e)
     {
         double maxTranslation = ProfileSection.Height;
-        
-        if (maxTranslation <= 0) 
+
+        if (maxTranslation <= 0)
             return;
 
         double currentScroll = e.VerticalOffset;
@@ -76,7 +82,7 @@ public partial class AccountView : ContentPage
         // Зсуваємо блоки вгору
         ProfileSection.TranslationY = -translationY;
         ProfileSection.Opacity = 1 - (translationY / maxTranslation); // плавне зникнення профілю
-        
+
         TabsSection.TranslationY = -translationY;
         ContentSection.TranslationY = -translationY;
     }
