@@ -1,28 +1,36 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using RootMobile.Models;
 using RootMobile.Services;
-using RootMobile.Views.TreeGameContecst;
+using System.Diagnostics;
 namespace RootMobile.Views;
-
 public partial class TreeGameView : ContentPage
 {
-    private UserAnimalModel _userTreeModel;
-    private TreeOfUser treeOfUser;
-    private WateringCan wateringCan;
+    private UserAnimalModel _userAnimalModel;
+    private AnimalTypeModel _animalTypeModel;
+
     private DataService _dataService;
 
     public TreeGameView(IDataService dataService)
     {
         _dataService = (DataService)dataService;
-       // _userTreeModel =  _dataService.GetUserCurrentTree().Result;
-        //AnimalTypeModel _treeLevelModel = _userTreeModel.TreeLevel;
-        //treeOfUser = new TreeOfUser(_treeLevelModel.Lvl,_userTreeModel.CurrentGrowProgress,_treeLevelModel.AmountForLevelUp,_userTreeModel.Name,_treeLevelModel.Lvl,0,0);
-        wateringCan = new WateringCan();
         InitializeComponent();
-        //TreeSprite.Source = treeOfUser.nameOfImage;
+    }
+
+    protected override async void OnAppearing()
+    {
+        Debug.WriteLine("11111111111");
+
+        base.OnAppearing();
+        Debug.WriteLine("11111111111");
+
+        _userAnimalModel = await _dataService.GetUserCurrentAnimal();
+
+        if (_userAnimalModel?.AnimalType != null)
+        {
+            _animalTypeModel =await _dataService.GetAnimalType(_userAnimalModel.AnimalTypeId) ;
+            TreeSprite.Source = _animalTypeModel.Name + ".png";
+            Console.WriteLine(_animalTypeModel.Name + ".png");
+            Debug.WriteLine("11111111111");
+            Debug.WriteLine(_animalTypeModel.Name + ".png");
+        }
     }
 }

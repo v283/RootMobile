@@ -62,7 +62,6 @@
     <ItemGroup>
       <None Remove="Resources\Images\GameImgs\background.png" />
       <None Remove="Resources\Images\GameImgs\fire.png" />
-      <None Remove="Resources\Images\GameImgs\tree.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -88,7 +87,7 @@
     <ItemGroup>
       <MauiImage Include="Resources\Images\GameImgs\fire.png" />
       <MauiImage Include="Resources\Images\GameImgs\fire_dragon.png" />
-      <MauiImage Include="Resources\Images\GameImgs\tree.png" />
+      <MauiImage Include="Resources\Images\GameImgs\wolf.png" />
       <MauiImage Include="Resources\Images\GameImgs\water_cat.png" />
     </ItemGroup>
 
@@ -99,6 +98,10 @@
       <MauiXaml Update="Views\Templates\ShowPinDetailPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Views\TreeGameContecst\" />
     </ItemGroup>
 
 </Project>

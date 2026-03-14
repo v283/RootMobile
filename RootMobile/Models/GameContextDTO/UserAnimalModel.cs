@@ -9,7 +9,7 @@ namespace RootMobile.Models
     public class UserAnimalModel : BaseModel, INotifyPropertyChanged
     {
         [PrimaryKey("id")]
-        public long Id { get; set; }
+        public long id { get; set; }
 
         private long animalTypeId;
 
@@ -43,65 +43,33 @@ namespace RootMobile.Models
             }
         }
 
-        private int exp;
-
-        [Column("exp")]
-        public int Exp
-        {
-            get => exp;
-            set
-            {
-                if (exp != value)
-                {
-                    exp = value;
-                    OnPropertyChanged(nameof(Exp));
-                }
-            }
-        }
-
-        private int currentHp;
+        private int current_hp;
 
         [Column("current_hp")]
         public int CurrentHp
         {
-            get => currentHp;
+            get => current_hp;
             set
             {
-                if (currentHp != value)
+                if (current_hp != value)
                 {
-                    currentHp = value;
+                    current_hp = value;
                     OnPropertyChanged(nameof(CurrentHp));
                 }
             }
         }
 
-        private string nickname;
-
-        [Column("nickname")]
-        public string Nickname
-        {
-            get => nickname;
-            set
-            {
-                if (nickname != value)
-                {
-                    nickname = value;
-                    OnPropertyChanged(nameof(Nickname));
-                }
-            }
-        }
-
-        private bool isActive;
+        private bool is_active;
 
         [Column("is_active")]
         public bool IsActive
         {
-            get => isActive;
+            get => is_active;
             set
             {
-                if (isActive != value)
+                if (is_active != value)
                 {
-                    isActive = value;
+                    is_active = value;
                     OnPropertyChanged(nameof(IsActive));
                 }
             }

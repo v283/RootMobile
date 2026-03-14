@@ -41,15 +41,28 @@ namespace RootMobile.Services
                 cart = value;
             }
         }
-        public async Task<UserAnimalModel> GetUserCurrentTree()
+        public async Task<UserAnimalModel> GetUserCurrentAnimal()
         {
+            Guid userId = Guid.Parse(_supabaseClient.Auth.CurrentUser.Id);
+
             var animals = await _supabaseClient
                 .From<UserAnimalModel>()
-                .Select("*,animal_types(*)")
+                .Where(x => x.Owner == userId && x.IsActive == true)
+                .Select("*")
                 .Get();
-            return animals.Model;
-        }
 
+            return animals.Models.FirstOrDefault();
+        }
+        public async Task<AnimalTypeModel> GetAnimalType(long animalTypeId)
+        {
+            var result = await _supabaseClient
+                .From<AnimalTypeModel>()
+                .Where(x => x.Id == animalTypeId)
+                .Select("*")
+                .Get();
+
+            return result.Models.FirstOrDefault();
+        }
         public Supabase.Client SupabaseClient { get => _supabaseClient; }
 
 
@@ -149,17 +162,16 @@ namespace RootMobile.Services
                     {
                         AnimalTypeId = 3, // дефолтний персонаж
                         Level = 1,
-                        Exp = 0,
                         CurrentHp = 100,
-                        Nickname = "Starter",
                         IsActive = true,
                         Owner = userId
                     };
 
-                    await _supabaseClient
-                        .From<UserAnimalModel>()
-                        .Insert(starterAnimal);
 
+                    var result = await _supabaseClient
+        .From<UserAnimalModel>()
+        .Insert(starterAnimal);
+                   
                 }
                 else
                 {
@@ -279,16 +291,16 @@ namespace RootMobile.Services
                 {
                     AnimalTypeId = 3, // дефолтний персонаж
                     Level = 1,
-                    Exp = 0,
                     CurrentHp = 100,
-                    Nickname = "Starter",
                     IsActive = true,
                     Owner = userId
                 };
 
-                await _supabaseClient
-                    .From<UserAnimalModel>()
-                    .Insert(starterAnimal);
+
+                var result = await _supabaseClient
+    .From<UserAnimalModel>()
+    .Insert(starterAnimal);
+
                 return true;
             }
             catch (Exception ex)
