@@ -1,5 +1,6 @@
-using RootMobile.Models;
+п»їusing RootMobile.Models;
 using RootMobile.Services;
+using System.Diagnostics;
 
 namespace RootMobile.Views;
 
@@ -8,6 +9,8 @@ public partial class TreeGameView : ContentPage
     private UserAnimalModel _userAnimalModel;
     private DataService _dataService;
     private Random rng = new();
+    private const int SummonCost = 5; // Р’Р°СЂС‚С–СЃС‚СЊ РїСЂРёР·РѕРІСѓ
+
     public TreeGameView(IDataService dataService)
     {
         _dataService = (DataService)dataService;
@@ -18,8 +21,20 @@ public partial class TreeGameView : ContentPage
     {
         base.OnAppearing();
         await LoadCurrentAnimal();
+        await RefreshCoins();
     }
 
+    private async Task RefreshCoins()
+    {
+        var userData = await _dataService.GetUserCoinAmount();
+        if (userData != null)
+        {
+            // Р’РёРєРѕСЂРёСЃС‚РѕРІСѓС”РјРѕ MainThread РґР»СЏ Р±РµР·РїРµС‡РЅРѕРіРѕ РѕРЅРѕРІР»РµРЅРЅСЏ UI
+            MainThread.BeginInvokeOnMainThread(() => {
+                CoinsLabel.Text = userData.Coins.ToString();
+            });
+        }
+    }
     private async Task LoadCurrentAnimal()
     {
         _userAnimalModel = await _dataService.GetUserCurrentAnimal();
@@ -28,37 +43,50 @@ public partial class TreeGameView : ContentPage
             TreeSprite.Source = _userAnimalModel.AnimalType.Name + ".png";
         }
     }
-    // Відкрити панель призову
+
+    // Р’С–РґРєСЂРёС‚Рё РїР°РЅРµР»СЊ РїСЂРёР·РѕРІСѓ
     private async void OnOpenSummonPanelClicked(object sender, EventArgs e)
     {
-        // 1. Отримуємо список доступних типів тварин (щоб знати кого призивати)
+        // 1. РџРµСЂРµРІС–СЂРєР° С‚Р° СЃРїРёСЃР°РЅРЅСЏ РјРѕРЅРµС‚
+        bool successSpend = await _dataService.TrySpendCoins(SummonCost);
+
+        if (!successSpend)
+        {
+            var userData = await _dataService.GetUserCoinAmount();
+            await DisplayAlert("РњР°Р»Рѕ рџЄ™", $"РўРѕР±С– РїРѕС‚СЂС–Р±РЅРѕ {userData.Coins.ToString()} рџЄ™ РґР»СЏ РїСЂРёР·РѕРІСѓ!", "РћРљ");
+            await DisplayAlert("РњР°Р»Рѕ рџЄ™", $"РўРѕР±С– РїРѕС‚СЂС–Р±РЅРѕ {SummonCost} рџЄ™ РґР»СЏ РїСЂРёР·РѕРІСѓ!", "РћРљ");
+            return;
+        }
+
+        // РћРЅРѕРІР»СЋС”РјРѕ Р»С–С‡РёР»СЊРЅРёРє РјРѕРЅРµС‚ РЅР° РµРєСЂР°РЅС–
+        await RefreshCoins();
+
+        // 2. РћС‚СЂРёРјСѓС”РјРѕ С‚РёРїРё РїРµСЂСЃРѕРЅР°Р¶С–РІ
         var allTypes = await _dataService.GetAllAnimalTypes();
         if (allTypes == null || !allTypes.Any()) return;
 
-        // 2. Рандомимо персонажа
+        // 3. Р Р°РЅРґРѕРј
         var randomType = allTypes[rng.Next(allTypes.Count)];
 
-        // 3. Готуємо модель для вставки
+        // 4. РЎС‚РІРѕСЂРµРЅРЅСЏ РЅРѕРІРѕРіРѕ Р·Р°РїРёСЃСѓ
         var newAnimal = new UserAnimalModel
         {
             AnimalTypeId = randomType.Id,
             Level = 1,
             CurrentHp = randomType.Hp,
-            IsActive = false, // Новий герой не стає активним автоматично
-            Owner = Guid.Parse(_dataService.GetCurrentUserId()) // Метод отримання ID з Supabase
+            IsActive = false,
+            Owner = Guid.Parse(_dataService.GetCurrentUserId())
         };
+        Debug.WriteLine("111111111");
 
-        // 4. Зберігаємо в базу
         await _dataService.AddNewAnimal(newAnimal);
 
-        // 5. Показуємо візуальний ефект
+        // 5. РџРѕРєР°Р· РµС„РµРєС‚С–РІ
         NewCharacterImage.Source = randomType.Name + ".png";
         NewCharacterName.Text = randomType.Name;
 
         SummonPanel.IsVisible = true;
         await SummonPanel.FadeTo(1, 500);
-
-        // Анімація "вистрибування" персонажа
         await NewCharacterImage.ScaleTo(1.2, 400, Easing.SpringOut);
     }
 
@@ -66,12 +94,11 @@ public partial class TreeGameView : ContentPage
     {
         await SummonPanel.FadeTo(0, 300);
         SummonPanel.IsVisible = false;
-        NewCharacterImage.Scale = 0.5; // Скидаємо для наступного разу
+        NewCharacterImage.Scale = 0.5;
     }
-    // Відкриваємо панель при натисканні на персонажа
+
     private async void OnCharacterTapped(object sender, EventArgs e)
     {
-        // Отримуємо всіх тварин користувача (активних і ні)
         var allAnimals = await _dataService.GetAllUserAnimals();
         AnimalsList.ItemsSource = allAnimals;
 
@@ -79,7 +106,6 @@ public partial class TreeGameView : ContentPage
         await CharacterSelectionPanel.FadeTo(1, 250);
     }
 
-    // Логіка вибору нового персонажа
     private async void OnAnimalSelected(object sender, EventArgs e)
     {
         var view = sender as BindableObject;
@@ -87,40 +113,28 @@ public partial class TreeGameView : ContentPage
 
         if (selectedAnimal != null)
         {
-            // 1. Візуальне оновлення (щоб юзер не чекав відповіді БД)
             TreeSprite.Source = selectedAnimal.AnimalType.Name + ".png";
             _userAnimalModel = selectedAnimal;
 
-            // 2. Оновлення в БД
             bool success = await _dataService.UpdateActiveAnimal(selectedAnimal.id);
 
             if (success)
             {
-                // Анімація успішного вибору
                 await TreeSprite.ScaleTo(1.2, 100);
                 await TreeSprite.ScaleTo(1.0, 100);
             }
-            else
-            {
-                // Якщо сталася помилка (наприклад, немає інтернету)
-                await DisplayAlert("Помилка", "не вдалося зберегти вибір у хмарі", "ОК");
-            }
         }
-
         ClosePanel();
     }
+
     private async void ClosePanel()
     {
         if (CharacterSelectionPanel == null) return;
+        await CharacterSelectionPanel.FadeTo(0, 200);
+        CharacterSelectionPanel.IsVisible = false;
+    }
 
-        await CharacterSelectionPanel.FadeTo(0, 200);
-        CharacterSelectionPanel.IsVisible = false;
-    }
-    private async void OnClosePanelClicked(object sender, EventArgs e)
-    {
-        await CharacterSelectionPanel.FadeTo(0, 200);
-        CharacterSelectionPanel.IsVisible = false;
-    }
+    private async void OnClosePanelClicked(object sender, EventArgs e) => ClosePanel();
 
     private async void OnStartBattleClicked(object sender, EventArgs e)
     {
