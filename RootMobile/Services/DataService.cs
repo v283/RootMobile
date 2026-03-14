@@ -53,6 +53,67 @@ namespace RootMobile.Services
 
             return animals.Models.FirstOrDefault();
         }
+        public async Task<List<UserAnimalModel>> GetAllUserAnimals()
+        {
+            Guid userId = Guid.Parse(_supabaseClient.Auth.CurrentUser.Id);
+
+            var result = await _supabaseClient
+                .From<UserAnimalModel>()
+                .Where(x => x.Owner == userId)
+                .Select("*, AnimalType:animal_types(*)") // Завантажуємо разом з даними про тип
+                .Get();
+
+            return result.Models;
+        }
+        // Отримати всі існуючі типи тварин з бази
+        public async Task<List<AnimalTypeModel>> GetAllAnimalTypes()
+        {
+            var result = await _supabaseClient
+                .From<AnimalTypeModel>()
+                .Get();
+            return result.Models;
+        }
+
+        // Додати нового персонажа користувачу
+        public async Task AddNewAnimal(UserAnimalModel newAnimal)
+        {
+            await _supabaseClient
+                .From<UserAnimalModel>()
+                .Insert(newAnimal);
+        }
+        public async Task<bool> UpdateActiveAnimal(long newActiveId)
+        {
+            try
+            {
+                Guid userId = Guid.Parse(_supabaseClient.Auth.CurrentUser.Id);
+
+                // 1. Скидаємо IsActive для ВСІХ тварин цього користувача
+                await _supabaseClient
+                    .From<UserAnimalModel>()
+                    .Where(x => x.Owner == userId)
+                    .Set(x => x.IsActive, false)
+                    .Update();
+
+                // 2. Встановлюємо IsActive = true тільки для обраної тварини
+                await _supabaseClient
+                    .From<UserAnimalModel>()
+                    .Where(x => x.id == newActiveId)
+                    .Set(x => x.IsActive, true)
+                    .Update();
+
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Debug.WriteLine($"Помилка при зміні активного юніта: {ex.Message}");
+                return false;
+            }
+        }
+        // Допоміжний метод для ID
+        public string GetCurrentUserId()
+        {
+            return _supabaseClient.Auth.CurrentUser?.Id;
+        }
         public async Task<AnimalTypeModel> GetAnimalType(long animalTypeId)
         {
             var result = await _supabaseClient

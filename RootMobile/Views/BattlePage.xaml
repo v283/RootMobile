@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="RootMobile.Views.NewPage1"
+             Title="Battle">
+
+    <Grid RowDefinitions="Auto,*,Auto">
+
+        <VerticalStackLayout Grid.Row="0" Padding="20">
+            <Label Text="Enemy HP" HorizontalOptions="Center" FontAttributes="Bold"/>
+            <ProgressBar x:Name="EnemyHpBar" Progress="1" HeightRequest="20" ProgressColor="Red"/>
+        </VerticalStackLayout>
+
+        <Grid x:Name="BattleCamera" Grid.Row="1">
+
+            <Grid x:Name="IdleContainer" HorizontalOptions="Center" VerticalOptions="Center">
+
+                <Grid x:Name="EnemyContainer">
+                    <Image x:Name="EnemySprite" Source="wolf.png" HeightRequest="200" />
+
+                    <Grid x:Name="EnemyDamageSprite" Opacity="0" HeightRequest="200">
+                        <Image Source="nature_fox.png"/>
+                        <BoxView Color="Red" Opacity="0.5"/>
+                    </Grid>
+                </Grid>
+
+                <AbsoluteLayout x:Name="ParticleContainer" 
+                                HorizontalOptions="Fill" 
+                                VerticalOptions="Fill" 
+                                InputTransparent="True" />
+            </Grid>
+
+            <Label x:Name="DamageText" TextColor="Yellow" FontSize="32" FontAttributes="Bold" 
+                   IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center">
+                <Label.Shadow>
+                    <Shadow Brush="Black" Offset="2,2" Radius="2" Opacity="0.8" />
+                </Label.Shadow>
+            </Label>
+
+            <Label x:Name="AttackText" FontSize="26" TextColor="White" BackgroundColor="#80000000"
+                   IsVisible="False" HorizontalOptions="Center" VerticalOptions="Center" Padding="10"/>
+
+            <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Start" Margin="0,10,0,0" Spacing="10">
+                <Label x:Name="BleedIcon" Text="🩸" FontSize="24" IsVisible="False"/>
+                <Label x:Name="PoisonIcon" Text="☠" FontSize="24" IsVisible="False"/>
+            </HorizontalStackLayout>
+        </Grid>
+
+        <VerticalStackLayout Grid.Row="2" Padding="20" Spacing="10">
+            <Label Text="Player HP" HorizontalOptions="Center"/>
+            <ProgressBar x:Name="PlayerHpBar" Progress="1" HeightRequest="15" ProgressColor="Green"/>
+
+            <Grid ColumnDefinitions="*,*" RowDefinitions="Auto,Auto" ColumnSpacing="10" RowSpacing="10">
+                <Button Grid.Row="0" Grid.Column="0" Text="Strong Attack" Clicked="StrongAttack" BackgroundColor="DarkRed"/>
+                <Button Grid.Row="0" Grid.Column="1" Text="Quick Attack" Clicked="QuickAttack"/>
+                <Button Grid.Row="1" Grid.Column="0" Text="Bleed" Clicked="BleedAttack" BackgroundColor="Crimson"/>
+                <Button Grid.Row="1" Grid.Column="1" Text="Poison" Clicked="PoisonAttack" BackgroundColor="Green"/>
+            </Grid>
+        </VerticalStackLayout>
+
+    </Grid>
+</ContentPage>
