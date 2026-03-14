@@ -53,8 +53,8 @@ public partial class TreeGameView : ContentPage
         if (!successSpend)
         {
             var userData = await _dataService.GetUserCoinAmount();
-            await DisplayAlert("Мало 🪙", $"Тобі потрібно {userData.Coins.ToString()} 🪙 для призову!", "ОК");
-            await DisplayAlert("Мало 🪙", $"Тобі потрібно {SummonCost} 🪙 для призову!", "ОК");
+            await DisplayAlert("Мало 🪙", $"Тобі потрібно {SummonCost} 🪙 для призову!" +
+                $"Додай ще рослин на карту і отримай нового героя !:)", "ОК");
             return;
         }
 

@@ -356,6 +356,7 @@ public partial class RootMapView : ContentPage
 
                         AddPinToMap(pinToDraw);
                         await DisplayAlert("Успіх", "Збережено в базу!", "OK");
+                        await _dataService.AddCoins(5);
                     }
                     else
                     {
