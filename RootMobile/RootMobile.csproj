@@ -61,7 +61,10 @@
 
     <ItemGroup>
       <None Remove="Resources\Images\GameImgs\background.png" />
-      <None Remove="Resources\Images\GameImgs\fire.png" />
+      <None Remove="Resources\Images\GameImgs\eagle.png" />
+      <None Remove="Resources\Images\GameImgs\fire_ghnom.png" />
+      <None Remove="Resources\Images\GameImgs\ghnom.png" />
+      <None Remove="Resources\Images\GameImgs\owl.png" />
     </ItemGroup>
 
     <ItemGroup>
@@ -82,16 +85,24 @@
 
     <ItemGroup>
       <MauiImage Include="Resources\Images\GameImgs\background.png" />
+      <MauiImage Include="Resources\Images\GameImgs\ice_fox.png" />
+      <MauiImage Include="Resources\Images\GameImgs\eagle.png" />
     </ItemGroup>
 
     <ItemGroup>
-      <MauiImage Include="Resources\Images\GameImgs\fire.png" />
+      <MauiImage Include="Resources\Images\GameImgs\fire_fox.png" />
       <MauiImage Include="Resources\Images\GameImgs\fire_dragon.png" />
-      <MauiImage Include="Resources\Images\GameImgs\wolf.png" />
+      <MauiImage Include="Resources\Images\GameImgs\fire_ghnom.png" />
+      <MauiImage Include="Resources\Images\GameImgs\ghnom.png" />
+      <MauiImage Include="Resources\Images\GameImgs\nature_fox.png" />
+      <MauiImage Include="Resources\Images\GameImgs\owl.png" />
       <MauiImage Include="Resources\Images\GameImgs\water_cat.png" />
     </ItemGroup>
 
     <ItemGroup>
+      <MauiXaml Update="Views\BattlePage.xaml">
+        <Generator>MSBuild:Compile</Generator>
+      </MauiXaml>
       <MauiXaml Update="Views\Templates\CreatePlantPinPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
@@ -101,10 +112,6 @@
       <MauiXaml Update="Views\Templates\ShowPinDetailPopup.xaml">
         <Generator>MSBuild:Compile</Generator>
       </MauiXaml>
-    </ItemGroup>
-
-    <ItemGroup>
-      <Folder Include="Views\TreeGameContecst\" />
     </ItemGroup>
 
 </Project>

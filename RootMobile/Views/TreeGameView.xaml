@@ -1,28 +1,103 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="RootMobile.Views.TreeGameView">
-    <ContentPage.Content>
-        <AbsoluteLayout>
 
-            <Image
-            x:Name="TreeSprite"
-            AbsoluteLayout.LayoutBounds="100,150,200,200"
-            AbsoluteLayout.LayoutFlags="None"/>
+    <AbsoluteLayout>
+        <Image Source="background.png"
+               Aspect="AspectFill"
+               AbsoluteLayout.LayoutBounds="0,0,1,1"
+               AbsoluteLayout.LayoutFlags="All"/>
 
-            <Image
-                Source="background.png"
-                Aspect="AspectFill"
-                AbsoluteLayout.LayoutBounds="0,0,1,1"
-                AbsoluteLayout.LayoutFlags="All"/>
+        <Image x:Name="TreeSprite"
+               AbsoluteLayout.LayoutBounds="100,350,200,200"
+               AbsoluteLayout.LayoutFlags="None">
+            <Image.GestureRecognizers>
+                <TapGestureRecognizer Tapped="OnCharacterTapped" />
+            </Image.GestureRecognizers>
+        </Image>
+        <Button Text="Отримати нового героя"
+        Clicked="OnOpenSummonPanelClicked"
+        BackgroundColor="Purple"
+        TextColor="White"
+        AbsoluteLayout.LayoutBounds="0.5,0.05,220,50"
+        AbsoluteLayout.LayoutFlags="PositionProportional"/>
 
-            <Label
-            Text="Tree 12Game"
-            TextColor="Yellow"
-            FontSize="24"
-            AbsoluteLayout.LayoutBounds="0.5,0.1,-1,-1"
-            AbsoluteLayout.LayoutFlags="PositionProportional"/>
-        </AbsoluteLayout>
-    </ContentPage.Content>
+        <Frame x:Name="SummonPanel"
+       IsVisible="False"
+       Opacity="0"
+       BackgroundColor="#EE000000"
+       CornerRadius="30"
+       AbsoluteLayout.LayoutBounds="0.5,0.5,320,450"
+       AbsoluteLayout.LayoutFlags="PositionProportional">
+
+            <VerticalStackLayout Spacing="20" VerticalOptions="Center">
+                <Label Text="НОВИЙ ПЕРСОНАЖ!" 
+               TextColor="Gold" FontSize="24" FontAttributes="Bold" 
+               HorizontalOptions="Center"/>
+
+                <Image x:Name="NewCharacterImage" 
+               HeightRequest="180" 
+               Scale="0.5"
+               HorizontalOptions="Center"/>
+
+                <Label x:Name="NewCharacterName" 
+               TextColor="White" FontSize="20" 
+               HorizontalOptions="Center"/>
+
+                <Button Text="ДОДАТИ В КОЛЕКЦІЮ" 
+                Clicked="OnConfirmSummonClicked"
+                BackgroundColor="DarkOrange"
+                TextColor="Black" FontAttributes="Bold"/>
+            </VerticalStackLayout>
+        </Frame>
+        <Button Text="Почати бій"
+                Clicked="OnStartBattleClicked"
+                BackgroundColor="Orange"
+                TextColor="White"
+                FontSize="20"
+                AbsoluteLayout.LayoutBounds="0.5,0.9,200,60"
+                AbsoluteLayout.LayoutFlags="PositionProportional"/>
+
+        <Frame x:Name="CharacterSelectionPanel"
+               IsVisible="False"
+               BackgroundColor="#CC000000"
+               CornerRadius="20"
+               Padding="10"
+               AbsoluteLayout.LayoutBounds="0.5,0.5,300,400"
+               AbsoluteLayout.LayoutFlags="PositionProportional">
+
+            <VerticalStackLayout Spacing="10">
+                <Label Text="Оберіть персонажа" 
+                       TextColor="White" 
+                       HorizontalOptions="Center" 
+                       FontAttributes="Bold"/>
+
+                <CollectionView x:Name="AnimalsList" HeightRequest="300">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Grid Padding="5">
+                                <Frame BackgroundColor="#44FFFFFF" CornerRadius="10" Padding="5">
+                                    <Frame.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnAnimalSelected" CommandParameter="{Binding .}" />
+                                    </Frame.GestureRecognizers>
+                                    <HorizontalStackLayout Spacing="15">
+                                        <Image Source="{Binding AnimalType.Name, StringFormat='{0}.png'}" 
+                                               WidthRequest="50" HeightRequest="50"/>
+                                        <VerticalStackLayout VerticalOptions="Center">
+                                            <Label Text="{Binding AnimalType.Name}" TextColor="White" FontAttributes="Bold"/>
+                                            <Label Text="{Binding Level, StringFormat='Рівень: {0}'}" TextColor="LightGray" FontSize="12"/>
+                                        </VerticalStackLayout>
+                                    </HorizontalStackLayout>
+                                </Frame>
+                            </Grid>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+                <Button Text="Закрити" Clicked="OnClosePanelClicked" BackgroundColor="Gray"/>
+            </VerticalStackLayout>
+        </Frame>
+
+    </AbsoluteLayout>
 </ContentPage>
