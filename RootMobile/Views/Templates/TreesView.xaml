@@ -101,18 +101,26 @@
 
                                 <HorizontalStackLayout Spacing="0" Margin="0,4,0,4">
                                     <HorizontalStackLayout.GestureRecognizers>
-                                        <TapGestureRecognizer Command="{Binding OpenCommentsAsync}" CommandParameter="{Binding .}" />
+      
                                     </HorizontalStackLayout.GestureRecognizers>
 
                                     <Image Source="comments.png"
                                            WidthRequest="18"
                                            HeightRequest="18"
                                            VerticalOptions="Center"
-                                           Margin="0,0,6,0" />
+                                           Margin="0,0,6,0">
+                                        <Image.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TreesViewModel}}, Path=OpenCommentsCommand}" CommandParameter="{Binding .}" />
+                                        </Image.GestureRecognizers>
+                                    </Image>
                                     <Label Text="Коментувати"
                                            TextColor="#536471"
                                            FontSize="13"
-                                           VerticalOptions="Center" />
+                                           VerticalOptions="Center">
+                                        <Label.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:TreesViewModel}}, Path=OpenCommentsCommand}" CommandParameter="{Binding .}" />
+                                        </Label.GestureRecognizers>
+                                    </Label>
                                 </HorizontalStackLayout>
 
                             </VerticalStackLayout>
