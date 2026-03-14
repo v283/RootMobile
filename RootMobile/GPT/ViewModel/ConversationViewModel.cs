@@ -8,8 +8,39 @@ using System.Collections.ObjectModel;
 
 namespace RootMobile.ViewModels
 {
+    [QueryProperty(nameof(PromptFromUrl), "prompt")]
     public partial class ConversationViewModel : BaseViewModel
     {
+        public string PromptFromUrl
+        {
+            set
+            {
+                // Розкодовуємо промпт
+                string receivedPrompt = Uri.UnescapeDataString(value ?? "");
+
+                // Запускаємо логіку обробки (не чекаємо на завершення в сеттері)
+                _ = ExecuteAiRequest(receivedPrompt);
+            }
+        }
+
+        private async Task ExecuteAiRequest(string prompt)
+        {
+            if (string.IsNullOrWhiteSpace(prompt)) return;
+
+            // Чекаємо півсекунди, щоб сторінка повністю завантажилась і CollectionView був готовий
+            await Task.Delay(500);
+
+            // Налаштовуємо режими повідомлення (текст активний)
+            TheMessage.IsTextActive = true;
+            TheMessage.IsImageActive = false;
+
+            // Встановлюємо текст у поле вводу (Query)
+            Query = prompt;
+
+            // Викликаємо ваш існуючий метод AskQuestionAsync
+            await AskQuestionAsync();
+        }
+
         [ObservableProperty]
         string query;
 
