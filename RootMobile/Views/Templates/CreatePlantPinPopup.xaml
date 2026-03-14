@@ -24,7 +24,7 @@
                 HorizontalOptions="Center" 
                 HeightRequest="650"
                 WidthRequest="360"
-                Padding="20">
+                Padding="10">
 
             <Grid RowDefinitions="Auto, *, Auto">
                 <!-- Заголовок -->
