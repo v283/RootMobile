@@ -14,6 +14,7 @@ public partial class CreatePlantPinPopup : Popup
     private List<CategoriesMapModel> _categories;
     private readonly OpenAIService _aiService;
 
+
     public CreatePlantPinPopup(IDataService dataService, IOpenAIService aiService)
     {
         InitializeComponent();
@@ -32,6 +33,7 @@ public partial class CreatePlantPinPopup : Popup
         };
     }
 
+
     private async void LoadCategories()
     {
         try
@@ -45,19 +47,73 @@ public partial class CreatePlantPinPopup : Popup
         }
     }
 
+    private byte[] CompressImage(string path)
+    {
+        using var original = SKBitmap.Decode(path);
+        if (original == null) return null;
+
+        int maxSide = 1024; // Для ШІ більше не потрібно
+        int width = original.Width;
+        int height = original.Height;
+
+        if (width > maxSide || height > maxSide)
+        {
+            double ratio = (double)Math.Max(width, height) / maxSide;
+            width = (int)(width / ratio);
+            height = (int)(height / ratio);
+        }
+
+        using var resized = original.Resize(new SKImageInfo(width, height), SKFilterQuality.Medium);
+        using var image = SKImage.FromBitmap(resized);
+        using var data = image.Encode(SKEncodedImageFormat.Jpeg, 70); // Якість 70% ідеальна для передачі
+        return data.ToArray();
+    }
+
     private async void OnTakePhotoClicked(object sender, EventArgs e)
     {
-        var photo = await MediaPicker.Default.PickPhotoAsync(); // Або CapturePhotoAsync
-        if (photo != null)
-        {
-            var localPath = Path.Combine(FileSystem.AppDataDirectory, Guid.NewGuid().ToString() + ".jpg");
-            using var stream = await photo.OpenReadAsync();
-            using var newStream = File.OpenWrite(localPath);
-            await stream.CopyToAsync(newStream);
+        var photo = await MediaPicker.Default.PickPhotoAsync();
+        if (photo == null) return;
 
+        try
+        {
+            LoadingIndicator.IsVisible = true;
+            LoadingIndicator.IsRunning = true;
+
+            // 1. Зберігаємо локально для карти
+            var localPath = Path.Combine(FileSystem.AppDataDirectory, Guid.NewGuid().ToString() + ".jpg");
+            using (var stream = await photo.OpenReadAsync())
+            using (var newStream = File.OpenWrite(localPath))
+                await stream.CopyToAsync(newStream);
+
+            // 2. Стискаємо зображення
+            byte[] compressedImage = CompressImage(localPath);
+
+            // 3. Викликаємо ваш OpenAIService
+            string aiResult = await _aiService.IdentifyPlantAsync(compressedImage);
+
+            if (aiResult.ToUpper().Contains("NOT_PLANT"))
+            {
+                await App.Current.MainPage.DisplayAlert("Помилка", "ШІ не впізнав рослину. Зробіть фото чіткішим.", "ОК");
+                return;
+            }
+
+            // Успіх: заповнюємо дані
             _tempImagePath = localPath;
             PreviewImage.Source = ImageSource.FromFile(localPath);
+            PlantNameEntry.Text = aiResult;
             CameraPlaceholder.IsVisible = false;
+
+            // Можна відразу згенерувати опис через той же ШІ
+            OnAiHelpClicked(null, null);
+        }
+        catch (Exception ex)
+        {
+            await App.Current.MainPage.DisplayAlert("API Error", "Не вдалося проаналізувати фото", "ОК");
+        }
+        finally
+        {
+            LoadingIndicator.IsVisible = false;
+            LoadingIndicator.IsRunning = false;
         }
     }
 
