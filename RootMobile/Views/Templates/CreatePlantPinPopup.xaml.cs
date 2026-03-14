@@ -74,52 +74,64 @@ public partial class CreatePlantPinPopup : Popup
         var photo = await MediaPicker.Default.PickPhotoAsync();
         if (photo == null) return;
 
+        string localPath = Path.Combine(FileSystem.AppDataDirectory, Guid.NewGuid().ToString() + ".jpg");
+
         try
         {
             LoadingIndicator.IsVisible = true;
             LoadingIndicator.IsRunning = true;
 
-            // 1. Зберігаємо локально для карти
-            var localPath = Path.Combine(FileSystem.AppDataDirectory, Guid.NewGuid().ToString() + ".jpg");
+            // 1. Зберігаємо файл
             using (var stream = await photo.OpenReadAsync())
             using (var newStream = File.OpenWrite(localPath))
                 await stream.CopyToAsync(newStream);
 
-            // 2. Стискаємо зображення
+            // 2. Стискаємо
             byte[] compressedImage = CompressImage(localPath);
 
-            // 3. Викликаємо ваш OpenAIService
-            string aiResult = await _aiService.IdentifyPlantAsync(compressedImage);
+            // 3. ОДИН запит до ШІ для ідентифікації та короткого опису (Оптимізація)
+            // Просимо ШІ повернути формат: Назва | Опис
+            string prompt = "Що це за рослина? Якщо не рослина, пиши NOT_PLANT. " +
+                            "Якщо рослина, пиши назву і через символ | короткі поради (до 2 речень).";
 
-            // ЛОГІКА ПЕРЕВІРКИ: Якщо ШІ не розпізнав рослину
-            if (string.IsNullOrEmpty(aiResult) || aiResult.ToUpper().Contains("NOT_PLANT"))
+            string aiResponse = await _aiService.IdentifyPlantAsync(compressedImage); // Переконайтеся, що сервіс приймає промпт
+
+            if (string.IsNullOrEmpty(aiResponse) || aiResponse.ToUpper().Contains("NOT_PLANT"))
             {
-                // 1. Очищуємо поле з назвою
+                // ВИДАЛЯЄМО файл, якщо це не рослина
+                if (File.Exists(localPath)) File.Delete(localPath);
+
                 PlantNameEntry.Text = string.Empty;
-
-                // 2. Виводимо сповіщення
                 await App.Current.MainPage.DisplayAlert("Опізнання неможливе",
-                    "ШІ не розпізнав рослину на цьому фото. Будь ласка, зробіть чіткіше фото саме рослини.", "ОК");
+                    "ШІ не розпізнав рослину. Спробуйте ще раз.", "ОК");
 
-                // Очищуємо прев'ю, бо фото не пройшло валідацію
                 PreviewImage.Source = null;
                 _tempImagePath = null;
                 CameraPlaceholder.IsVisible = true;
                 return;
             }
 
-            // Успіх: заповнюємо дані
+            // 4. Розбиваємо відповідь (якщо ШІ повернув Назва | Опис)
+            if (aiResponse.Contains("|"))
+            {
+                var parts = aiResponse.Split('|');
+                PlantNameEntry.Text = parts[0].Trim();
+                CommentEntry.Text = parts[1].Trim();
+            }
+            else
+            {
+                PlantNameEntry.Text = aiResponse.Trim();
+            }
+
             _tempImagePath = localPath;
             PreviewImage.Source = ImageSource.FromFile(localPath);
-            PlantNameEntry.Text = aiResult;
             CameraPlaceholder.IsVisible = false;
-
-            // Можна відразу згенерувати опис через той же ШІ
-            OnAiHelpClicked(null, null);
         }
         catch (Exception ex)
         {
-            await App.Current.MainPage.DisplayAlert("API Error", "Не вдалося проаналізувати фото", "ОК");
+            // У разі помилки видаляємо файл, щоб не засмічувати пам'ять
+            if (File.Exists(localPath)) File.Delete(localPath);
+            await App.Current.MainPage.DisplayAlert("Помилка", "Не вдалося проаналізувати фото", "ОК");
         }
         finally
         {
