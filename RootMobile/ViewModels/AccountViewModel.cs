@@ -54,6 +54,7 @@ public partial class AccountViewModel : ObservableObject
         BadgesVm = new BadgesViewModel(_dataService);
         
         await TreesVm.InitializeAsync();
+        await BadgesVm.Initialize();
     }
 
     [RelayCommand]
