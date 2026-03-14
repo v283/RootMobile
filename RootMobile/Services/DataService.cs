@@ -491,7 +491,11 @@ namespace RootMobile.Services
             }
         }
 
-        // ... решта коду ...
+        public async Task<List<PlantPinModel>> GetPlantPinsByCategoryAsync(string category)
+        {
+            try
+            {
+                var query = _supabaseClient.From<PlantPinModel>();
 
                 // Якщо категорія не "ALL", додаємо фільтр
                 if (category != "ALL")
