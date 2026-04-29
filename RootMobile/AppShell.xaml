@@ -18,9 +18,9 @@
         <ShellContent Title="Game" Route="treegameview"
                       Icon="game_tree.png" 
                       ContentTemplate="{DataTemplate views:TreeGameView}" />
-        <!-- <ShellContent Title="Shop" Route="shopview" -->
-        <!--               Icon="shop.png" -->
-        <!--               ContentTemplate="{DataTemplate views:ShopView}" /> -->
+        <ShellContent Title="Shop" Route="shopview"
+                      Icon="shop.png"
+                      ContentTemplate="{DataTemplate views:ShopView}" />
         <ShellContent Title="Account" Route="accountview"
                       Icon="account.png"
                       ContentTemplate="{DataTemplate views:AccountView}" />

@@ -12,11 +12,11 @@
     <Grid RowDefinitions="Auto,Auto,Auto,*">
         
         <Grid x:Name="TopBar" ZIndex="3" BackgroundColor="White" RowDefinitions="*" ColumnDefinitions="Auto,*,Auto" Grid.Row="0" Padding="16,6,16,10">
-            <Image HeightRequest="24" WidthRequest="24" Source="email.png" Grid.Column="0">
-                <Image.GestureRecognizers>
-                    <TapGestureRecognizer Command="{Binding GoToEmailsCommand}" />
-                </Image.GestureRecognizers>
-            </Image>
+            <BoxView HeightRequest="24" BackgroundColor="Transparent" WidthRequest="24" Grid.Column="0">
+                <!-- <Image.GestureRecognizers> -->
+                <!--     <TapGestureRecognizer Command="{Binding GoToEmailsCommand}" /> -->
+                <!-- </Image.GestureRecognizers> -->
+            </BoxView>
             <HorizontalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="10">
                 <Label Text="My Profile" FontSize="20" FontAttributes="Bold" />
                 <Image Source="edit" WidthRequest="20" HeightRequest="20">

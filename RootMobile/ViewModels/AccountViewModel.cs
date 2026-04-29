@@ -67,6 +67,7 @@ public partial class AccountViewModel : ObservableObject
         if (_pinDataMode != null)
         {
             await TreesVm.InitializeAsync(_pinDataMode.UserId);
+            await BadgesVm.Initialize();
         }
 
     }

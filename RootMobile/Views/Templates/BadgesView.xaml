@@ -2,6 +2,27 @@
 
 <ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:RootMobile.ViewModels"
+             xmlns:models="clr-namespace:RootMobile.Models"
+             xmlns:ffimageloading="clr-namespace:FFImageLoading.Maui;assembly=FFImageLoading.Maui"
+             xmlns:services="clr-namespace:RootMobile.Services"
              x:Class="RootMobile.Views.Templates.BadgesView">
+    <CollectionView ItemsSource="{Binding BadgesCollection}">
+        <CollectionView.ItemsLayout>
+            <GridItemsLayout Orientation="Vertical" Span="3" />
+        </CollectionView.ItemsLayout>
+        <CollectionView.ItemTemplate>
+                     <DataTemplate x:DataType="models:BadgeModel">
+                         <Border StrokeThickness="0">
+                             
+         
+                         <VerticalStackLayout Spacing="10" Margin="10">
+                        <Image Source="{Binding Image}" HeightRequest="100"/>
+                        <Label Text="{Binding Title}"/>
+                    </VerticalStackLayout>
+                         </Border>
+                </DataTemplate>
+                </CollectionView.ItemTemplate>
+    </CollectionView>
     
-</ContentView>
+</ContentView> 

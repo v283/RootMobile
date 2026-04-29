@@ -1043,6 +1043,13 @@ namespace RootMobile.Services
             }
         }
 
+
+        public async Task<List<BadgeModel>> GetBadges()
+        {
+            var response = await _supabaseClient.From<BadgeModel>().Get();
+            return response.Models;
+
+        }
         public event PropertyChangedEventHandler PropertyChanged;
 
         protected void OnPropertyChanged(string propertyName)

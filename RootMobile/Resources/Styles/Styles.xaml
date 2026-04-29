@@ -437,5 +437,23 @@
         <Setter Property="UnselectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray200}, Dark={StaticResource Gray950}}" />
         <Setter Property="SelectedTabColor" Value="{AppThemeBinding Light={StaticResource Gray950}, Dark={StaticResource Gray200}}" />
     </Style>
+    
+    
+    <Style
+        x:Key="TxtSubtitle2_2"
+        TargetType="Label">
+        <Setter Property="FontFamily" Value="MonaSansMedium" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
+
+    <Style
+        x:Key="TxtSubtitle2_3"
+        TargetType="Entry">
+        <Setter Property="FontFamily" Value="MonaSansMedium" />
+        <Setter Property="BackgroundColor" Value="Transparent" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="TextColor" Value="{DynamicResource TextColor}" />
+    </Style>
 
 </ResourceDictionary>

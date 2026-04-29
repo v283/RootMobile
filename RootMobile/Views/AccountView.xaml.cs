@@ -40,6 +40,10 @@ public partial class AccountView : ContentPage
             {
                 await vm.TreesVm.RefreshAsync();
             }
+            if (vm.TreesVm != null)
+            {
+                await vm.TreesVm.RefreshAsync();
+            }
         }
 
 
